@@ -1,6 +1,6 @@
 ﻿using Domain;
 
-namespace Warehouse.Domain.ElectricGuitar;
+namespace Warehouse.Domain.ElectricGuitars;
 
 public class Pickup : ValueObject
 {
