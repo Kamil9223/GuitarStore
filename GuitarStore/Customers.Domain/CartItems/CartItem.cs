@@ -1,29 +1,28 @@
 ﻿using Domain;
 
-namespace Customers.Domain.Products;
+namespace Customers.Domain.CartItems;
 
-public class Product : Entity, IIdentifiable
+public class CartItem : Entity, IIdentifiable
 {
     public int Id { get; }
-    public ProductType ProductType { get; }
     public string Name { get; }
     public decimal Price { get; }
     public uint Quantity { get; private set; }
+    public int CartId { get; }
 
-    private Product(int id, ProductType productType, string name, decimal price, uint quantity)
+    private CartItem(int id, string name, decimal price, uint quantity)
     {
         Id = id;
-        ProductType = productType;
         Name = name;
         Price = price;
         Quantity = quantity;
     }
 
-    public static Product Create(int id, ProductType productType, string name, decimal price, uint quantity)
+    internal static CartItem Create(int id, string name, decimal price, uint quantity)
     {
         //Check rules
 
-        return new Product(id, productType, name, price, quantity);
+        return new CartItem(id, name, price, quantity);
     }
 
     internal void IncreaseQuantity(uint quantity) => Quantity += quantity;

@@ -1,4 +1,5 @@
-﻿using Customers.Domain.Products;
+﻿using Customers.Domain.CartItems;
+using Customers.Domain.Products;
 using Domain;
 
 namespace Customers.Domain.Carts;
@@ -6,27 +7,26 @@ namespace Customers.Domain.Carts;
 public class Cart : Entity, IIdentifiable
 {
     public int Id { get; }
-    public ICollection<Product> Products { get; }
+    public ICollection<CartItem> CartItems { get; }
     public DateTime CreatedAt { get; }
-    public decimal TotalPrice { get => Products.Sum(x => x.Price * x.Quantity); }
+    public decimal TotalPrice { get => CartItems.Sum(x => x.Price * x.Quantity); }
 
-    private Cart(int id)
+    private Cart()
     {
-        Id = id;
         CreatedAt = DateTime.Now;
-        Products = new List<Product>();
+        CartItems = new List<CartItem>();
     }
 
-    public static Cart Create(int id)
+    public static Cart Create()
     {
-        return new Cart(id);
+        return new Cart();
     }
 
-    public void ClearCart() => Products.Clear();
+    public void ClearCart() => CartItems.Clear();
 
-    public void AddProduct(Product product)
+    public void AddProduct(CartItem product)
     {
-        var existingProduct = Products.SingleOrDefault(x => x.Id == product.Id);
+        var existingProduct = CartItems.SingleOrDefault(x => x.Id == product.Id);
 
         if (existingProduct is not null)
         {
@@ -34,12 +34,12 @@ public class Cart : Entity, IIdentifiable
             return;
         }
 
-        Products.Add(product);
+        CartItems.Add(product);
     }
 
     public void RemoveProduct(int productId, uint quantity)
     {
-        var existingProduct = Products.SingleOrDefault(x => x.Id == productId);
+        var existingProduct = CartItems.SingleOrDefault(x => x.Id == productId);
 
         if (existingProduct is null)
         {
@@ -52,6 +52,6 @@ public class Cart : Entity, IIdentifiable
             return;
         }
 
-        Products.Remove(existingProduct);
+        CartItems.Remove(existingProduct);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Domain;
 
-namespace Customers.Domain.Products;
+namespace Orders.Domain.Products;
 
 public class Product : Entity, IIdentifiable
 {
@@ -19,7 +19,7 @@ public class Product : Entity, IIdentifiable
         Quantity = quantity;
     }
 
-    public static Product Create(int id, ProductType productType, string name, decimal price, uint quantity)
+    internal static Product Create(int id, ProductType productType, string name, decimal price, uint quantity)
     {
         //Check rules
 
