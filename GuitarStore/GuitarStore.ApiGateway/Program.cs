@@ -1,6 +1,15 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using GuitarStore.ApiGateway.Configuration;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+builder.Host.ConfigureContainer<ContainerBuilder>(autoFacBuilder =>
+{
+    autoFacBuilder.RegisterModule<ModulesInitializator>();
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
