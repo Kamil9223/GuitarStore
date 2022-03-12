@@ -2,8 +2,10 @@
 
 namespace Warehouse.Domain.ElectricGuitars;
 
-public class Pickup : ValueObject
+public class Pickup : Entity
 {
+    public int Id { get; }
+    public int ElectricGuitarId { get; }
     public string Name { get; }
     public PickupType PickupType { get; }
 

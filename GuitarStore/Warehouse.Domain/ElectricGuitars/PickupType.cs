@@ -1,6 +1,14 @@
 ﻿public enum PickupType
 {
-    Single = 1,
+    SingleBridge = 1,
 
-    Double = 2
+    SingleMiddle = 2,
+
+    SingleNeck = 3,
+
+    DoubleBridge = 4,
+
+    DoubleMiddle = 5,
+
+    DoubleNeck = 6
 }

@@ -4,13 +4,13 @@ namespace Warehouse.Domain.Store;
 
 public class StoreLocation : ValueObject
 {
-    public string Address { get; }
+    public string Street { get; }
     public string PostalCode { get; }
     public string City { get; }
 
     private StoreLocation(string address, string postalCode, string city)
     {
-        Address = address;
+        Street = address;
         PostalCode = postalCode;
         City = city;
     }
