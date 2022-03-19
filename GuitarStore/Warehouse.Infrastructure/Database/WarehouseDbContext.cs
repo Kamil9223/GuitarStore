@@ -11,6 +11,8 @@ internal class WarehouseDbContext : DbContext
     public DbSet<ElectricGuitar> ElectricGuitars { get; set; }
     public DbSet<AcousticGuitar> AcousticGuitars { get; set; }
 
+    public const string DbSchema = "Warehouse";
+
     public WarehouseDbContext() { }
 
     public WarehouseDbContext(DbContextOptions<WarehouseDbContext> options) : base(options) { }

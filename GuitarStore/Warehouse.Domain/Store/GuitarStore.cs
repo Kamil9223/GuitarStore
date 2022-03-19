@@ -12,6 +12,9 @@ public class GuitarStore : Entity, IIdentifiable
     public ICollection<AcousticGuitar> AcousticGuitars { get; }
     public ICollection<ElectricGuitar> ElectricGuitars { get; }
 
+    //For EF Core
+    private GuitarStore() { }
+
     private GuitarStore(string name, StoreLocation location)
     {
         Name = name;
@@ -25,14 +28,14 @@ public class GuitarStore : Entity, IIdentifiable
         return new GuitarStore(name, storeLocation);
     }
 
-    public void AddElectricGuitar(ICollection<Pickup> pickups)
+    public void AddElectricGuitar(string companyName, string modelName, decimal price, ICollection<Pickup> pickups)
     {
-        ElectricGuitars.Add(ElectricGuitar.Create(Id, pickups));
+        ElectricGuitars.Add(ElectricGuitar.Create(Id, companyName, modelName, price, pickups));
     }
 
-    public void AddAcousticGuitar()
+    public void AddAcousticGuitar(string companyName, string modelName, decimal price)
     {
-        AcousticGuitars.Add(AcousticGuitar.Create(Id));
+        AcousticGuitars.Add(AcousticGuitar.Create(Id, companyName, modelName, price));
     }
 
 
