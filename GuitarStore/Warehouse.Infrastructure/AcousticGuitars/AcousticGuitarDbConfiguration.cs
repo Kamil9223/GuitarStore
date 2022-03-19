@@ -15,12 +15,12 @@ internal class AcousticGuitarDbConfiguration : IEntityTypeConfiguration<Acoustic
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
-        builder.HasOne<GuitarStore>()
-            .WithMany()
+        builder.HasOne(x => x.GuitarStore)
+            .WithMany(x => x.AcousticGuitars)
             .HasForeignKey(x => x.GuitarStoreId);
 
         builder.Property(x => x.CompanyName).HasMaxLength(75).IsRequired();
         builder.Property(x => x.ModelName).HasMaxLength(100).IsRequired();
-        builder.Property(x => x.Price).IsRequired();
+        builder.Property(x => x.Price).HasColumnType("decimal(10,2)").IsRequired();
     }
 }

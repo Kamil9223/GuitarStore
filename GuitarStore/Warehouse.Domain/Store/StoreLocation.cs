@@ -8,6 +8,9 @@ public class StoreLocation : ValueObject
     public string PostalCode { get; }
     public string City { get; }
 
+    //For EF Core
+    private StoreLocation() { }
+
     private StoreLocation(string address, string postalCode, string city)
     {
         Street = address;

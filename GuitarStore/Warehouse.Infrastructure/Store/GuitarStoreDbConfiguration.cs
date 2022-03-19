@@ -18,9 +18,9 @@ internal class GuitarStoreDbConfiguration : IEntityTypeConfiguration<GuitarStore
         
         builder.OwnsOne<StoreLocation>("Location", builder =>
         {
-            builder.Property(x => x.City).HasMaxLength(200).IsRequired();
-            builder.Property(x => x.Street).HasMaxLength(400).IsRequired();
-            builder.Property(x => x.PostalCode).HasColumnType("char(6)").IsRequired();
+            builder.Property(x => x.City).HasColumnName("City").HasMaxLength(200).IsRequired();
+            builder.Property(x => x.Street).HasColumnName("Street").HasMaxLength(400).IsRequired();
+            builder.Property(x => x.PostalCode).HasColumnName("PostalCode").HasColumnType("char(6)").IsRequired();
         });
     }
 }
