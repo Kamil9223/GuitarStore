@@ -1,6 +1,8 @@
-﻿namespace Warehouse.Contracts.Store;
+﻿using Application;
 
-public class AddGuitarStoreCommand
+namespace Warehouse.Contracts.Store;
+
+public class AddGuitarStoreCommand : ICommand
 {
     public string Name { get; init; }
 
