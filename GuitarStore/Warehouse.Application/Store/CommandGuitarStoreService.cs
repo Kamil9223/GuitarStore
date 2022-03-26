@@ -1,4 +1,5 @@
-﻿using Warehouse.Contracts.Store;
+﻿using System.Text;
+using Warehouse.Contracts.Store;
 using Warehouse.Domain.Store;
 
 namespace Warehouse.Application.Store;
@@ -14,6 +15,25 @@ internal class CommandGuitarStoreService : ICommandGuitarStoreService
 
     public async Task AddGuitarStore(AddGuitarStoreCommand command)
     {
-        await _guitarStoreRepository.Add(GuitarStore.Create("test", null));
+        AddGuitarStoreCommandValidator validator = new AddGuitarStoreCommandValidator();
+
+        var validationResult = validator.Validate(command);
+        if (!validationResult.IsValid)
+        {
+            var errorBuilder = new StringBuilder();
+
+            errorBuilder.AppendLine("Invalid command, reason: ");
+
+            foreach (var error in validationResult.Errors)
+            {
+                errorBuilder.AppendLine(error.ErrorMessage);
+            }
+
+            throw new Exception(errorBuilder.ToString());
+        }
+
+        await _guitarStoreRepository.Add(
+            GuitarStore.Create(command.Name, StoreLocation.Create(command.Street, command.PostalCode, command.City))
+            );
     }
 }
