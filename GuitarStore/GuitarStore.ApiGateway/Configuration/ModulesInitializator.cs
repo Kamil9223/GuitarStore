@@ -8,5 +8,6 @@ internal class ModulesInitializator : Module
     protected override void Load(ContainerBuilder builder)
     {
         builder.RegisterModule<WarehouseModuleInitializator>();
+        builder.RegisterModule<ApiModule>();
     }
 }

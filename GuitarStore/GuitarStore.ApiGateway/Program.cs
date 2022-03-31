@@ -1,6 +1,7 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using GuitarStore.ApiGateway.Configuration;
+using GuitarStore.ApiGateway.MiddleWares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware<ExceptionsMiddleware>();
 
 app.MapControllers();
 
