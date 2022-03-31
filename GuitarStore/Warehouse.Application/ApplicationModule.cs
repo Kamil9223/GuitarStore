@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using FluentValidation;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Module = Autofac.Module;
@@ -14,5 +15,12 @@ internal sealed class ApplicationModule : Module
             .Where(type => type.Name.EndsWith("Service"))
             .AsImplementedInterfaces()
             .InstancePerLifetimeScope();
+
+        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            .AsClosedTypesOf(typeof(IValidator<>))
+            .AsImplementedInterfaces()
+            .InstancePerLifetimeScope();
+
+        builder.RegisterGeneric(typeof(ValidationService<>)).As(typeof(IValidationService<>));
     }
 }

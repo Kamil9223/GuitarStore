@@ -4,7 +4,7 @@ using Warehouse.Contracts.Store;
 namespace GuitarStore.ApiGateway.Modules.Warehouse.Store;
 
 [ApiController]
-[Route("[controller]")]
+[Route("stores")]
 public class GuitarStoreController : ControllerBase
 {
     private readonly ICommandGuitarStoreService _commandGuitarStoreService;
@@ -17,7 +17,14 @@ public class GuitarStoreController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(AddGuitarStoreRequest request)
     {
-        await _commandGuitarStoreService.AddGuitarStore(new AddGuitarStoreCommand());
+        //Log info about client request (or in middleware)
+        await _commandGuitarStoreService.AddGuitarStore(new AddGuitarStoreCommand
+        {
+            Name = request.Name,
+            City = request.City,
+            PostalCode = request.PostalCode,
+            Street = request.Street
+        });
 
         return Ok();
     }
