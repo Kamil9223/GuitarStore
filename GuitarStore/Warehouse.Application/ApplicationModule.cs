@@ -2,6 +2,7 @@
 using FluentValidation;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Warehouse.Contracts;
 using Module = Autofac.Module;
 
 [assembly: InternalsVisibleTo("Warehouse.Infrastructure")]
@@ -12,7 +13,7 @@ internal sealed class ApplicationModule : Module
     protected override void Load(ContainerBuilder builder)
     {
         builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-            .Where(type => type.Name.EndsWith("Service"))
+            .Where(type => type.Name.EndsWith("Handler"))
             .AsImplementedInterfaces()
             .InstancePerLifetimeScope();
 
@@ -21,6 +22,8 @@ internal sealed class ApplicationModule : Module
             .AsImplementedInterfaces()
             .InstancePerLifetimeScope();
 
-        builder.RegisterGeneric(typeof(ValidationService<>)).As(typeof(IValidationService<>));
+        builder.RegisterGeneric(typeof(ValidationService<>)).As(typeof(IValidationService<>)).InstancePerLifetimeScope();
+
+        builder.RegisterGeneric(typeof(CommandHandlerExecutor<>)).As(typeof(ICommandHandlerExecutor<>)).InstancePerLifetimeScope();
     }
 }

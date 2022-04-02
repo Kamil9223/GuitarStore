@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Warehouse.Contracts;
 using Warehouse.Contracts.Store;
 
 namespace GuitarStore.ApiGateway.Modules.Warehouse.Store;
@@ -7,24 +8,29 @@ namespace GuitarStore.ApiGateway.Modules.Warehouse.Store;
 [Route("stores")]
 public class GuitarStoreController : ControllerBase
 {
-    private readonly ICommandGuitarStoreService _commandGuitarStoreService;
+    ICommandHandlerExecutor<AddGuitarStoreCommand> _addGuitarStoreCommandExecutor;
+    ICommandHandlerExecutor<UpdateGuitarStoreCommand> _updateGuitarStoreCommandExecutor;
 
-    public GuitarStoreController(ICommandGuitarStoreService commandGuitarStoreService)
+    public GuitarStoreController(
+        ICommandHandlerExecutor<AddGuitarStoreCommand> addGuitarStoreCommandExecutor,
+        ICommandHandlerExecutor<UpdateGuitarStoreCommand> updateGuitarStoreCommandExecutor)
     {
-        _commandGuitarStoreService = commandGuitarStoreService;
+        _addGuitarStoreCommandExecutor = addGuitarStoreCommandExecutor;
+        _updateGuitarStoreCommandExecutor = updateGuitarStoreCommandExecutor;
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(AddGuitarStoreRequest request)
     {
-        //Log info about client request (or in middleware)
-        await _commandGuitarStoreService.AddGuitarStore(new AddGuitarStoreCommand
+        await _addGuitarStoreCommandExecutor.Execute(new AddGuitarStoreCommand
         {
             Name = request.Name,
             City = request.City,
             PostalCode = request.PostalCode,
             Street = request.Street
         });
+
+        await _updateGuitarStoreCommandExecutor.Execute(new UpdateGuitarStoreCommand { });
 
         return Ok();
     }
