@@ -30,7 +30,20 @@ public class GuitarStoreController : ControllerBase
             Street = request.Street
         });
 
-        await _updateGuitarStoreCommandExecutor.Execute(new UpdateGuitarStoreCommand { });
+        return Ok();
+    }
+
+    [HttpPut("{guitarStoreId}")]
+    public async Task<IActionResult> Update(int guitarStoreId, UpdateGuitarStoreRequest request)
+    {
+        await _updateGuitarStoreCommandExecutor.Execute(new UpdateGuitarStoreCommand
+        {
+            Id = guitarStoreId,
+            Name = request.Name,
+            City = request.City,
+            PostalCode = request.PostalCode,
+            Street= request.Street
+        });
 
         return Ok();
     }

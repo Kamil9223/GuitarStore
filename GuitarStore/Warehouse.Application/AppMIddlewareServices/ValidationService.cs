@@ -3,7 +3,7 @@ using FluentValidation;
 using System.Text;
 using ValidationException = Application.Exceptions.ValidationException;
 
-namespace Warehouse.Application;
+namespace Warehouse.Application.AppMIddlewareServices;
 
 internal class ValidationService<TCommand> : IValidationService<TCommand>
     where TCommand : ICommand

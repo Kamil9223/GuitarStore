@@ -1,7 +1,8 @@
 ﻿using Application;
+using Warehouse.Application.AppMIddlewareServices;
 using Warehouse.Contracts;
 
-namespace Warehouse.Application;
+namespace Warehouse.Application.CommandQueryExecutors;
 
 internal class CommandHandlerExecutor<TCommand> : ICommandHandlerExecutor<TCommand> where TCommand : ICommand
 {

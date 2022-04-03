@@ -1,4 +1,4 @@
-﻿namespace Warehouse.Application;
+﻿namespace Warehouse.Application.AppMIddlewareServices;
 
 internal interface IValidationService<TCommand>
 {
