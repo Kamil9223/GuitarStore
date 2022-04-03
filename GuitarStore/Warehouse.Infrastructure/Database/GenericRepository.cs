@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Warehouse.Infrastructure.Database;
@@ -18,19 +19,19 @@ internal class GenericRepository<TEntity> : IRepository<TEntity>
         await _context.Set<TEntity>().AddAsync(entity);
     }
 
-    public Task<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate)
+    public async Task<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate)
     {
-        throw new NotImplementedException();
+        return await _context.Set<TEntity>().Where(predicate).ToListAsync();
     }
 
-    public Task<TEntity> Get(int id)
+    public async Task<TEntity> Get(int id)
     {
-        throw new NotImplementedException();
+        return await _context.Set<TEntity>().FindAsync(id);
     }
 
-    public Task<IEnumerable<TEntity>> GetAll()
+    public async Task<IEnumerable<TEntity>> GetAll()
     {
-        throw new NotImplementedException();
+        return await _context.Set<TEntity>().ToListAsync();
     }
 
     public Task Remove(TEntity entity)

@@ -16,16 +16,15 @@ internal class GuitarStoreCommandHandler :
         _guitarStoreRepository = guitarStoreRepository;
     }
 
-    public Task Handle(AddGuitarStoreCommand command)
+    public async Task Handle(AddGuitarStoreCommand command)
     {
-        return Task.CompletedTask;
-        //await _guitarStoreRepository.Add(
-        //    GuitarStore.Create(command.Name, StoreLocation.Create(command.Street, command.PostalCode, command.City))
-        //    );
+        await _guitarStoreRepository.Add(GuitarStore.Create(command.Name, StoreLocation.Create(command.Street, command.PostalCode, command.City)));
     }
 
-    public Task Handle(UpdateGuitarStoreCommand command)
+    public async Task Handle(UpdateGuitarStoreCommand command)
     {
-        return Task.CompletedTask;
+        var guitarStore = await _guitarStoreRepository.Get(command.Id);
+
+        guitarStore.UpdateProperties(command.Name, StoreLocation.Create(command.Street, command.PostalCode, command.City));
     }
 }
