@@ -8,16 +8,20 @@ namespace Warehouse.Application.AppMIddlewareServices;
 internal class ValidationService<TCommand> : IValidationService<TCommand>
     where TCommand : ICommand
 {
-    private readonly IValidator<TCommand> _validator;
+    private readonly IList<IValidator<TCommand>> _validators;
 
-    public ValidationService(IValidator<TCommand> validator)
+    public ValidationService(IList<IValidator<TCommand>> validators)
     {
-        _validator = validator;
+        _validators = validators;
     }
 
     public void Validate(TCommand command)
     {
-        var validationResult = _validator.Validate(command);
+        var validator = _validators.SingleOrDefault();
+        if (validator is null)
+            return;
+
+        var validationResult = validator.Validate(command);
         if (!validationResult.IsValid)
         {
             var errorBuilder = new StringBuilder();

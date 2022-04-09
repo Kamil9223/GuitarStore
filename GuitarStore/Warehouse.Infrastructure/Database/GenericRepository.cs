@@ -7,9 +7,9 @@ namespace Warehouse.Infrastructure.Database;
 internal class GenericRepository<TEntity> : IRepository<TEntity>
     where TEntity : Entity
 {
-    private readonly WarehouseDbContext _context;
+    private readonly DbContext _context;
 
-    public GenericRepository(WarehouseDbContext context)
+    public GenericRepository(DbContext context)
     {
         _context = context;
     }

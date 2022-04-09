@@ -21,7 +21,6 @@ internal sealed class InfrastructureModule : Module
             return new WarehouseDbContext(dbOptions.Options);
         })
             .As<DbContext>()
-            .AsSelf()
             .InstancePerLifetimeScope();
 
         builder.RegisterType<UnitOfWork>()

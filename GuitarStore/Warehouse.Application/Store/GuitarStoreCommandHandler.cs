@@ -6,7 +6,8 @@ namespace Warehouse.Application.Store;
 
 internal class GuitarStoreCommandHandler :
     ICommandHandler<AddGuitarStoreCommand>,
-    ICommandHandler<UpdateGuitarStoreCommand>
+    ICommandHandler<UpdateGuitarStoreCommand>,
+    ICommandHandler<DeleteGuitarStoreCommand>
 {
     private readonly IGuitarStoreRepository _guitarStoreRepository;
 
@@ -26,5 +27,12 @@ internal class GuitarStoreCommandHandler :
         var guitarStore = await _guitarStoreRepository.Get(command.Id);
 
         guitarStore.UpdateProperties(command.Name, StoreLocation.Create(command.Street, command.PostalCode, command.City));
+    }
+
+    public async Task Handle(DeleteGuitarStoreCommand command)
+    {
+        var guitarStore = await _guitarStoreRepository.Get(command.Id);
+
+        await _guitarStoreRepository.Remove(guitarStore);
     }
 }

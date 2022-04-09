@@ -10,13 +10,16 @@ public class GuitarStoreController : ControllerBase
 {
     ICommandHandlerExecutor<AddGuitarStoreCommand> _addGuitarStoreCommandExecutor;
     ICommandHandlerExecutor<UpdateGuitarStoreCommand> _updateGuitarStoreCommandExecutor;
+    ICommandHandlerExecutor<DeleteGuitarStoreCommand> _deleteGuitarStoreCommandExecutor;
 
     public GuitarStoreController(
         ICommandHandlerExecutor<AddGuitarStoreCommand> addGuitarStoreCommandExecutor,
-        ICommandHandlerExecutor<UpdateGuitarStoreCommand> updateGuitarStoreCommandExecutor)
+        ICommandHandlerExecutor<UpdateGuitarStoreCommand> updateGuitarStoreCommandExecutor,
+        ICommandHandlerExecutor<DeleteGuitarStoreCommand> deleteGuitarStoreCommandExecutor)
     {
         _addGuitarStoreCommandExecutor = addGuitarStoreCommandExecutor;
         _updateGuitarStoreCommandExecutor = updateGuitarStoreCommandExecutor;
+        _deleteGuitarStoreCommandExecutor = deleteGuitarStoreCommandExecutor;
     }
 
     [HttpPost]
@@ -44,6 +47,14 @@ public class GuitarStoreController : ControllerBase
             PostalCode = request.PostalCode,
             Street= request.Street
         });
+
+        return Ok();
+    }
+
+    [HttpDelete("{guitarStoreId}")]
+    public async Task<IActionResult> Delete(int guitarStoreId)
+    {
+        await _deleteGuitarStoreCommandExecutor.Execute(new DeleteGuitarStoreCommand { Id = guitarStoreId });
 
         return Ok();
     }
