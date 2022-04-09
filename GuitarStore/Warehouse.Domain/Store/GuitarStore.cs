@@ -7,8 +7,8 @@ namespace Warehouse.Domain.Store;
 public class GuitarStore : Entity, IIdentifiable
 {
     public int Id { get; }
-    public string Name { get; }
-    public StoreLocation Location { get; }
+    public string Name { get; private set; }
+    public StoreLocation Location { get; private set; }
     public ICollection<AcousticGuitar> AcousticGuitars { get; }
     public ICollection<ElectricGuitar> ElectricGuitars { get; }
 
@@ -28,6 +28,16 @@ public class GuitarStore : Entity, IIdentifiable
         return new GuitarStore(name, storeLocation);
     }
 
+    public void UpdateProperties(string name, StoreLocation storeLocation)
+    {
+        if (name is not null)
+        {
+            Name = name;
+        }
+
+        Location = storeLocation;
+    }
+
     public void AddElectricGuitar(string companyName, string modelName, decimal price, ICollection<Pickup> pickups)
     {
         ElectricGuitars.Add(ElectricGuitar.Create(Id, companyName, modelName, price, pickups));
@@ -37,6 +47,4 @@ public class GuitarStore : Entity, IIdentifiable
     {
         AcousticGuitars.Add(AcousticGuitar.Create(Id, companyName, modelName, price));
     }
-
-
 }

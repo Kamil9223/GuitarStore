@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Domain;
+using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
@@ -19,7 +20,11 @@ internal sealed class InfrastructureModule : Module
             dbOptions.UseSqlServer(configuration.GetSection("ConnectionStrings:Warehouse").Value);
             return new WarehouseDbContext(dbOptions.Options);
         })
-            .AsSelf()
+            .As<DbContext>()
+            .InstancePerLifetimeScope();
+
+        builder.RegisterType<UnitOfWork>()
+            .As<IUnitOfWork>()
             .InstancePerLifetimeScope();
 
         builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
