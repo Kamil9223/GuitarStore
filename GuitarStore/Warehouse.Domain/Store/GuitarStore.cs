@@ -1,6 +1,4 @@
 ﻿using Domain;
-using Warehouse.Domain.AcousticGuitars;
-using Warehouse.Domain.ElectricGuitars;
 
 namespace Warehouse.Domain.Store;
 
@@ -9,8 +7,7 @@ public class GuitarStore : Entity, IIdentifiable
     public int Id { get; }
     public string Name { get; private set; }
     public StoreLocation Location { get; private set; }
-    public ICollection<AcousticGuitar> AcousticGuitars { get; }
-    public ICollection<ElectricGuitar> ElectricGuitars { get; }
+    public ICollection<Product.Product> Products { get; }
 
     //For EF Core
     private GuitarStore() { }
@@ -19,8 +16,7 @@ public class GuitarStore : Entity, IIdentifiable
     {
         Name = name;
         Location = location;
-        AcousticGuitars = new List<AcousticGuitar>();
-        ElectricGuitars = new List<ElectricGuitar>();
+        Products = new List<Product.Product>();
     }
 
     public static GuitarStore Create(string name, StoreLocation storeLocation)
@@ -38,13 +34,8 @@ public class GuitarStore : Entity, IIdentifiable
         Location = storeLocation;
     }
 
-    public void AddElectricGuitar(string companyName, string modelName, decimal price, ICollection<Pickup> pickups)
+    public void AddProduct(int categoryId, string producerName, string modelName, decimal price, string description, int guitarStoreId)
     {
-        ElectricGuitars.Add(ElectricGuitar.Create(Id, companyName, modelName, price, pickups));
-    }
-
-    public void AddAcousticGuitar(string companyName, string modelName, decimal price)
-    {
-        AcousticGuitars.Add(AcousticGuitar.Create(Id, companyName, modelName, price));
+        Products.Add(Product.Product.Create(categoryId, producerName, modelName, price, description, guitarStoreId));
     }
 }
