@@ -6,24 +6,26 @@ public class Category : Entity, IIdentifiable
 {
     public int Id { get; }
     public string CategoryName { get; }
-    public int? SubCategoryId { get; }
-    public Category SubCategory { get; }
+    public int? ParentCategoryId { get; }
+    public Category ParentCategory { get; }
+    public ICollection<Category> SubCategories { get; }
     public ICollection<Product> Products { get; }
 
     //For EF Core
     private Category() { }
 
-    private Category(string categoryName, int? subCategoryId)
+    private Category(string categoryName, int? parentCategoryId)
     {
         CategoryName = categoryName;
-        SubCategoryId = subCategoryId;
+        ParentCategoryId = parentCategoryId;
         Products = new List<Product>();
+        SubCategories = new List<Category>();
     }
 
-    public static Category CreateCategory(string categoryName, int? subCategoryId)
+    public static Category CreateCategory(string categoryName, int? parentCategoryId)
     {
         //Check rules?
 
-        return new Category(categoryName, subCategoryId);
+        return new Category(categoryName, parentCategoryId);
     }
 }
