@@ -1,4 +1,4 @@
-﻿using Infrastructure;
+﻿using Domain;
 
 namespace Warehouse.Application.AppMIddlewareServices;
 

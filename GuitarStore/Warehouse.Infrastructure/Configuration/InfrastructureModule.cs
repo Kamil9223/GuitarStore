@@ -1,6 +1,4 @@
 ﻿using Autofac;
-using Domain;
-using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
@@ -23,17 +21,9 @@ internal sealed class InfrastructureModule : Module
             .As<DbContext>()
             .InstancePerLifetimeScope();
 
-        builder.RegisterType<UnitOfWork>()
-            .As<IUnitOfWork>()
-            .InstancePerLifetimeScope();
-
         builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
             .Where(type => type.Name.EndsWith("Repository"))
             .AsImplementedInterfaces()
-            .InstancePerLifetimeScope();
-
-        builder.RegisterGeneric(typeof(GenericRepository<>))
-            .As(typeof(IRepository<>))
             .InstancePerLifetimeScope();
     }
 }

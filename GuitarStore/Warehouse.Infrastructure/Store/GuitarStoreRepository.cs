@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.Database;
+using Microsoft.EntityFrameworkCore;
 using Warehouse.Domain.Store;
-using Warehouse.Infrastructure.Database;
 
 namespace Warehouse.Infrastructure.Store;
 

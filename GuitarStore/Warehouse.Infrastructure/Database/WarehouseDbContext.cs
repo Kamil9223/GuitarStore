@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Warehouse.Domain.AcousticGuitars;
-using Warehouse.Domain.ElectricGuitars;
+using Warehouse.Domain.Product;
 using Warehouse.Domain.Store;
 
 namespace Warehouse.Infrastructure.Database;
@@ -8,8 +7,8 @@ namespace Warehouse.Infrastructure.Database;
 internal class WarehouseDbContext : DbContext
 {
     public DbSet<GuitarStore> GuitarStores { get; set; }
-    public DbSet<ElectricGuitar> ElectricGuitars { get; set; }
-    public DbSet<AcousticGuitar> AcousticGuitars { get; set; }
+    public DbSet<Product> Products { get; set; }
+    public DbSet<Category> Categories { get; set; }
 
     public const string DbSchema = "Warehouse";
 
