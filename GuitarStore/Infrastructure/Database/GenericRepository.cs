@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace Warehouse.Infrastructure.Database;
+namespace Infrastructure.Database;
 
-internal class GenericRepository<TEntity> : IRepository<TEntity>
+public class GenericRepository<TEntity> : IRepository<TEntity>
     where TEntity : Entity
 {
     private readonly DbContext _context;
