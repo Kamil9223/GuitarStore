@@ -12,6 +12,10 @@ internal class WarehouseDbContext : DbContext
 
     public const string DbSchema = "Warehouse";
 
+    public const string GuitarStoreTableName = "Stores";
+    public const string ProductTableName = "Products";
+    public const string CategoryTableName = "Categories";
+
     public WarehouseDbContext() { }
 
     public WarehouseDbContext(DbContextOptions<WarehouseDbContext> options) : base(options) { }

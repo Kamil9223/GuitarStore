@@ -9,7 +9,7 @@ internal class GuitarStoreDbConfiguration : IEntityTypeConfiguration<GuitarStore
 {
     public void Configure(EntityTypeBuilder<GuitarStore> builder)
     {
-        builder.ToTable("Stores", WarehouseDbContext.DbSchema);
+        builder.ToTable(WarehouseDbContext.GuitarStoreTableName, WarehouseDbContext.DbSchema);
 
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
