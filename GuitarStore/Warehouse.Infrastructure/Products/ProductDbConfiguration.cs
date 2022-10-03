@@ -9,7 +9,7 @@ internal class ProductDbConfiguration : IEntityTypeConfiguration<Product>
 {
     public void Configure(EntityTypeBuilder<Product> builder)
     {
-        builder.ToTable("Products", WarehouseDbContext.DbSchema);
+        builder.ToTable(WarehouseDbContext.ProductTableName, WarehouseDbContext.DbSchema);
 
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
