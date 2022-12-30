@@ -24,8 +24,6 @@ public class Category : Entity, IIdentifiable
 
     public static Category CreateCategory(string categoryName, int? parentCategoryId)
     {
-        //Check rules?
-
         return new Category(categoryName, parentCategoryId);
     }
 }

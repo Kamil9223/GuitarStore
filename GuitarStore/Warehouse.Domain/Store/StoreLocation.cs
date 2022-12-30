@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Warehouse.Domain.Store.Exceptions;
 
 namespace Warehouse.Domain.Store;
 
@@ -11,17 +12,20 @@ public class StoreLocation : ValueObject
     //For EF Core
     private StoreLocation() { }
 
-    private StoreLocation(string address, string postalCode, string city)
+    private StoreLocation(string street, string postalCode, string city)
     {
-        Street = address;
+        Street = street;
         PostalCode = postalCode;
         City = city;
     }
 
-    public static StoreLocation Create(string address, string postalCode, string city)
+    public static StoreLocation Create(string street, string postalCode, string city)
     {
-        //check rules
+        if (string.IsNullOrWhiteSpace(street) || string.IsNullOrWhiteSpace(postalCode) || string.IsNullOrWhiteSpace(city))
+        {
+            throw new StoreLocationEmptyPropertyException($"At least one of [{nameof(StoreLocation)}] property is empty.");
+        }
 
-        return new StoreLocation(address, postalCode, city);
+        return new StoreLocation(street, postalCode, city);
     }
 }

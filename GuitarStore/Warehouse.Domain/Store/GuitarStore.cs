@@ -24,16 +24,6 @@ public class GuitarStore : Entity, IIdentifiable
         return new GuitarStore(name, storeLocation);
     }
 
-    public void UpdateProperties(string name, StoreLocation storeLocation)
-    {
-        if (name is not null)
-        {
-            Name = name;
-        }
-
-        Location = storeLocation;
-    }
-
     public void AddProduct(int categoryId, string producerName, string modelName, decimal price, string description, int guitarStoreId)
     {
         Products.Add(Product.Product.Create(categoryId, producerName, modelName, price, description, guitarStoreId));
