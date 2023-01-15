@@ -26,7 +26,7 @@ internal class GuitarStoreCommandHandler :
     {
         var guitarStore = await _guitarStoreRepository.Get(command.Id);
 
-        guitarStore.UpdateProperties(command.Name, StoreLocation.Create(command.Street, command.PostalCode, command.City));
+        guitarStore.ChangeLocation(StoreLocation.Create(command.Street, command.PostalCode, command.City));
     }
 
     public async Task Handle(DeleteGuitarStoreCommand command)
