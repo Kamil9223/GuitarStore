@@ -42,7 +42,6 @@ public class GuitarStoreController : ControllerBase
         await _updateGuitarStoreCommandExecutor.Execute(new UpdateGuitarStoreCommand
         {
             Id = guitarStoreId,
-            Name = request.Name,
             City = request.City,
             PostalCode = request.PostalCode,
             Street= request.Street

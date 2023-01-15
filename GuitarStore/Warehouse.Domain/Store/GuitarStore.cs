@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Warehouse.Domain.Product;
 
 namespace Warehouse.Domain.Store;
 
@@ -24,18 +25,13 @@ public class GuitarStore : Entity, IIdentifiable
         return new GuitarStore(name, storeLocation);
     }
 
-    public void UpdateProperties(string name, StoreLocation storeLocation)
+    public void AddProduct(int categoryId, ProductModel productModel, Money price, string description, int guitarStoreId)
     {
-        if (name is not null)
-        {
-            Name = name;
-        }
-
-        Location = storeLocation;
+        Products.Add(Product.Product.Create(categoryId, productModel, price, description, guitarStoreId));
     }
 
-    public void AddProduct(int categoryId, string producerName, string modelName, decimal price, string description, int guitarStoreId)
+    public void ChangeLocation(StoreLocation storeLocation)
     {
-        Products.Add(Product.Product.Create(categoryId, producerName, modelName, price, description, guitarStoreId));
+        Location = storeLocation;
     }
 }

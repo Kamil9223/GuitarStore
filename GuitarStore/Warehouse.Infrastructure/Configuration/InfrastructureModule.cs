@@ -18,7 +18,7 @@ internal sealed class InfrastructureModule : Module
         {
             configuration = context.Resolve<IConfiguration>();
             var dbOptions = new DbContextOptionsBuilder<WarehouseDbContext>();
-            dbOptions.UseSqlServer(configuration.GetSection("ConnectionStrings:Warehouse").Value);
+            dbOptions.UseSqlServer(configuration.GetSection("ConnectionStrings:GuitarStore").Value);
             return new WarehouseDbContext(dbOptions.Options);
         })
             .As<DbContext>()
@@ -26,7 +26,7 @@ internal sealed class InfrastructureModule : Module
 
         builder.RegisterType<SqlConnectionFactory>()
                 .As<ISqlConnectionFactory>()
-                .WithParameter("connectionString", configuration.GetSection("ConnectionStrings:Warehouse").Value)
+                .WithParameter("connectionString", configuration.GetSection("ConnectionStrings:GuitarStore").Value)
                 .InstancePerLifetimeScope();
 
         builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())

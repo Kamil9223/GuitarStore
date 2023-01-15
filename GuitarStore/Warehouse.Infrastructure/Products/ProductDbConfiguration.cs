@@ -22,11 +22,19 @@ internal class ProductDbConfiguration : IEntityTypeConfiguration<Product>
              .WithMany(x => x.Products)
              .HasForeignKey(x => x.CategoryId);
 
-        builder.Property(x => x.ProducerName).HasMaxLength(75).IsRequired();
-        builder.Property(x => x.ModelName).HasMaxLength(100).IsRequired();
-        builder.Property(x => x.Price).HasColumnType("decimal(10,2)").IsRequired();
-        builder.Property(x => x.Description).IsRequired();
+        builder.OwnsOne(x => x.ProductModel, builder =>
+        {
+            builder.Property(x => x.ProducerName).HasColumnName("ProducerName").HasMaxLength(75).IsRequired();
+            builder.HasIndex(x => x.ProducerName).IsUnique();
+            builder.Property(x => x.Name).HasColumnName("Name").HasMaxLength(100).IsRequired();
+        });
 
-        builder.HasIndex(x => x.ProducerName).IsUnique();
+        builder.OwnsOne(x => x.Price, builder =>
+        {
+            builder.Property(x => x.Currency).HasColumnName("Currency").HasColumnType("Char(3)").IsRequired();
+            builder.Property(x => x.Value).HasColumnName("Price").HasColumnType("decimal(10,2)").IsRequired();
+        });     
+        
+        builder.Property(x => x.Description).IsRequired();
     }
 }
