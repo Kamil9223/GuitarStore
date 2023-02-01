@@ -1,5 +1,4 @@
-﻿using Customers.Domain.CartItems;
-using Customers.Domain.Products;
+﻿using Customers.Domain.Products;
 using Domain;
 
 namespace Customers.Domain.Carts;
@@ -7,9 +6,9 @@ namespace Customers.Domain.Carts;
 public class Cart : Entity, IIdentifiable
 {
     public int Id { get; }
-    public ICollection<CartItem> CartItems { get; }
+    internal ICollection<CartItem> CartItems { get; }
     public DateTime CreatedAt { get; }
-    public decimal TotalPrice { get => CartItems.Sum(x => x.Price * x.Quantity); }
+    public decimal TotalPrice => CartItems.Sum(x => x.Price * x.Quantity);
 
     private Cart()
     {
@@ -24,7 +23,7 @@ public class Cart : Entity, IIdentifiable
 
     public void ClearCart() => CartItems.Clear();
 
-    public void AddProduct(CartItem product)
+    public void AddProduct(Product product)
     {
         var existingProduct = CartItems.SingleOrDefault(x => x.Id == product.Id);
 
@@ -34,16 +33,16 @@ public class Cart : Entity, IIdentifiable
             return;
         }
 
-        CartItems.Add(product);
+        CartItems.Add(CartItem.Create(product.Id, product.Name, product.Price, product.Quantity));
     }
 
     public void RemoveProduct(int productId, uint quantity)
     {
-        var existingProduct = CartItems.SingleOrDefault(x => x.Id == productId);
+        var existingProduct = CartItems.SingleOrDefault(x => x.ProductId == productId);
 
         if (existingProduct is null)
         {
-            throw new Exception(); //TODO domain exception with correct message and code maybe
+            throw new DomainException($"Cannot remove product from cart because product with Id: [{productId}] is not stored in cart.");
         }
 
         if (existingProduct.IsQuantityDeacrisingPossible(quantity))

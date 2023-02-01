@@ -1,4 +1,4 @@
-﻿namespace Domain;
+﻿namespace Domain.ValueObjects;
 
 public abstract class ValueObject : IEquatable<ValueObject>
 {
@@ -15,10 +15,10 @@ public abstract class ValueObject : IEquatable<ValueObject>
         if (ReferenceEquals(this, obj))
             return true;
 
-        if (this.GetType() != obj.GetType())
+        if (GetType() != obj.GetType())
             return false;
 
-        return this.GetType()
+        return GetType()
                    .GetProperties()
                    .All(p => Equals(p.GetValue(this, null), p.GetValue(obj, null)));
     }
@@ -27,7 +27,7 @@ public abstract class ValueObject : IEquatable<ValueObject>
     {
         int result = 0;
 
-        var properties = this.GetType().GetProperties();
+        var properties = GetType().GetProperties();
 
         foreach (var property in properties)
         {

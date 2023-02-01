@@ -1,5 +1,5 @@
 ﻿using Domain;
-using Warehouse.Domain.Store.Exceptions;
+using Domain.ValueObjects;
 
 namespace Warehouse.Domain.Store;
 
@@ -23,7 +23,7 @@ public class StoreLocation : ValueObject
     {
         if (string.IsNullOrWhiteSpace(street) || string.IsNullOrWhiteSpace(postalCode) || string.IsNullOrWhiteSpace(city))
         {
-            throw new StoreLocationEmptyPropertyException($"At least one of [{nameof(StoreLocation)}] property is empty.");
+            throw new DomainException($"At least one of [{nameof(StoreLocation)}] property is empty.");
         }
 
         return new StoreLocation(street, postalCode, city);

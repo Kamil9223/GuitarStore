@@ -31,7 +31,6 @@ internal class ProductDbConfiguration : IEntityTypeConfiguration<Product>
 
         builder.OwnsOne(x => x.Price, builder =>
         {
-            builder.Property(x => x.Currency).HasColumnName("Currency").HasColumnType("Char(3)").IsRequired();
             builder.Property(x => x.Value).HasColumnName("Price").HasColumnType("decimal(10,2)").IsRequired();
         });     
         
