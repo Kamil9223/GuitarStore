@@ -2,9 +2,9 @@
 using FluentValidation;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Warehouse.Application.Abstractions;
 using Warehouse.Application.AppMIddlewareServices;
 using Warehouse.Application.CommandQueryExecutors;
-using Warehouse.Contracts;
 using Module = Autofac.Module;
 
 [assembly: InternalsVisibleTo("Warehouse.Infrastructure")]

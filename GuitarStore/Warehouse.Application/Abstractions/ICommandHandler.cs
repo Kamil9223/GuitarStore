@@ -1,6 +1,6 @@
 ﻿using Application;
 
-namespace Warehouse.Contracts;
+namespace Warehouse.Application.Abstractions;
 
 public interface ICommandHandler<TCommand> where TCommand : ICommand
 {

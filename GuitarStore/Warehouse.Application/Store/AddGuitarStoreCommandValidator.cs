@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using Warehouse.Contracts.Store;
+using Warehouse.Application.Store.commands;
 
 namespace Warehouse.Application.Store;
 

@@ -1,6 +1,6 @@
 ﻿using Application;
+using Warehouse.Application.Abstractions;
 using Warehouse.Application.AppMIddlewareServices;
-using Warehouse.Contracts;
 
 namespace Warehouse.Application.CommandQueryExecutors;
 

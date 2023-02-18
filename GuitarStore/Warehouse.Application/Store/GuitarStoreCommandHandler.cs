@@ -1,5 +1,5 @@
-﻿using Warehouse.Contracts;
-using Warehouse.Contracts.Store;
+﻿using Warehouse.Application.Abstractions;
+using Warehouse.Application.Store.commands;
 using Warehouse.Domain.Store;
 
 namespace Warehouse.Application.Store;
