@@ -12,8 +12,8 @@ using Warehouse.Infrastructure.Database;
 namespace Warehouse.Infrastructure.Migrations
 {
     [DbContext(typeof(WarehouseDbContext))]
-    [Migration("20220930170431_ChangeWarehouseModel")]
-    partial class ChangeWarehouseModel
+    [Migration("20230218172224_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,7 +24,7 @@ namespace Warehouse.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Warehouse.Domain.Product.Category", b =>
+            modelBuilder.Entity("Warehouse.Domain.Categories.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -47,7 +47,7 @@ namespace Warehouse.Infrastructure.Migrations
                     b.ToTable("Categories", "Warehouse");
                 });
 
-            modelBuilder.Entity("Warehouse.Domain.Product.Product", b =>
+            modelBuilder.Entity("Warehouse.Domain.Products.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,20 +58,13 @@ namespace Warehouse.Infrastructure.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("GuitarStoreId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ModelName")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("ProducerName")
                         .IsRequired()
@@ -98,19 +91,34 @@ namespace Warehouse.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Stores", "Warehouse");
                 });
 
-            modelBuilder.Entity("Warehouse.Domain.Product.Category", b =>
+            modelBuilder.Entity("Warehouse.Domain.Categories.Category", b =>
                 {
-                    b.HasOne("Warehouse.Domain.Product.Category", "ParentCategory")
+                    b.HasOne("Warehouse.Domain.Categories.Category", "ParentCategory")
                         .WithMany("SubCategories")
                         .HasForeignKey("ParentCategoryId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -118,9 +126,9 @@ namespace Warehouse.Infrastructure.Migrations
                     b.Navigation("ParentCategory");
                 });
 
-            modelBuilder.Entity("Warehouse.Domain.Product.Product", b =>
+            modelBuilder.Entity("Warehouse.Domain.Products.Product", b =>
                 {
-                    b.HasOne("Warehouse.Domain.Product.Category", "Category")
+                    b.HasOne("Warehouse.Domain.Categories.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -132,48 +140,32 @@ namespace Warehouse.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.OwnsOne("Domain.ValueObjects.Money", "Price", b1 =>
+                        {
+                            b1.Property<int>("ProductId")
+                                .HasColumnType("int");
+
+                            b1.Property<decimal>("Value")
+                                .HasColumnType("decimal(10,2)")
+                                .HasColumnName("Price");
+
+                            b1.HasKey("ProductId");
+
+                            b1.ToTable("Products", "Warehouse");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProductId");
+                        });
+
                     b.Navigation("Category");
 
                     b.Navigation("GuitarStore");
-                });
 
-            modelBuilder.Entity("Warehouse.Domain.Store.GuitarStore", b =>
-                {
-                    b.OwnsOne("Warehouse.Domain.Store.StoreLocation", "Location", b1 =>
-                        {
-                            b1.Property<int>("GuitarStoreId")
-                                .HasColumnType("int");
-
-                            b1.Property<string>("City")
-                                .IsRequired()
-                                .HasMaxLength(200)
-                                .HasColumnType("nvarchar(200)")
-                                .HasColumnName("City");
-
-                            b1.Property<string>("PostalCode")
-                                .IsRequired()
-                                .HasColumnType("char(6)")
-                                .HasColumnName("PostalCode");
-
-                            b1.Property<string>("Street")
-                                .IsRequired()
-                                .HasMaxLength(400)
-                                .HasColumnType("nvarchar(400)")
-                                .HasColumnName("Street");
-
-                            b1.HasKey("GuitarStoreId");
-
-                            b1.ToTable("Stores", "Warehouse");
-
-                            b1.WithOwner()
-                                .HasForeignKey("GuitarStoreId");
-                        });
-
-                    b.Navigation("Location")
+                    b.Navigation("Price")
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Warehouse.Domain.Product.Category", b =>
+            modelBuilder.Entity("Warehouse.Domain.Categories.Category", b =>
                 {
                     b.Navigation("Products");
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Warehouse.Domain.Product;
+using Warehouse.Domain.Categories;
 using Warehouse.Infrastructure.Database;
 
 namespace Warehouse.Infrastructure.Categories;
@@ -9,17 +9,17 @@ internal class CategoryDbConfiguration : IEntityTypeConfiguration<Category>
 {
     public void Configure(EntityTypeBuilder<Category> builder)
     {
-        builder.ToTable(WarehouseDbContext.CategoryTableName, WarehouseDbContext.DbSchema);
+        builder.ToTable("Categories", "Warehouse");
 
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
         builder.HasOne(x => x.ParentCategory)
             .WithMany(x => x.SubCategories)
-            .HasForeignKey(x => x.ParentCategoryId)
+            //.HasForeignKey(x => x.ParentCategoryId)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Property(x => x.CategoryName).HasMaxLength(75).IsRequired();
+        builder.Property(x => x.CategoryName).HasMaxLength(75);
     }
 }

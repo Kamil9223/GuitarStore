@@ -19,14 +19,14 @@ internal class GuitarStoreCommandHandler :
 
     public async Task Handle(AddGuitarStoreCommand command)
     {
-        await _guitarStoreRepository.Add(GuitarStore.Create(command.Name, StoreLocation.Create(command.Street, command.PostalCode, command.City)));
+        //await _guitarStoreRepository.Add(GuitarStore.Create(command.Name, StoreLocation.Create(command.Street, command.PostalCode, command.City)));
     }
 
     public async Task Handle(UpdateGuitarStoreCommand command)
     {
         var guitarStore = await _guitarStoreRepository.Get(command.Id);
 
-        guitarStore.ChangeLocation(StoreLocation.Create(command.Street, command.PostalCode, command.City));
+        //guitarStore.ChangeLocation(StoreLocation.Create(command.Street, command.PostalCode, command.City));
     }
 
     public async Task Handle(DeleteGuitarStoreCommand command)
