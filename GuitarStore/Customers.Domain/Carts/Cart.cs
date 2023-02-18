@@ -6,7 +6,7 @@ namespace Customers.Domain.Carts;
 public class Cart : Entity, IIdentifiable
 {
     public int Id { get; }
-    internal ICollection<CartItem> CartItems { get; }
+    public ICollection<CartItem> CartItems { get; }
     public DateTime CreatedAt { get; }
     public decimal TotalPrice => CartItems.Sum(x => x.Price * x.Quantity);
 

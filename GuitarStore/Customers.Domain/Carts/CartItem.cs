@@ -3,14 +3,16 @@ using Domain.ValueObjects;
 
 namespace Customers.Domain.Carts;
 
-internal class CartItem : Entity, IIdentifiable
+public class CartItem : Entity, IIdentifiable
 {
     public int Id { get; }
     public int ProductId { get; set; }
     public string Name { get; }
     public Money Price { get; }
     public uint Quantity { get; private set; }
-    public int CartId { get; }
+
+    //For EF Core
+    private CartItem() { }
 
     private CartItem(int productId, string name, Money price, uint quantity)
     {

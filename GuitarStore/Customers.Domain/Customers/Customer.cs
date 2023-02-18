@@ -13,6 +13,9 @@ public class Customer : Entity, IIdentifiable
     public CustomerAddress Address { get; }
     public Cart Cart { get; }
 
+    //For EF Core
+    private Customer() { }
+
     private Customer(string name, string lastName, EmailAddress email, CustomerAddress address, Cart cart)
     {
         Name = name;
