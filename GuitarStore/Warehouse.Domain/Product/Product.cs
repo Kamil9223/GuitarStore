@@ -8,27 +8,11 @@ public class Product : Entity, IIdentifiable
 {
     public int Id { get; }
     public int CategoryId { get; }
-    public Category Category { get; }
-    public ProductModel ProductModel { get; }
+    public string ProducerName { get; }
+    public string Name { get; }
     public Money Price { get; }
     public string Description { get; }
     public int GuitarStoreId { get; }
+    public Category Category { get; }
     public GuitarStore GuitarStore { get; }
-
-    //For EF Core
-    private Product() { }
-
-    private Product(int categoryId, ProductModel productModel, Money price, string description, int guitarStoreId)
-    {
-        CategoryId = categoryId;
-        ProductModel = productModel;
-        Price = price;
-        Description = description;
-        GuitarStoreId = guitarStoreId;
-    }
-
-    internal static Product Create(int categoryId, ProductModel productModel, Money price, string description, int guitarStoreId)
-    {
-        return new Product(categoryId, productModel, price, description, guitarStoreId);
-    }
 }
