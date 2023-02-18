@@ -1,28 +1,32 @@
 ﻿using Domain;
+using Domain.ValueObjects;
 
-namespace Customers.Domain.CartItems;
+namespace Customers.Domain.Carts;
 
 public class CartItem : Entity, IIdentifiable
 {
     public int Id { get; }
+    public int ProductId { get; set; }
     public string Name { get; }
-    public decimal Price { get; }
+    public Money Price { get; }
     public uint Quantity { get; private set; }
-    public int CartId { get; }
 
-    private CartItem(int id, string name, decimal price, uint quantity)
+    //For EF Core
+    private CartItem() { }
+
+    private CartItem(int productId, string name, Money price, uint quantity)
     {
-        Id = id;
+        ProductId = productId;
         Name = name;
         Price = price;
         Quantity = quantity;
     }
 
-    internal static CartItem Create(int id, string name, decimal price, uint quantity)
+    internal static CartItem Create(int productId, string name, Money price, uint quantity)
     {
         //Check rules
 
-        return new CartItem(id, name, price, quantity);
+        return new CartItem(productId, name, price, quantity);
     }
 
     internal void IncreaseQuantity(uint quantity) => Quantity += quantity;
@@ -31,7 +35,7 @@ public class CartItem : Entity, IIdentifiable
     {
         if (quantity >= Quantity)
         {
-            throw new Exception(); //TODO: domain exception with message and code maybe
+            throw new DomainException($"Cannot decrease quantity of cartItem.");
         }
 
         Quantity -= quantity;

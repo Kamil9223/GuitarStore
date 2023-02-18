@@ -1,5 +1,5 @@
 ﻿using Domain;
-using Warehouse.Domain.Product.Exceptions;
+using Domain.ValueObjects;
 using Warehouse.Domain.Store;
 
 namespace Warehouse.Domain.Product;
