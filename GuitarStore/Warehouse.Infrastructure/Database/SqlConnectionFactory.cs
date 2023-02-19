@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Data;
-using Warehouse.Application.DataAccessAbstraction;
+using Warehouse.Application.Abstractions;
 
 namespace Warehouse.Infrastructure.Database;
 

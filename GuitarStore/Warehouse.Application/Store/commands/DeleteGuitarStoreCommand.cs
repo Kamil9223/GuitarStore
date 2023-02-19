@@ -1,6 +1,6 @@
 ﻿using Application;
 
-namespace Warehouse.Application.Store.commands;
+namespace Warehouse.Application.Store.Commands;
 
 public class DeleteGuitarStoreCommand : ICommand
 {

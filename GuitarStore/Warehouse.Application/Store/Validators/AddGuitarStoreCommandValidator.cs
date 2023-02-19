@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using Warehouse.Application.Store.commands;
+using Warehouse.Application.Store.Commands;
 
-namespace Warehouse.Application.Store;
+namespace Warehouse.Application.Store.Validators;
 
 internal class AddGuitarStoreCommandValidator : AbstractValidator<AddGuitarStoreCommand>
 {

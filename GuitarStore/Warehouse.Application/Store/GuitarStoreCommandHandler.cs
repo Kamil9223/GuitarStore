@@ -1,5 +1,5 @@
 ﻿using Warehouse.Application.Abstractions;
-using Warehouse.Application.Store.commands;
+using Warehouse.Application.Store.Commands;
 using Warehouse.Domain.Store;
 
 namespace Warehouse.Application.Store;
@@ -19,14 +19,20 @@ internal class GuitarStoreCommandHandler :
 
     public async Task Handle(AddGuitarStoreCommand command)
     {
-        //await _guitarStoreRepository.Add(GuitarStore.Create(command.Name, StoreLocation.Create(command.Street, command.PostalCode, command.City)));
+        var guitarStore = new GuitarStore(
+            name: command.Name,
+            street: command.Street,
+            postalCode: command.PostalCode,
+            city: command.City);
+
+        await _guitarStoreRepository.Add(guitarStore);
     }
 
     public async Task Handle(UpdateGuitarStoreCommand command)
     {
         var guitarStore = await _guitarStoreRepository.Get(command.Id);
 
-        //guitarStore.ChangeLocation(StoreLocation.Create(command.Street, command.PostalCode, command.City));
+        guitarStore.ChangeLocation(command.Street, command.PostalCode, command.City);
     }
 
     public async Task Handle(DeleteGuitarStoreCommand command)

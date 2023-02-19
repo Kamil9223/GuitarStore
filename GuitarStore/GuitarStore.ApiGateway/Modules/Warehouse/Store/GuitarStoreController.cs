@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Warehouse.Application.Abstractions;
-using Warehouse.Application.Store.commands;
+using Warehouse.Application.Store.Commands;
 
 namespace GuitarStore.ApiGateway.Modules.Warehouse.Store;
 

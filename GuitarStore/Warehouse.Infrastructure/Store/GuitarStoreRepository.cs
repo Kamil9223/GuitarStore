@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
-using Warehouse.Application.DataAccessAbstraction;
+using Warehouse.Application.Abstractions;
 using Warehouse.Domain.Store;
 
 namespace Warehouse.Infrastructure.Store;

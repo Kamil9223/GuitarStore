@@ -1,4 +1,4 @@
-﻿namespace Warehouse.Application.AppMIddlewareServices;
+﻿namespace Warehouse.Application.Abstractions;
 
 internal interface IUnitOfWorkService
 {

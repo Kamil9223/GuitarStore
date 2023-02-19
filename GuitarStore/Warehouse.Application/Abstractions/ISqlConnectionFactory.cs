@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace Warehouse.Application.DataAccessAbstraction;
+namespace Warehouse.Application.Abstractions;
 
 public interface ISqlConnectionFactory
 {

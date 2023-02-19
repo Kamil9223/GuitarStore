@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
-using Warehouse.Application.DataAccessAbstraction;
+using Warehouse.Application.Abstractions;
 using Warehouse.Infrastructure.Database;
 using Module = Autofac.Module;
 

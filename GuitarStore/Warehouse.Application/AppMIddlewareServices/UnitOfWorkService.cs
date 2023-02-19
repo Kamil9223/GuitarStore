@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Warehouse.Application.Abstractions;
 
 namespace Warehouse.Application.AppMIddlewareServices;
 
