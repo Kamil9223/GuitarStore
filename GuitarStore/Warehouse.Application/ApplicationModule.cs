@@ -28,5 +28,6 @@ internal sealed class ApplicationModule : Module
         builder.RegisterType(typeof(UnitOfWorkService)).As(typeof(IUnitOfWorkService)).InstancePerLifetimeScope();
 
         builder.RegisterGeneric(typeof(CommandHandlerExecutor<>)).As(typeof(ICommandHandlerExecutor<>)).InstancePerLifetimeScope();
+        builder.RegisterGeneric(typeof(QueryHandlerExecutor<,>)).As(typeof(IQueryHandlerExecutor<,>)).InstancePerLifetimeScope();
     }
 }

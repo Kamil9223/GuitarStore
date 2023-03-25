@@ -44,7 +44,7 @@ public class GuitarStoreController : ControllerBase
             Id = guitarStoreId,
             City = request.City,
             PostalCode = request.PostalCode,
-            Street= request.Street
+            Street = request.Street
         });
 
         return Ok();
