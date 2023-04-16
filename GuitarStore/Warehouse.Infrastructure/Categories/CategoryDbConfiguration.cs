@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Warehouse.Domain.Categories;
-using Warehouse.Infrastructure.Database;
 
 namespace Warehouse.Infrastructure.Categories;
 
@@ -20,6 +19,6 @@ internal class CategoryDbConfiguration : IEntityTypeConfiguration<Category>
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Property(x => x.CategoryName).HasMaxLength(75);
+        builder.Property(x => x.CategoryName).HasMaxLength(75).IsRequired();
     }
 }
