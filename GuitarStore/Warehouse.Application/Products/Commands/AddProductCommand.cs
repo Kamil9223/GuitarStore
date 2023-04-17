@@ -1,6 +1,6 @@
 ﻿using Application;
 
-namespace Warehouse.Application.Product.Commands;
+namespace Warehouse.Application.Products.Commands;
 
 public class AddProductCommand : ICommand
 {

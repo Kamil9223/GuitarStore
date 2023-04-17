@@ -6,10 +6,10 @@ namespace Warehouse.Domain.Products;
 
 public class Product : Entity, IIdentifiable
 {
-    public int Id { get; }
-    public string? Brand { get; }
-    public string? Name { get; }
-    public Money? Price { get; }
-    public string? Description { get; }
-    public Category? Category { get; }
+    public int Id { get; init; }
+    public string? Brand { get; init; }
+    public string? Name { get; init; }
+    public Money? Price { get; init; }
+    public string? Description { get; init; }
+    public Category? Category { get; init; }
 }

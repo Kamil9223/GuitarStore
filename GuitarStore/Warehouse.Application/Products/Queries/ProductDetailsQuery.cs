@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Warehouse.Application.Product.Queries;
+namespace Warehouse.Application.Products.Queries;
 
 public class ProductDetailsQuery : IQuery
 {
