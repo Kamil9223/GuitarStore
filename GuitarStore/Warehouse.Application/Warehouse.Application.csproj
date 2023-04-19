@@ -17,8 +17,4 @@
     <ProjectReference Include="..\Warehouse.Domain\Warehouse.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Product\Validators\" />
-  </ItemGroup>
-
 </Project>

@@ -30,7 +30,7 @@ public class ProductsController : ControllerBase
         return Ok();
     }
 
-    [HttpPut("{guitarStoreId}")]
+    [HttpPut("{productId}")]
     public async Task<IActionResult> Update(int productId, UpdateProductCommand request)
     {
         await _updateProductCommandHandler.Execute(request);
