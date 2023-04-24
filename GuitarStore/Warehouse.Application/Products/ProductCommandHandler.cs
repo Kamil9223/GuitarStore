@@ -24,10 +24,16 @@ internal class ProductCommandHandler :
 
     public async Task Handle(AddProductCommand command)
     {
+        var isProductWithBrandAndNameExists = await _productsRepository.Any(ProductSpecification.WithBrandAndName(command.Brand, command.Name));
+        if (isProductWithBrandAndNameExists)
+        {
+            throw new GuitarStoreApplicationException($"Product with Brand: [{command.Brand}] and Name: [{command.Name}] already exists.");
+        }
+
         var category = await _categoryRepository.SingleOrDefault(CategorySpecification.IsTheMostNestedCategory(command.CategoryId));
         if (category is null)
         {
-            throw new NotFoundException($"Cannot Add product with category: cateogryId: [{command.CategoryId}] bacause the category is not the most nested category");
+            throw new GuitarStoreApplicationException($"Cannot Add product with category: cateogryId: [{command.CategoryId}] bacause the category is not the most nested category.");
         }
 
         var product = new Product

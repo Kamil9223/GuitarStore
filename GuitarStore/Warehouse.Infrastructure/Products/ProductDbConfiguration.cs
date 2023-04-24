@@ -17,8 +17,9 @@ internal class ProductDbConfiguration : IEntityTypeConfiguration<Product>
              .WithMany(x => x.Products);
 
         builder.Property(x => x.Brand).HasMaxLength(75).IsRequired();
-        builder.HasIndex(x => x.Brand).IsUnique();
         builder.Property(x => x.Name).HasMaxLength(100).IsRequired();
+
+        builder.HasIndex(x => new { x.Brand, x.Name }).IsUnique();
 
         builder.OwnsOne(x => x.Price, builder =>
         {
