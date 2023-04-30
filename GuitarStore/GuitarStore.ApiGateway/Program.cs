@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Host.ConfigureContainer<ContainerBuilder>(autoFacBuilder =>
 {
-    autoFacBuilder.RegisterModule<ModulesInitializator>();
+    autoFacBuilder.RegisterModule(new ModulesInitializator(builder.Configuration));
 });
 
 builder.Services.AddControllers();

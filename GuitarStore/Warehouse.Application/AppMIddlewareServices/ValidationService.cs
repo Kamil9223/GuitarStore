@@ -1,6 +1,7 @@
 ﻿using Application;
 using FluentValidation;
 using System.Text;
+using Warehouse.Application.Abstractions;
 using ValidationException = Application.Exceptions.ValidationException;
 
 namespace Warehouse.Application.AppMIddlewareServices;

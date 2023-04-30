@@ -7,7 +7,7 @@ namespace Infrastructure.Database;
 public class GenericRepository<TEntity> : IRepository<TEntity>
     where TEntity : Entity
 {
-    private readonly DbContext _context;
+    protected readonly DbContext _context;
 
     public GenericRepository(DbContext context)
     {
@@ -19,17 +19,27 @@ public class GenericRepository<TEntity> : IRepository<TEntity>
         await _context.Set<TEntity>().AddAsync(entity);
     }
 
-    public async Task<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate)
+    public async Task<IEnumerable<TEntity?>> Find(Expression<Func<TEntity, bool>> predicate)
     {
         return await _context.Set<TEntity>().Where(predicate).ToListAsync();
     }
 
-    public async Task<TEntity> Get(int id)
+    public async Task<TEntity?> SingleOrDefault(Expression<Func<TEntity, bool>> predicate)
+    {
+        return await _context.Set<TEntity>().SingleOrDefaultAsync(predicate);
+    }
+
+    public async Task<bool> Any(Expression<Func<TEntity, bool>> predicate)
+    {
+        return await _context.Set<TEntity>().AnyAsync(predicate);
+    }
+
+    public async Task<TEntity?> Get(int id)
     {
         return await _context.Set<TEntity>().FindAsync(id);
     }
 
-    public async Task<IEnumerable<TEntity>> GetAll()
+    public async Task<IEnumerable<TEntity?>> GetAll()
     {
         return await _context.Set<TEntity>().ToListAsync();
     }

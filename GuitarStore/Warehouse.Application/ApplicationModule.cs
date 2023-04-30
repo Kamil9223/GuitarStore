@@ -1,10 +1,11 @@
 ﻿using Autofac;
 using FluentValidation;
+using Mapster;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Warehouse.Application.Abstractions;
 using Warehouse.Application.AppMIddlewareServices;
 using Warehouse.Application.CommandQueryExecutors;
-using Warehouse.Contracts;
 using Module = Autofac.Module;
 
 [assembly: InternalsVisibleTo("Warehouse.Infrastructure")]
@@ -24,9 +25,12 @@ internal sealed class ApplicationModule : Module
             .AsImplementedInterfaces()
             .InstancePerLifetimeScope();
 
+        TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetExecutingAssembly());
+
         builder.RegisterGeneric(typeof(ValidationService<>)).As(typeof(IValidationService<>)).InstancePerLifetimeScope();
         builder.RegisterType(typeof(UnitOfWorkService)).As(typeof(IUnitOfWorkService)).InstancePerLifetimeScope();
 
         builder.RegisterGeneric(typeof(CommandHandlerExecutor<>)).As(typeof(ICommandHandlerExecutor<>)).InstancePerLifetimeScope();
+        builder.RegisterGeneric(typeof(QueryHandlerExecutor<,>)).As(typeof(IQueryHandlerExecutor<,>)).InstancePerLifetimeScope();
     }
 }
