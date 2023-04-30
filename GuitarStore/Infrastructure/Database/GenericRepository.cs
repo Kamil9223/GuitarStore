@@ -7,7 +7,7 @@ namespace Infrastructure.Database;
 public class GenericRepository<TEntity> : IRepository<TEntity>
     where TEntity : Entity
 {
-    private readonly DbContext _context;
+    protected readonly DbContext _context;
 
     public GenericRepository(DbContext context)
     {

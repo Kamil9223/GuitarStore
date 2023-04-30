@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using FluentValidation;
 using Mapster;
-using MapsterMapper;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Warehouse.Application.Abstractions;
@@ -26,8 +25,7 @@ internal sealed class ApplicationModule : Module
             .AsImplementedInterfaces()
             .InstancePerLifetimeScope();
 
-        builder.RegisterType<TypeAdapterConfig>().SingleInstance();
-        builder.RegisterType<ServiceMapper>().As<IMapper>().InstancePerLifetimeScope();
+        TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetExecutingAssembly());
 
         builder.RegisterGeneric(typeof(ValidationService<>)).As(typeof(IValidationService<>)).InstancePerLifetimeScope();
         builder.RegisterType(typeof(UnitOfWorkService)).As(typeof(IUnitOfWorkService)).InstancePerLifetimeScope();
