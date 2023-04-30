@@ -4,9 +4,9 @@ namespace Warehouse.Application.Products.Commands;
 
 public class AddProductCommand : ICommand
 {
-    public string? Brand { get; set; }
-    public string? Name { get; set; }
-    public string? Description { get; set; }
-    public decimal? Price { get; set; }
-    public int CategoryId { get; set; }
+    public string? Brand { get; init; }
+    public string? Name { get; init; }
+    public string? Description { get; init; }
+    public decimal? Price { get; init; }
+    public int CategoryId { get; init; }
 }

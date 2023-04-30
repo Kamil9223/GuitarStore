@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Warehouse.Application.Abstractions;
 using Warehouse.Application.Products.Commands;
+using Warehouse.Application.Products.Dtos;
+using Warehouse.Application.Products.Queries;
 
 namespace GuitarStore.ApiGateway.Modules.Warehouse.Products;
 
@@ -11,15 +13,21 @@ public class ProductsController : ControllerBase
     private readonly ICommandHandlerExecutor<AddProductCommand> _addProductCommandHandler;
     private readonly ICommandHandlerExecutor<DeleteProductCommand> _deleteProductCommandHandler;
     private readonly ICommandHandlerExecutor<UpdateProductCommand> _updateProductCommandHandler;
+    private readonly IQueryHandler<ListProductsQuery, IEnumerable<ProductDto>> _listProductsQueryHandler; 
+    private readonly IQueryHandler<ProductDetailsQuery, ProductDetailsDto> _productDetailsQueryHandler;
 
     public ProductsController(
         ICommandHandlerExecutor<AddProductCommand> addProductCommandHandler,
         ICommandHandlerExecutor<DeleteProductCommand> deleteProductCommandHandler,
-        ICommandHandlerExecutor<UpdateProductCommand> updateProductCommandHandler)
+        ICommandHandlerExecutor<UpdateProductCommand> updateProductCommandHandler,
+        IQueryHandler<ListProductsQuery, IEnumerable<ProductDto>> listProductsQueryHandler,
+        IQueryHandler<ProductDetailsQuery, ProductDetailsDto> productDetailsQueryHandler)
     {
         _addProductCommandHandler = addProductCommandHandler;
         _deleteProductCommandHandler = deleteProductCommandHandler;
         _updateProductCommandHandler = updateProductCommandHandler;
+        _listProductsQueryHandler = listProductsQueryHandler;
+        _productDetailsQueryHandler = productDetailsQueryHandler;
     }
 
     [HttpPost]
@@ -44,5 +52,21 @@ public class ProductsController : ControllerBase
         await _deleteProductCommandHandler.Execute(new DeleteProductCommand { Id = productId });
 
         return Ok();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var products = await _listProductsQueryHandler.Handle(new ListProductsQuery());
+
+        return Ok(products);
+    }
+
+    [HttpGet("{productId}")]
+    public async Task<IActionResult> GetDetails(int productId)
+    {
+        var productDetails = await _productDetailsQueryHandler.Handle(new ProductDetailsQuery { ProductId = productId });
+
+        return Ok(productDetails);
     }
 }

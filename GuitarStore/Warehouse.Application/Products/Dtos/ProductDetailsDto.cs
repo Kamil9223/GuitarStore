@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Warehouse.Application.Products.Dtos;
+﻿namespace Warehouse.Application.Products.Dtos;
 
 public class ProductDetailsDto
 {
+    public string? Brand { get; init; }
+    public string? Name { get; init; }
+    public decimal Price { get; init; }
+    public string? Description { get; init; }
+    public string? CategoryNamw { get; init; }
 }

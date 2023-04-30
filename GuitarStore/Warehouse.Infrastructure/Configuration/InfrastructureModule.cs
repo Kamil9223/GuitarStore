@@ -10,15 +10,19 @@ namespace Warehouse.Infrastructure.Configuration;
 
 internal sealed class InfrastructureModule : Module
 {
+    private readonly IConfiguration _configuration;
+
+    public InfrastructureModule(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
     protected override void Load(ContainerBuilder builder)
     {
-        IConfiguration? configuration = null;
-
         builder.Register(context =>
         {
-            configuration = context.Resolve<IConfiguration>();
             var dbOptions = new DbContextOptionsBuilder<WarehouseDbContext>();
-            dbOptions.UseSqlServer(configuration.GetSection("ConnectionStrings:GuitarStore").Value);
+            dbOptions.UseSqlServer(_configuration.GetSection("ConnectionStrings:GuitarStore").Value);
             return new WarehouseDbContext(dbOptions.Options);
         })
             .As<DbContext>()
@@ -26,7 +30,7 @@ internal sealed class InfrastructureModule : Module
 
         builder.RegisterType<SqlConnectionFactory>()
                 .As<ISqlConnectionFactory>()
-                .WithParameter("connectionString", configuration.GetSection("ConnectionStrings:GuitarStore").Value)
+                .WithParameter("connectionString", _configuration.GetSection("ConnectionStrings:GuitarStore").Value)
                 .InstancePerLifetimeScope();
 
         builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())

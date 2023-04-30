@@ -53,65 +53,30 @@ namespace Warehouse.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("CategoryId")
+                    b.Property<string>("Brand")
+                        .IsRequired()
+                        .HasMaxLength(75)
+                        .HasColumnType("nvarchar(75)");
+
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int>("GuitarStoreId")
-                        .HasColumnType("int");
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("ProducerName")
-                        .IsRequired()
-                        .HasMaxLength(75)
-                        .HasColumnType("nvarchar(75)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("GuitarStoreId");
-
-                    b.HasIndex("ProducerName")
+                    b.HasIndex("Brand", "Name")
                         .IsUnique();
 
                     b.ToTable("Products", "Warehouse");
-                });
-
-            modelBuilder.Entity("Warehouse.Domain.Store.GuitarStore", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("Street")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Stores", "Warehouse");
                 });
 
             modelBuilder.Entity("Warehouse.Domain.Categories.Category", b =>
@@ -128,15 +93,7 @@ namespace Warehouse.Infrastructure.Migrations
                 {
                     b.HasOne("Warehouse.Domain.Categories.Category", "Category")
                         .WithMany("Products")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Warehouse.Domain.Store.GuitarStore", "GuitarStore")
-                        .WithMany("Products")
-                        .HasForeignKey("GuitarStoreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CategoryId");
 
                     b.OwnsOne("Domain.ValueObjects.Money", "Price", b1 =>
                         {
@@ -157,10 +114,7 @@ namespace Warehouse.Infrastructure.Migrations
 
                     b.Navigation("Category");
 
-                    b.Navigation("GuitarStore");
-
-                    b.Navigation("Price")
-                        .IsRequired();
+                    b.Navigation("Price");
                 });
 
             modelBuilder.Entity("Warehouse.Domain.Categories.Category", b =>
@@ -168,11 +122,6 @@ namespace Warehouse.Infrastructure.Migrations
                     b.Navigation("Products");
 
                     b.Navigation("SubCategories");
-                });
-
-            modelBuilder.Entity("Warehouse.Domain.Store.GuitarStore", b =>
-                {
-                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }
