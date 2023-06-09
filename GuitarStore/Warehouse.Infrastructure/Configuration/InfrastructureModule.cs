@@ -22,7 +22,7 @@ internal sealed class InfrastructureModule : Module
         builder.Register(context =>
         {
             var dbOptions = new DbContextOptionsBuilder<WarehouseDbContext>();
-            dbOptions.UseSqlServer(_configuration.GetSection("ConnectionStrings:GuitarStore").Value);
+            dbOptions.UseSqlServer(_configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value);
             return new WarehouseDbContext(dbOptions.Options);
         })
             .As<DbContext>()
@@ -30,12 +30,12 @@ internal sealed class InfrastructureModule : Module
 
         builder.RegisterType<SqlConnectionFactory>()
                 .As<ISqlConnectionFactory>()
-                .WithParameter("connectionString", _configuration.GetSection("ConnectionStrings:GuitarStore").Value)
+                .WithParameter("connectionString", _configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value)
                 .InstancePerLifetimeScope();
 
         builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
             .Where(type => type.Name.EndsWith("Repository"))
             .AsImplementedInterfaces()
-            .InstancePerLifetimeScope();
+            .InstancePerLifetimeScope(); 
     }
 }
