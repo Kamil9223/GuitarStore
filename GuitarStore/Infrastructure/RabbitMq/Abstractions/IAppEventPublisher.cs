@@ -1,4 +1,6 @@
-﻿namespace Infrastructure.RabbitMq.Abstractions;
+﻿using Infrastructure.RabbitMq.Abstractions.Events;
+
+namespace Infrastructure.RabbitMq.Abstractions;
 
 /// <summary>
 /// Application Event Publisher

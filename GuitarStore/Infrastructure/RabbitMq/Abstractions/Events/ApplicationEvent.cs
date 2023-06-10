@@ -1,6 +1,6 @@
 ﻿using Domain.ValueObjects;
 
-namespace Infrastructure.RabbitMq;
+namespace Infrastructure.RabbitMq.Abstractions.Events;
 
 /// <summary>
 /// Represents application event sending between modules in asynchronous way (e.g RabbitMq)
