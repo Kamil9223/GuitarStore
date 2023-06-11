@@ -16,4 +16,12 @@ public class RabbitMqQueueName
 
     public static implicit operator RabbitMqQueueName(string queueName) => new(queueName);
     public static implicit operator string(RabbitMqQueueName value) => value.QueueName;
+
+    public static List<RabbitMqQueueName> DefinedQueuesNames
+        => new List<RabbitMqQueueName>{
+            AuthQueue,
+            CustomersQueue,
+            OrdersQueue,
+            CatalogQueue
+        };
 }

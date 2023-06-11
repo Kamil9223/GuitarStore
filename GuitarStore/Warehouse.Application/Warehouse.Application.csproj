@@ -19,4 +19,8 @@
     <ProjectReference Include="..\Warehouse.Domain\Warehouse.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Products\Events\ConsumerEvents\" />
+  </ItemGroup>
+
 </Project>
