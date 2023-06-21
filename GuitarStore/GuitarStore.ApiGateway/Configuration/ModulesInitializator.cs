@@ -1,6 +1,6 @@
 ﻿using Autofac;
+using Catalog.Infrastructure.Configuration;
 using Infrastructure.Configuration;
-using Warehouse.Infrastructure.Configuration;
 
 namespace GuitarStore.ApiGateway.Configuration;
 
@@ -15,7 +15,7 @@ internal class ModulesInitializator : Module
     protected override void Load(ContainerBuilder builder)
     {
         builder.RegisterModule<CommonModule>();
-        builder.RegisterModule(new WarehouseModuleInitializator(_configuration));
+        builder.RegisterModule(new CatalogModuleInitializator(_configuration));
         builder.RegisterModule<ApiModule>();
     }
 }

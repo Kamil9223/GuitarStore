@@ -60,7 +60,7 @@ internal class RabbitMqSetupBackgroundService : IHostedService
     {
         var publisherEventType = typeof(IEventPublisher);
 
-        var warehousePublisherEvents = GetModulePublisherEvents("Warehouse.Application", publisherEventType);
+        var warehousePublisherEvents = GetModulePublisherEvents("Catalog.Application", publisherEventType);
         //var ordersPublisherEvents = GetModulePublisherEvents("Orders.Application", publisherEventType);
         var customersPublisherEvents = GetModulePublisherEvents("Customers.Application", publisherEventType);
         //var authPublisherEvents = GetModulePublisherEvents("Auth.Application", publisherEventType);
