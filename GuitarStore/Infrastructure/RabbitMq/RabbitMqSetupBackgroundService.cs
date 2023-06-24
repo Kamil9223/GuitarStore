@@ -1,5 +1,5 @@
-﻿using Infrastructure.RabbitMq.Abstractions;
-using Infrastructure.RabbitMq.Abstractions.Events;
+﻿using Application.RabbitMq.Abstractions.Events;
+using Infrastructure.RabbitMq.Abstractions;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 using System.Reflection;
@@ -58,7 +58,7 @@ internal class RabbitMqSetupBackgroundService : IHostedService
 
     private void BindQueues(IModel channel)
     {
-        var publisherEventType = typeof(IEventPublisher);
+        var publisherEventType = typeof(IPublishEvent);
 
         var warehousePublisherEvents = GetModulePublisherEvents("Catalog.Application", publisherEventType);
         //var ordersPublisherEvents = GetModulePublisherEvents("Orders.Application", publisherEventType);

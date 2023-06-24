@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.RabbitMq.Abstractions;
+﻿namespace Application.RabbitMq.Abstractions;
 
 /// <summary>
 /// Application event subscriber

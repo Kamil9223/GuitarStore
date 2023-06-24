@@ -1,6 +1,6 @@
-﻿using Infrastructure.RabbitMq.Abstractions.Events;
+﻿using Application.RabbitMq.Abstractions.Events;
 
-namespace Infrastructure.RabbitMq.Abstractions;
+namespace Application.RabbitMq.Abstractions;
 
 /// <summary>
 /// Application Event Publisher
