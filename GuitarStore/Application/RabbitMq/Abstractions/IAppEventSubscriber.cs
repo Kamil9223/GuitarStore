@@ -1,4 +1,7 @@
-﻿namespace Application.RabbitMq.Abstractions;
+﻿using Application.RabbitMq.Abstractions.Events;
+using Infrastructure.RabbitMq;
+
+namespace Application.RabbitMq.Abstractions;
 
 /// <summary>
 /// Application event subscriber
@@ -8,6 +11,5 @@ public interface IAppEventSubscriber
     /// <summary>
     /// Subscribe to queue
     /// </summary>
-    /// <param name="event"></param>
-    Task Subscribe<TEvent>(TEvent @event);
+    void Subscribe<TEvent>(TEvent @event, RabbitMqQueueName queueName) where TEvent : ApplicationEvent;
 }

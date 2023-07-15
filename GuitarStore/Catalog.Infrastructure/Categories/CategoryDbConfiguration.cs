@@ -8,7 +8,7 @@ internal class CategoryDbConfiguration : IEntityTypeConfiguration<Category>
 {
     public void Configure(EntityTypeBuilder<Category> builder)
     {
-        builder.ToTable("Categories", "Warehouse");
+        builder.ToTable("Categories", "Catalog");
 
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedOnAdd();

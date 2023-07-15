@@ -10,7 +10,7 @@ internal class RabbitMqSetupBackgroundService : IHostedService
 {
     private readonly IRabbitMqConnector _rabbitMqConnector;
 
-    private const string ExchangeName = "GuitarStore";
+    public const string ExchangeName = "GuitarStore";
 
     public RabbitMqSetupBackgroundService(IRabbitMqConnector rabbitMqConnector)
     {

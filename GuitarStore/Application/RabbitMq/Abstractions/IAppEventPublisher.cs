@@ -11,5 +11,5 @@ public interface IAppEventPublisher
     /// Publish Event
     /// </summary>
     /// <param name="event"></param>
-    Task Publish<TEvent>(TEvent @event) where TEvent : ApplicationEvent;
+    Task Publish<TEvent>(TEvent @event) where TEvent : ApplicationEvent, IPublishEvent;
 }
