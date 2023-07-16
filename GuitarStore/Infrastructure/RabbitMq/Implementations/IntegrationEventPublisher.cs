@@ -6,16 +6,16 @@ using System.Text;
 
 namespace Infrastructure.RabbitMq.Implementations;
 
-internal class AppEventPublisher : IAppEventPublisher
+internal class IntegrationEventPublisher : IIntegrationEventPublisher
 {
     private readonly IRabbitMqChannel _rabbitMqChannel;
 
-    public AppEventPublisher(IRabbitMqChannel rabbitMqChannel)
+    public IntegrationEventPublisher(IRabbitMqChannel rabbitMqChannel)
     {
         _rabbitMqChannel = rabbitMqChannel;
     }
 
-    public Task Publish<TEvent>(TEvent @event) where TEvent : ApplicationEvent, IPublishEvent
+    public Task Publish<TEvent>(TEvent @event) where TEvent : IntegrationEvent, IIntegrationPublishEvent
     {
         var channel = _rabbitMqChannel.Channel;
 

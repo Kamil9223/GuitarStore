@@ -16,13 +16,17 @@ internal static class RabbitMqExtension
             .As<IHostedService>()
             .SingleInstance();
 
-        builder.RegisterType<AppEventPublisher>()
+        builder.RegisterType<IntegrationEventPublisher>()
             .AsImplementedInterfaces()
             .InstancePerLifetimeScope();
 
-        builder.RegisterType<AppEventSubscriber>()
+        builder.RegisterType<IntegrationEventSubscriber>()
             .AsImplementedInterfaces()
             .InstancePerLifetimeScope();
+
+        builder.RegisterType<IntegrationEventsSubscriptionManager>()
+            .AsSelf()
+            .SingleInstance();
 
         return builder;
     }

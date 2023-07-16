@@ -1,5 +1,5 @@
 ﻿namespace Application.RabbitMq.Abstractions.Events;
 
-public interface IPublishEvent
+public interface IIntegrationConsumeEvent
 {
 }

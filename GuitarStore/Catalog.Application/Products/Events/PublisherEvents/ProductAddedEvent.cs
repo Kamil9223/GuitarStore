@@ -2,6 +2,6 @@
 
 namespace Catalog.Application.Products.Events.PublisherEvents;
 
-internal class ProductAddedEvent : ApplicationEvent, IPublishEvent
+internal class ProductAddedEvent : IntegrationEvent, IIntegrationPublishEvent
 {
 }

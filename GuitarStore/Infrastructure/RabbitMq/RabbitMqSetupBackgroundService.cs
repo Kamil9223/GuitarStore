@@ -58,7 +58,7 @@ internal class RabbitMqSetupBackgroundService : IHostedService
 
     private void BindQueues(IModel channel)
     {
-        var publisherEventType = typeof(IPublishEvent);
+        var publisherEventType = typeof(IIntegrationPublishEvent);
 
         var warehousePublisherEvents = GetModulePublisherEvents("Catalog.Application", publisherEventType);
         //var ordersPublisherEvents = GetModulePublisherEvents("Orders.Application", publisherEventType);

@@ -5,11 +5,11 @@ namespace Application.RabbitMq.Abstractions;
 /// <summary>
 /// Application Event Publisher
 /// </summary>
-public interface IAppEventPublisher
+public interface IIntegrationEventPublisher
 {
     /// <summary>
     /// Publish Event
     /// </summary>
     /// <param name="event"></param>
-    Task Publish<TEvent>(TEvent @event) where TEvent : ApplicationEvent, IPublishEvent;
+    Task Publish<TEvent>(TEvent @event) where TEvent : IntegrationEvent, IIntegrationPublishEvent;
 }
