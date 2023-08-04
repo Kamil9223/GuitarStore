@@ -1,5 +1,5 @@
 ﻿using Catalog.Application.Products.Dtos;
-using Catalog.Domain.Products;
+using Catalog.Domain;
 using Mapster;
 
 namespace Catalog.Application.Products;

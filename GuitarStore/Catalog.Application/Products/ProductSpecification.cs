@@ -1,4 +1,4 @@
-﻿using Catalog.Domain.Products;
+﻿using Catalog.Domain;
 using System.Linq.Expressions;
 
 namespace Catalog.Application.Products;

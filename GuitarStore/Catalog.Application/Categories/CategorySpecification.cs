@@ -1,4 +1,4 @@
-﻿using Catalog.Domain.Categories;
+﻿using Catalog.Domain;
 using System.Linq.Expressions;
 
 namespace Catalog.Application.Categories;

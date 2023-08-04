@@ -2,8 +2,7 @@
 using Catalog.Application.Abstractions;
 using Catalog.Application.Categories;
 using Catalog.Application.Products.Commands;
-using Catalog.Domain.Categories;
-using Catalog.Domain.Products;
+using Catalog.Domain;
 using Domain;
 
 namespace Catalog.Application.Products;
