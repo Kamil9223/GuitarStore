@@ -17,7 +17,7 @@ internal class CategoryDbConfiguration : IEntityTypeConfiguration<Category>
 
         builder.HasOne(x => x.ParentCategory)
             .WithMany(x => x.SubCategories)
-            //.HasForeignKey(x => x.ParentCategoryId)
+            .HasForeignKey(x => x.ParentCategoryId)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
 

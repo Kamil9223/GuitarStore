@@ -14,11 +14,16 @@ internal class ProductDbConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
         builder.Property(x => x.Name).HasMaxLength(100);
-        builder.Property(x => x.SKU).HasMaxLength(100);
 
-        builder.HasOne(x => x.Category).WithMany(x => x.Products);
+        builder
+            .HasOne(x => x.Category)
+            .WithMany(x => x.Products)
+            .HasForeignKey(x => x.CategoryId);
 
-        builder.HasOne(x => x.Brand).WithMany(x => x.Products);
+        builder
+            .HasOne(x => x.Brand)
+            .WithMany(x => x.Products)
+            .HasForeignKey(x => x.BrandId);
 
         builder
            .HasMany(e => e.VariationOptions)

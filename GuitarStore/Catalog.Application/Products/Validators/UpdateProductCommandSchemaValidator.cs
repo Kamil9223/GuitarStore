@@ -11,7 +11,6 @@ internal class UpdateProductCommandSchemaValidator : AbstractValidator<UpdatePro
            .NotEmpty();
 
         RuleFor(x => x.Price)
-           .NotNull()
            .NotEmpty();
     }
 }

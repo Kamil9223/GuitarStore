@@ -7,9 +7,10 @@ public class Product : Entity, IIdentifiable
     public int Id { get; private set; }
     public string Name { get; private set; } = null!;
     public string Description { get; private set; } = null!;
-    public string SKU { get; private set; } = null!;
     public Brand Brand { get; private set; } = null!;
+    public int BrandId { get; private set; }
     public Category Category { get; private set; } = null!;
+    public int CategoryId { get; private set; }
     public ICollection<VariationOption> VariationOptions { get; private set; } = null!;
 
     public void UpdateDescription(string description)
