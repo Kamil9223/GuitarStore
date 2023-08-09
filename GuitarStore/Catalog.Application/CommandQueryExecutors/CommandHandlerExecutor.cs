@@ -7,24 +7,26 @@ internal class CommandHandlerExecutor<TCommand> : ICommandHandlerExecutor<TComma
 {
     private readonly IValidationService<TCommand> _validationService;
     private readonly ICommandHandler<TCommand> _handler;
-    private readonly IUnitOfWorkService _unitOfWorkService;
+    private readonly IUnitOfWork _unitOfWork;
 
     public CommandHandlerExecutor(
         IValidationService<TCommand> validationService,
         ICommandHandler<TCommand> handler,
-        IUnitOfWorkService unitOfWorkService)
+        IUnitOfWork unitOfWork)
     {
         _validationService = validationService;
         _handler = handler;
-        _unitOfWorkService = unitOfWorkService;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task Execute(TCommand command)
     {
         _validationService.Validate(command);
 
+        using var dbTransaction = await _unitOfWork.BeginTransaction();
+
         await _handler.Handle(command);
 
-        await _unitOfWorkService.Commit();
+        dbTransaction.Commit();
     }
 }

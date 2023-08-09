@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Catalog.Application.Abstractions;
 using Catalog.Infrastructure.Database;
+using Catalog.Infrastructure.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
@@ -35,6 +36,10 @@ internal sealed class InfrastructureModule : Module
 
         builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
             .Where(type => type.Name.EndsWith("Repository"))
+            .AsImplementedInterfaces()
+            .InstancePerLifetimeScope();
+
+        builder.RegisterType<UnitOfWork>()
             .AsImplementedInterfaces()
             .InstancePerLifetimeScope();
     }
