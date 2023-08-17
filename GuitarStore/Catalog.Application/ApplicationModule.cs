@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using Catalog.Application.Abstractions;
-using Catalog.Application.AppMIddlewareServices;
 using Catalog.Application.CommandQueryExecutors;
+using Catalog.Application.CrossCuttingServices;
 using FluentValidation;
 using Mapster;
 using System.Reflection;
@@ -27,9 +27,12 @@ internal sealed class ApplicationModule : Module
 
         TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetExecutingAssembly());
 
+        builder.RegisterType<CommandHandlerExecutor>().AsImplementedInterfaces().InstancePerLifetimeScope();
+        builder.RegisterType<QueryHandlerExecutor>().AsImplementedInterfaces().InstancePerLifetimeScope();
+
         builder.RegisterGeneric(typeof(ValidationService<>)).As(typeof(IValidationService<>)).InstancePerLifetimeScope();
 
-        builder.RegisterGeneric(typeof(CommandHandlerExecutor<>)).As(typeof(ICommandHandlerExecutor<>)).InstancePerLifetimeScope();
-        builder.RegisterGeneric(typeof(QueryHandlerExecutor<,>)).As(typeof(IQueryHandlerExecutor<,>)).InstancePerLifetimeScope();
+        builder.RegisterGenericDecorator(typeof(CommandDbTransactionDecorator<>), typeof(ICommandHandler<>));
+        builder.RegisterGenericDecorator(typeof(CommandValidationDecorator<>), typeof(ICommandHandler<>));
     }
 }

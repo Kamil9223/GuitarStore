@@ -10,30 +10,19 @@ namespace GuitarStore.ApiGateway.Modules.Catalog.Products;
 [Route("products")]
 public class ProductsController : ControllerBase
 {
-    private readonly ICommandHandlerExecutor<AddProductCommand> _addProductCommandHandler;
-    private readonly ICommandHandlerExecutor<DeleteProductCommand> _deleteProductCommandHandler;
-    private readonly ICommandHandlerExecutor<UpdateProductCommand> _updateProductCommandHandler;
-    private readonly IQueryHandler<ListProductsQuery, IEnumerable<ProductDto>> _listProductsQueryHandler;
-    private readonly IQueryHandler<ProductDetailsQuery, ProductDetailsDto> _productDetailsQueryHandler;
+    private readonly ICommandHandlerExecutor _commandHandlerExecutor;
+    private readonly IQueryHandlerExecutor _queryHandlerExecutor;
 
-    public ProductsController(
-        ICommandHandlerExecutor<AddProductCommand> addProductCommandHandler,
-        ICommandHandlerExecutor<DeleteProductCommand> deleteProductCommandHandler,
-        ICommandHandlerExecutor<UpdateProductCommand> updateProductCommandHandler,
-        IQueryHandler<ListProductsQuery, IEnumerable<ProductDto>> listProductsQueryHandler,
-        IQueryHandler<ProductDetailsQuery, ProductDetailsDto> productDetailsQueryHandler)
+    public ProductsController(ICommandHandlerExecutor commandHandlerExecutor, IQueryHandlerExecutor queryHandlerExecutor)
     {
-        _addProductCommandHandler = addProductCommandHandler;
-        _deleteProductCommandHandler = deleteProductCommandHandler;
-        _updateProductCommandHandler = updateProductCommandHandler;
-        _listProductsQueryHandler = listProductsQueryHandler;
-        _productDetailsQueryHandler = productDetailsQueryHandler;
+        _commandHandlerExecutor = commandHandlerExecutor;
+        _queryHandlerExecutor = queryHandlerExecutor;
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(AddProductCommand request)
     {
-        await _addProductCommandHandler.Execute(request);
+        await _commandHandlerExecutor.Execute(request);
 
         return Ok();
     }
@@ -41,7 +30,7 @@ public class ProductsController : ControllerBase
     [HttpPut("{productId}")]
     public async Task<IActionResult> Update(int productId, UpdateProductCommand request)
     {
-        await _updateProductCommandHandler.Execute(request);
+        await _commandHandlerExecutor.Execute(request);
 
         return Ok();
     }
@@ -49,7 +38,7 @@ public class ProductsController : ControllerBase
     [HttpDelete("{productId}")]
     public async Task<IActionResult> Delete(int productId)
     {
-        await _deleteProductCommandHandler.Execute(new DeleteProductCommand { Id = productId });
+        await _commandHandlerExecutor.Execute(new DeleteProductCommand { Id = productId });
 
         return Ok();
     }
@@ -57,7 +46,7 @@ public class ProductsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var products = await _listProductsQueryHandler.Handle(new ListProductsQuery());
+        var products = await _queryHandlerExecutor.Execute<ListProductsQuery, IEnumerable<ProductDto>>(new ListProductsQuery());
 
         return Ok(products);
     }
@@ -65,7 +54,7 @@ public class ProductsController : ControllerBase
     [HttpGet("{productId}")]
     public async Task<IActionResult> GetDetails(int productId)
     {
-        var productDetails = await _productDetailsQueryHandler.Handle(new ProductDetailsQuery { ProductId = productId });
+        var productDetails = await _queryHandlerExecutor.Execute<ProductDetailsQuery, ProductDetailsDto>(new ProductDetailsQuery { ProductId = productId });
 
         return Ok(productDetails);
     }

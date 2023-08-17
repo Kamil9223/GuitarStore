@@ -26,7 +26,7 @@ internal sealed class InfrastructureModule : Module
             dbOptions.UseSqlServer(_configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value!);
             return new CatalogDbContext(dbOptions.Options);
         })
-        .As<DbContext>()
+        .As<CatalogDbContext>()
         .InstancePerLifetimeScope();
 
         builder.RegisterType<SqlConnectionFactory>()

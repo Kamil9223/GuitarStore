@@ -15,6 +15,8 @@ public class Product : Entity, IIdentifiable
     public int CategoryId { get; private set; }
     public ICollection<VariationOption> VariationOptions { get; private set; } = null!;
 
+    private Product() { }
+
     public Product(string name, string description, decimal price, int quantity, Brand brand, Category category, ICollection<VariationOption> variationOptions)
     {
         Name = name;

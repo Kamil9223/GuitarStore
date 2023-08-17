@@ -1,32 +1,22 @@
 ﻿using Application;
+using Autofac;
 using Catalog.Application.Abstractions;
 
 namespace Catalog.Application.CommandQueryExecutors;
 
-internal class CommandHandlerExecutor<TCommand> : ICommandHandlerExecutor<TCommand> where TCommand : ICommand
+internal class CommandHandlerExecutor : ICommandHandlerExecutor
 {
-    private readonly IValidationService<TCommand> _validationService;
-    private readonly ICommandHandler<TCommand> _handler;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly ILifetimeScope _scope;
 
-    public CommandHandlerExecutor(
-        IValidationService<TCommand> validationService,
-        ICommandHandler<TCommand> handler,
-        IUnitOfWork unitOfWork)
+    public CommandHandlerExecutor(ILifetimeScope scope)
     {
-        _validationService = validationService;
-        _handler = handler;
-        _unitOfWork = unitOfWork;
+        _scope = scope;
     }
 
-    public async Task Execute(TCommand command)
+    public async Task Execute<TCommand>(TCommand command) where TCommand : ICommand
     {
-        _validationService.Validate(command);
-
-        using var dbTransaction = await _unitOfWork.BeginTransaction();
-
-        await _handler.Handle(command);
-
-        dbTransaction.Commit();
+        using var scope = _scope.BeginLifetimeScope();
+        var handler = scope.Resolve<ICommandHandler<TCommand>>();
+        await handler.Handle(command);
     }
 }

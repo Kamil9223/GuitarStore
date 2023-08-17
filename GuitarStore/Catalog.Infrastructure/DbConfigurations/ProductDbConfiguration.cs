@@ -17,6 +17,8 @@ internal class ProductDbConfiguration : IEntityTypeConfiguration<Product>
 
         builder.HasIndex(x => x.Name).IsUnique();
 
+        builder.Property(x => x.Price).HasColumnType("decimal(10,2)");
+
         builder
             .HasOne(x => x.Category)
             .WithMany(x => x.Products)

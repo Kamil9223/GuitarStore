@@ -4,7 +4,7 @@ using FluentValidation;
 using System.Text;
 using ValidationException = Application.Exceptions.ValidationException;
 
-namespace Catalog.Application.AppMIddlewareServices;
+namespace Catalog.Application.CrossCuttingServices;
 
 internal class ValidationService<TCommand> : IValidationService<TCommand>
     where TCommand : ICommand

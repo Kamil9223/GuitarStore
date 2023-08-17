@@ -1,21 +1,24 @@
 ﻿using Application;
+using Autofac;
 using Catalog.Application.Abstractions;
 
 namespace Catalog.Application.CommandQueryExecutors;
 
-internal class QueryHandlerExecutor<TQuery, TResponse> : IQueryHandlerExecutor<TQuery, TResponse>
-    where TQuery : IQuery
-    where TResponse : class
+internal class QueryHandlerExecutor : IQueryHandlerExecutor
 {
-    private readonly IQueryHandler<TQuery, TResponse> _handler;
+    private readonly ILifetimeScope _scope;
 
-    public QueryHandlerExecutor(IQueryHandler<TQuery, TResponse> handler)
+    public QueryHandlerExecutor(ILifetimeScope scope)
     {
-        _handler = handler;
+        _scope = scope;
     }
 
-    public async Task<TResponse> Execute(TQuery query)
+    public async Task<TResponse> Execute<TQuery, TResponse>(TQuery query)
+        where TQuery : IQuery
+        where TResponse : class
     {
-        return await _handler.Handle(query);
+        using var scope = _scope.BeginLifetimeScope();
+        var handler = scope.Resolve<IQueryHandler<TQuery, TResponse>>();
+        return await handler.Handle(query);
     }
 }
