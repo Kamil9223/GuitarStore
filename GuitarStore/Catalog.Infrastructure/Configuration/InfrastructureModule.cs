@@ -23,16 +23,16 @@ internal sealed class InfrastructureModule : Module
         builder.Register(context =>
         {
             var dbOptions = new DbContextOptionsBuilder<CatalogDbContext>();
-            dbOptions.UseSqlServer(_configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value);
+            dbOptions.UseSqlServer(_configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value!);
             return new CatalogDbContext(dbOptions.Options);
         })
-            .As<DbContext>()
-            .InstancePerLifetimeScope();
+        .As<DbContext>()
+        .InstancePerLifetimeScope();
 
         builder.RegisterType<SqlConnectionFactory>()
-                .As<ISqlConnectionFactory>()
-                .WithParameter("connectionString", _configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value)
-                .InstancePerLifetimeScope();
+            .As<ISqlConnectionFactory>()
+            .WithParameter("connectionString", _configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value!)
+            .InstancePerLifetimeScope();
 
         builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
             .Where(type => type.Name.EndsWith("Repository"))
@@ -40,6 +40,11 @@ internal sealed class InfrastructureModule : Module
             .InstancePerLifetimeScope();
 
         builder.RegisterType<UnitOfWork>()
+            .AsImplementedInterfaces()
+            .InstancePerLifetimeScope();
+
+        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            .Where(type => type.Name.EndsWith("QueryService"))
             .AsImplementedInterfaces()
             .InstancePerLifetimeScope();
     }

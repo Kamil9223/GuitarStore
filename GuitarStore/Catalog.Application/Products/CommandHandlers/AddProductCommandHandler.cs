@@ -1,6 +1,8 @@
 ﻿using Application.Exceptions;
+using Application.RabbitMq.Abstractions;
 using Catalog.Application.Abstractions;
 using Catalog.Application.Products.Commands;
+using Catalog.Application.Products.Events.PublisherEvents;
 using Catalog.Domain;
 using Catalog.Domain.IRepositories;
 
@@ -13,19 +15,22 @@ internal class AddProductCommandHandler : ICommandHandler<AddProductCommand>
     private readonly IBrandRepository _brandRepository;
     private readonly ICategoryRepository _categoryRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IIntegrationEventPublisher _integrationEventPublisher;
 
     public AddProductCommandHandler(
         IProductRepository productRepository,
         IVariationOptionRepository variationOptionRepository,
         IBrandRepository brandRepository,
         ICategoryRepository categoryRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IIntegrationEventPublisher integrationEventPublisher)
     {
         _productRepository = productRepository;
         _variationOptionRepository = variationOptionRepository;
         _brandRepository = brandRepository;
         _categoryRepository = categoryRepository;
         _unitOfWork = unitOfWork;
+        _integrationEventPublisher = integrationEventPublisher;
     }
 
     public async Task Handle(AddProductCommand command)
@@ -47,12 +52,17 @@ internal class AddProductCommandHandler : ICommandHandler<AddProductCommand>
         if (category is null)
             throw new GuitarStoreApplicationException($"Category that has not children with Id = [{command.CategoryId}] not exists.");
 
-        var product = new Product(command.Name, command.Description, brand, category, variationOptions);
+        var product = new Product(command.Name, command.Description, command.Price, command.Quantity, brand, category, variationOptions);
 
         _productRepository.Add(product);
 
         await _unitOfWork.SaveChanges();
 
-        //publish event
+        await _integrationEventPublisher.Publish(new ProductAddedEvent
+        {
+            Name = command.Name,
+            Quantity = command.Quantity,
+            Price = command.Price
+        });
     }
 }

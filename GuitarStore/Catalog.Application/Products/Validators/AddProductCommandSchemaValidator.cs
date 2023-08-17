@@ -22,5 +22,11 @@ internal class AddProductCommandSchemaValidator : AbstractValidator<AddProductCo
 
         RuleFor(x => x.VariationOptionIds)
            .NotEmpty();
+
+        RuleFor(x => x.Quantity)
+            .GreaterThan(0);
+
+        RuleFor(x => x.Price)
+            .GreaterThan(0);
     }
 }
