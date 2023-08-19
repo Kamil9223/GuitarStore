@@ -27,22 +27,6 @@ public class ProductsController : ControllerBase
         return Ok();
     }
 
-    [HttpPut("{productId}")]
-    public async Task<IActionResult> Update(int productId, UpdateProductCommand request)
-    {
-        await _commandHandlerExecutor.Execute(request);
-
-        return Ok();
-    }
-
-    [HttpDelete("{productId}")]
-    public async Task<IActionResult> Delete(int productId)
-    {
-        await _commandHandlerExecutor.Execute(new DeleteProductCommand { Id = productId });
-
-        return Ok();
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
