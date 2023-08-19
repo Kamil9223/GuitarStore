@@ -1,4 +1,5 @@
 ﻿using Application.Exceptions;
+using Domain;
 using Newtonsoft.Json;
 using System.Net;
 
@@ -23,6 +24,9 @@ public class ExceptionsMiddleware : IMiddleware
         var responseModel = ex switch
         {
             ValidationException => new ResponseModel(HttpStatusCode.BadRequest, ex.Message, null),
+            NotFoundException => new ResponseModel(HttpStatusCode.NotFound, ex.Message, null),
+            DomainException => new ResponseModel(HttpStatusCode.Conflict, ex.Message, null),
+            GuitarStoreApplicationException => new ResponseModel(HttpStatusCode.Conflict, ex.Message, null),
             _ => new ResponseModel(HttpStatusCode.InternalServerError, ex.Message, null)
         };
 

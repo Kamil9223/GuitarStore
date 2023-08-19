@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Catalog.Application.Abstractions;
 using Catalog.Infrastructure.Database;
+using Catalog.Infrastructure.Persistance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
@@ -22,19 +23,28 @@ internal sealed class InfrastructureModule : Module
         builder.Register(context =>
         {
             var dbOptions = new DbContextOptionsBuilder<CatalogDbContext>();
-            dbOptions.UseSqlServer(_configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value);
+            dbOptions.UseSqlServer(_configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value!);
             return new CatalogDbContext(dbOptions.Options);
         })
-            .As<DbContext>()
-            .InstancePerLifetimeScope();
+        .As<CatalogDbContext>()
+        .InstancePerLifetimeScope();
 
         builder.RegisterType<SqlConnectionFactory>()
-                .As<ISqlConnectionFactory>()
-                .WithParameter("connectionString", _configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value)
-                .InstancePerLifetimeScope();
+            .As<ISqlConnectionFactory>()
+            .WithParameter("connectionString", _configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value!)
+            .InstancePerLifetimeScope();
 
         builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
             .Where(type => type.Name.EndsWith("Repository"))
+            .AsImplementedInterfaces()
+            .InstancePerLifetimeScope();
+
+        builder.RegisterType<UnitOfWork>()
+            .AsImplementedInterfaces()
+            .InstancePerLifetimeScope();
+
+        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            .Where(type => type.Name.EndsWith("QueryService"))
             .AsImplementedInterfaces()
             .InstancePerLifetimeScope();
     }

@@ -1,5 +1,4 @@
-﻿using Catalog.Domain.Categories;
-using Catalog.Domain.Products;
+﻿using Catalog.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Infrastructure.Database;
@@ -8,6 +7,9 @@ internal class CatalogDbContext : DbContext
 {
     public DbSet<Product> Products { get; set; }
     public DbSet<Category> Categories { get; set; }
+    public DbSet<Brand> Brands { get; set; }
+    public DbSet<Variation> Variations { get; set; }
+    public DbSet<VariationOption> VariationOptions { get; set; }
 
     public CatalogDbContext() { }
 

@@ -2,7 +2,7 @@
 
 namespace Catalog.Application.Abstractions;
 
-public interface ICommandHandlerExecutor<TCommand> where TCommand : ICommand
+public interface ICommandHandlerExecutor
 {
-    Task Execute(TCommand command);
+    Task Execute<TCommand>(TCommand command) where TCommand : ICommand;
 }

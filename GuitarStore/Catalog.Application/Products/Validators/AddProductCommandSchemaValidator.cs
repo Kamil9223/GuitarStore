@@ -7,21 +7,26 @@ internal class AddProductCommandSchemaValidator : AbstractValidator<AddProductCo
 {
     public AddProductCommandSchemaValidator()
     {
-        RuleFor(x => x.Brand)
-            .NotNull()
-            .NotEmpty()
-            .MaximumLength(75);
+        RuleFor(x => x.Description)
+            .NotEmpty();
 
         RuleFor(x => x.Name)
-            .NotNull()
             .NotEmpty()
             .MaximumLength(100);
 
-        RuleFor(x => x.Price)
-           .NotNull()
-           .NotEmpty();
-
         RuleFor(x => x.CategoryId)
            .NotEmpty();
+
+        RuleFor(x => x.BrandId)
+           .NotEmpty();
+
+        RuleFor(x => x.VariationOptionIds)
+           .NotEmpty();
+
+        RuleFor(x => x.Quantity)
+            .GreaterThan(0);
+
+        RuleFor(x => x.Price)
+            .GreaterThan(0);
     }
 }
