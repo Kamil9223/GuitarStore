@@ -1,6 +1,6 @@
 ﻿using Application.RabbitMq.Abstractions.Events;
 
-namespace Catalog.Application.Products.Events.PublisherEvents;
+namespace Catalog.Application.Products.Events.Outgoing;
 
 internal class ProductAddedEvent : IntegrationEvent, IIntegrationPublishEvent
 {

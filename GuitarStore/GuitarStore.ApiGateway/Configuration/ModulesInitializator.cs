@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Catalog.Infrastructure.Configuration;
+using Customers.Infrastructure.Configuration;
 using Infrastructure.Configuration;
 
 namespace GuitarStore.ApiGateway.Configuration;
@@ -16,6 +17,7 @@ internal class ModulesInitializator : Module
     {
         builder.RegisterModule<CommonModule>();
         builder.RegisterModule(new CatalogModuleInitializator(_configuration));
+        builder.RegisterModule(new CustomersModuleInitializator(_configuration));
         builder.RegisterModule<ApiModule>();
     }
 }

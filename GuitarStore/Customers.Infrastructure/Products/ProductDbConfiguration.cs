@@ -13,8 +13,9 @@ internal class ProductDbConfiguration : IEntityTypeConfiguration<Product>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
-        builder.Property(x => x.Name).HasColumnName("Name").HasMaxLength(200);
-        builder.Property(x => x.Quantity).HasColumnName("Quantity");
+        builder.Property(x => x.Name).HasMaxLength(200);
+        builder.HasIndex(x => x.Name).IsUnique();
+
         builder.OwnsOne(x => x.Price, builder =>
         {
             builder.Property(x => x.Value).HasColumnName("Price").HasColumnType("decimal(10,2)");

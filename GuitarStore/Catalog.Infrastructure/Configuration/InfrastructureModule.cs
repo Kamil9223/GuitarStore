@@ -1,7 +1,7 @@
 ﻿using Autofac;
 using Catalog.Application.Abstractions;
 using Catalog.Infrastructure.Database;
-using Catalog.Infrastructure.Persistance;
+using Catalog.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;

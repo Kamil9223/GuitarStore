@@ -3,7 +3,7 @@ using Catalog.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Data;
 
-namespace Catalog.Infrastructure.Persistance;
+namespace Catalog.Infrastructure.Persistence;
 
 internal class UnitOfWork : IUnitOfWork
 {
