@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 
 namespace Customers.Domain.Products;
 
 public interface IProductRepository
 {
     void Add(Product product);
+    Task<bool> Exists(Expression<Func<Product, bool>> predicate);
 }

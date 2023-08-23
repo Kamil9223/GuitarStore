@@ -7,38 +7,37 @@ public class Product : Entity, IIdentifiable
 {
     public int Id { get; }
     public string Name { get; }
-    public Money Price { get; }
-    public uint Quantity { get; private set; }
+    public Money Price { get; private set; }
+    public int Quantity { get; private set; }
 
     //For EF Core
     private Product() { }
 
-    private Product(int id, string name, Money price, uint quantity)
+    private Product(string name, Money price, int quantity)
     {
-        Id = id;
         Name = name;
         Price = price;
         Quantity = quantity;
     }
 
-    public static Product Create(int id, string name, Money price, uint quantity)
+    public static Product Create(string name, Money price, int quantity)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new DomainException($"Provided product name: [{name}] is not valid.");
         }
 
-        if (quantity == 0)
+        if (quantity <= 0)
         {
             throw new DomainException($"Product quantity must be greater than zero.");
         }
 
-        return new Product(id, name, price, quantity);
+        return new Product(name, price, quantity);
     }
 
-    internal void IncreaseQuantity(uint quantity) => Quantity += quantity;
+    internal void IncreaseQuantity(int quantity) => Quantity += quantity;
 
-    internal void DecreaseQuantity(uint quantity)
+    internal void DecreaseQuantity(int quantity)
     {
         if (quantity >= Quantity)
         {

@@ -2,7 +2,7 @@
 using Application.RabbitMq.Abstractions;
 using Catalog.Application.Abstractions;
 using Catalog.Application.Products.Commands;
-using Catalog.Application.Products.Events.PublisherEvents;
+using Catalog.Application.Products.Events.Outgoing;
 using Catalog.Domain;
 using Catalog.Domain.IRepositories;
 
