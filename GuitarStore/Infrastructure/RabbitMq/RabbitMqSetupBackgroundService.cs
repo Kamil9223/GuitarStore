@@ -58,31 +58,31 @@ internal class RabbitMqSetupBackgroundService : IHostedService
 
     private void BindQueues(IModel channel)
     {
-        var publisherEventType = typeof(IIntegrationPublishEvent);
+        var consumerEventType = typeof(IIntegrationConsumeEvent);
 
-        var warehousePublisherEvents = GetModulePublisherEvents("Catalog.Application", publisherEventType);
+        var catalogPublisherEvents = GetModuleConsumerEvents("Catalog.Application", consumerEventType);
         //var ordersPublisherEvents = GetModulePublisherEvents("Orders.Application", publisherEventType);
-        var customersPublisherEvents = GetModulePublisherEvents("Customers.Application", publisherEventType);
+        var customersPublisherEvents = GetModuleConsumerEvents("Customers.Application", consumerEventType);
         //var authPublisherEvents = GetModulePublisherEvents("Auth.Application", publisherEventType);
 
-        BindQueues(RabbitMqQueueName.CatalogQueue, warehousePublisherEvents);
+        BindQueues(RabbitMqQueueName.CatalogQueue, catalogPublisherEvents);
         //BindQueues(RabbitMqQueueName.OrdersQueue, ordersPublisherEvents);
         BindQueues(RabbitMqQueueName.CustomersQueue, customersPublisherEvents);
         //BindQueues(RabbitMqQueueName.AuthQueue, authPublisherEvents);
 
-        IEnumerable<Type> GetModulePublisherEvents(string appModuleName, Type publisherEventType)
+        IEnumerable<Type> GetModuleConsumerEvents(string appModuleName, Type consumerEventType)
             => Assembly
                 .Load(new AssemblyName(appModuleName))
                 .GetTypes()
-                .Where(p => p.IsAssignableTo(publisherEventType));
+                .Where(p => p.IsAssignableTo(consumerEventType));
 
-        void BindQueues(string queueName, IEnumerable<Type> modulePublisherEventsTypes)
+        void BindQueues(string queueName, IEnumerable<Type> moduleConsumerEventsTypes)
         {
-            foreach (var modulePublisherEventType in modulePublisherEventsTypes)
+            foreach (var moduleConsumerEventType in moduleConsumerEventsTypes)
             {
                 channel.QueueBind(queue: queueName,
                              exchange: ExchangeName,
-                             routingKey: modulePublisherEventType.Name);
+                             routingKey: moduleConsumerEventType.Name);
             }
         }
     }

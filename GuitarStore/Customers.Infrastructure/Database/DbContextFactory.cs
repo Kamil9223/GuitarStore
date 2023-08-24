@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
 namespace Customers.Infrastructure.Database;
 
@@ -10,8 +11,13 @@ internal class DbContextFactory : IDesignTimeDbContextFactory<CustomersDbContext
 
     public CustomersDbContext CreateDbContext(string[] args)
     {
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+               .SetBasePath(Directory.GetCurrentDirectory())
+               .AddJsonFile("appsettings.json")
+               .Build();
+
         var optionsBuilder = new DbContextOptionsBuilder<CustomersDbContext>();
-        var connectionString = Environment.GetEnvironmentVariable("ASPNETCORE_DB_STRING");
+        var connectionString = configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value;
 
         var sqlConnectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
 

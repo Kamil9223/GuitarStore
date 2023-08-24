@@ -12,17 +12,17 @@ namespace Infrastructure.RabbitMq.Implementations;
 internal class IntegrationEventSubscriber : IIntegrationEventSubscriber
 {
     private readonly IRabbitMqChannel _rabbitMqChannel;
-    private readonly IContainer _container;
+    private readonly ILifetimeScope _scope;
     private readonly IntegrationEventsSubscriptionManager _integrationEventsSubscriptionManager;
 
-    public IntegrationEventSubscriber(IRabbitMqChannel rabbitMqChannel, IContainer container, IntegrationEventsSubscriptionManager integrationEventsSubscriptionManager)
+    public IntegrationEventSubscriber(IRabbitMqChannel rabbitMqChannel, ILifetimeScope scope, IntegrationEventsSubscriptionManager integrationEventsSubscriptionManager)
     {
         _rabbitMqChannel = rabbitMqChannel;
-        _container = container;
+        _scope = scope;
         _integrationEventsSubscriptionManager = integrationEventsSubscriptionManager;
     }
 
-    public void Subscribe<TEvent, TEventHandler>(TEvent @event, RabbitMqQueueName queueName)
+    public void Subscribe<TEvent, TEventHandler>(RabbitMqQueueName queueName)
         where TEvent : IntegrationEvent, IIntegrationConsumeEvent
         where TEventHandler : IIntegrationEventHandler<TEvent>
     {
@@ -46,7 +46,7 @@ internal class IntegrationEventSubscriber : IIntegrationEventSubscriber
                 var message = Encoding.UTF8.GetString(@event.Body.Span);
                 var integrationEvent = JsonConvert.DeserializeObject<TEvent>(message);
 
-                using var scope = _container.BeginLifetimeScope();
+                using var scope = _scope.BeginLifetimeScope();
                 var handlerType = _integrationEventsSubscriptionManager.GetHandlerTypeForEvent(typeof(TEvent));
 
                 var handler = scope.Resolve(handlerType);

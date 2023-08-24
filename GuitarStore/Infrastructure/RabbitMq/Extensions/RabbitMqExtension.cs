@@ -12,20 +12,24 @@ internal static class RabbitMqExtension
             .AsImplementedInterfaces()
             .SingleInstance();
 
-        builder.RegisterType<RabbitMqSetupBackgroundService>()
-            .As<IHostedService>()
-            .SingleInstance();
-
         builder.RegisterType<IntegrationEventPublisher>()
             .AsImplementedInterfaces()
             .InstancePerLifetimeScope();
 
         builder.RegisterType<IntegrationEventSubscriber>()
             .AsImplementedInterfaces()
-            .InstancePerLifetimeScope();
+            .SingleInstance();
 
         builder.RegisterType<IntegrationEventsSubscriptionManager>()
             .AsSelf()
+            .SingleInstance();
+
+        builder.RegisterType<RabbitMqSetupBackgroundService>()
+            .As<IHostedService>()
+            .SingleInstance();
+
+        builder.RegisterType<RabbitMqSubscriptionBackgroundService>()
+            .As<IHostedService>()
             .SingleInstance();
 
         return builder;

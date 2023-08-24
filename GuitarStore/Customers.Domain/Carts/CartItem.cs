@@ -9,12 +9,12 @@ public class CartItem : Entity, IIdentifiable
     public int ProductId { get; set; }
     public string Name { get; }
     public Money Price { get; }
-    public uint Quantity { get; private set; }
+    public int Quantity { get; private set; }
 
     //For EF Core
     private CartItem() { }
 
-    private CartItem(int productId, string name, Money price, uint quantity)
+    private CartItem(int productId, string name, Money price, int quantity)
     {
         ProductId = productId;
         Name = name;
@@ -22,16 +22,16 @@ public class CartItem : Entity, IIdentifiable
         Quantity = quantity;
     }
 
-    internal static CartItem Create(int productId, string name, Money price, uint quantity)
+    internal static CartItem Create(int productId, string name, Money price, int quantity)
     {
         //Check rules
 
         return new CartItem(productId, name, price, quantity);
     }
 
-    internal void IncreaseQuantity(uint quantity) => Quantity += quantity;
+    internal void IncreaseQuantity(int quantity) => Quantity += quantity;
 
-    internal void DecreaseQuantity(uint quantity)
+    internal void DecreaseQuantity(int quantity)
     {
         if (quantity >= Quantity)
         {
@@ -41,5 +41,5 @@ public class CartItem : Entity, IIdentifiable
         Quantity -= quantity;
     }
 
-    internal bool IsQuantityDeacrisingPossible(uint quantity) => Quantity > quantity;
+    internal bool IsQuantityDeacrisingPossible(int quantity) => Quantity > quantity;
 }

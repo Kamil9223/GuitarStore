@@ -1,10 +1,8 @@
-﻿using Autofac;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Application.RabbitMq.Abstractions;
+using Autofac;
+using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+using Module = Autofac.Module;
 
 [assembly: InternalsVisibleTo("Customers.Infrastructure")]
 namespace Customers.Application;
@@ -13,6 +11,13 @@ internal sealed class ApplicationModule : Module
 {
     protected override void Load(ContainerBuilder builder)
     {
+        builder.RegisterType<EventBusSubscriptionManager>()
+            .AsImplementedInterfaces()
+            .SingleInstance();
 
+        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            .AsClosedTypesOf(typeof(IIntegrationEventHandler<>))
+            .AsImplementedInterfaces()
+            .InstancePerLifetimeScope();
     }
 }

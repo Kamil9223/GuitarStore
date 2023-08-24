@@ -26,10 +26,10 @@ internal sealed class InfrastructureModule : Autofac.Module
         .As<CustomersDbContext>()
         .InstancePerLifetimeScope();
 
-        //builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-        //    .Where(type => type.Name.EndsWith("Repository"))
-        //    .AsImplementedInterfaces()
-        //    .InstancePerLifetimeScope();
+        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            .Where(type => type.Name.EndsWith("Repository"))
+            .AsImplementedInterfaces()
+            .InstancePerLifetimeScope();
 
         builder.RegisterType<UnitOfWork>()
             .AsImplementedInterfaces()

@@ -36,7 +36,7 @@ public class Cart : Entity, IIdentifiable
         CartItems.Add(CartItem.Create(product.Id, product.Name, product.Price, product.Quantity));
     }
 
-    public void RemoveProduct(int productId, uint quantity)
+    public void RemoveProduct(int productId, int quantity)
     {
         var existingProduct = CartItems.SingleOrDefault(x => x.ProductId == productId);
 

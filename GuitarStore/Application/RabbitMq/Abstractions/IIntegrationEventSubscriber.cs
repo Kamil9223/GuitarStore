@@ -11,7 +11,7 @@ public interface IIntegrationEventSubscriber
     /// <summary>
     /// Subscribe to queue
     /// </summary>
-    void Subscribe<TEvent, TEventHandler>(TEvent @event, RabbitMqQueueName queueName)
+    void Subscribe<TEvent, TEventHandler>(RabbitMqQueueName queueName)
         where TEvent : IntegrationEvent, IIntegrationConsumeEvent
         where TEventHandler : IIntegrationEventHandler<TEvent>;
 }
