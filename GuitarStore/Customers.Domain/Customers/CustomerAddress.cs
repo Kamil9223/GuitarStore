@@ -6,14 +6,14 @@ namespace Customers.Domain.Customers;
 public class CustomerAddress : ValueObject
 {
     public string Country { get; }
-    public Locality Locality { get; }
+    public Locality? Locality { get; }
     public string LocalityName { get; }
     public string PostalCode { get; }
     public string HouseNumber { get; }
-    public string? Street { get; }
-    public string? LocalNumber { get; }
+    public string Street { get; }
+    public string LocalNumber { get; }
 
-    private CustomerAddress(string country, Locality locality, string localityName, string postalCode, string houseNumber, string? street, string? localNumber)
+    private CustomerAddress(string country, Locality? locality, string localityName, string postalCode, string houseNumber, string street, string localNumber)
     {
         Country = country;
         Locality = locality;
@@ -24,7 +24,7 @@ public class CustomerAddress : ValueObject
         LocalNumber = localNumber;
     }
 
-    public static CustomerAddress Create(string country, Locality locality, string localityName, string postalCode, string houseNumber, string? street, string? localNumber)
+    public static CustomerAddress Create(string country, Locality locality, string localityName, string postalCode, string houseNumber, string street, string localNumber)
     {
         if (string.IsNullOrWhiteSpace(country))
         {

@@ -18,16 +18,16 @@ internal class CustomerDbConfiguration : IEntityTypeConfiguration<Customer>
 
         builder.OwnsOne(x => x.Address, builder =>
         {
-            builder.Property(x => x.Country).HasColumnName("Country").HasMaxLength(300);
+            builder.Property(x => x.Country).HasColumnName("Country").HasMaxLength(300).IsRequired(false);
             builder.Property(x => x.Locality).HasConversion(
                 x => x.ToString(),
                 x => (Locality)Enum.Parse(typeof(Locality), x))
-                .HasColumnName("Locality").HasMaxLength(15);
-            builder.Property(x => x.LocalityName).HasColumnName("LocalityName").HasMaxLength(500);
-            builder.Property(x => x.PostalCode).HasColumnName("PostalCode").HasMaxLength(10);
-            builder.Property(x => x.HouseNumber).HasColumnName("HouseNumber").HasMaxLength(20);
-            builder.Property(x => x.Street).HasColumnName("Street").HasMaxLength(500);
-            builder.Property(x => x.LocalNumber).HasColumnName("LocalNumber").HasMaxLength(20);
+                .HasColumnName("Locality").HasMaxLength(15).IsRequired(false);
+            builder.Property(x => x.LocalityName).HasColumnName("LocalityName").HasMaxLength(500).IsRequired(false);
+            builder.Property(x => x.PostalCode).HasColumnName("PostalCode").HasMaxLength(10).IsRequired(false);
+            builder.Property(x => x.HouseNumber).HasColumnName("HouseNumber").HasMaxLength(20).IsRequired(false);
+            builder.Property(x => x.Street).HasColumnName("Street").HasMaxLength(500).IsRequired(false);
+            builder.Property(x => x.LocalNumber).HasColumnName("LocalNumber").HasMaxLength(20).IsRequired(false);
         });
 
         builder.OwnsOne(x => x.Email, builder =>
