@@ -1,7 +1,7 @@
 ﻿using Application.Exceptions;
 using Application.RabbitMq.Abstractions;
 using Customers.Application.Abstractions;
-using Customers.Application.Products.Messages.Events.Incoming;
+using Customers.Application.Products.Events.Incoming;
 using Customers.Domain.Products;
 
 namespace Customers.Application.Products.Handlers.EventHandlers;

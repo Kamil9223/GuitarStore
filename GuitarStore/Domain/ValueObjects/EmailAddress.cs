@@ -9,7 +9,7 @@ public class EmailAddress : ValueObject
         @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$",
         RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-    public string Email { get; set; }
+    public string Email { get; }
 
     private EmailAddress(string email)
     {
@@ -25,4 +25,10 @@ public class EmailAddress : ValueObject
 
         return new EmailAddress(email);
     }
+
+    public static bool operator ==(EmailAddress emailAddress, string email)
+        => emailAddress.Email == email;
+
+    public static bool operator !=(EmailAddress emailAddress, string email)
+        => emailAddress.Email != email;
 }

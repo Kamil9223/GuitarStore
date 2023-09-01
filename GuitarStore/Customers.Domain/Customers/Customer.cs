@@ -25,14 +25,14 @@ public class Customer : Entity, IIdentifiable
         Cart = cart;
     }
 
-    public static Customer Create(string name, string lastName, EmailAddress email, CustomerAddress address)
+    public static Customer Create(string name, string lastName, EmailAddress email, CustomerAddress address = null)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new DomainException($"Provided property [Name]: [{name}] is invalid.");
         }
 
-        if (string.IsNullOrWhiteSpace(name))
+        if (string.IsNullOrWhiteSpace(lastName))
         {
             throw new DomainException($"Provided property [LastName]: [{lastName}] is invalid.");
         }

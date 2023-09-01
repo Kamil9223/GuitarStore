@@ -1,6 +1,6 @@
 ﻿using Application.RabbitMq.Abstractions.Events;
 
-namespace Customers.Application.Products.Messages.Events.Incoming;
+namespace Customers.Application.Products.Events.Incoming;
 
 internal class ProductAddedEvent : IntegrationEvent, IIntegrationConsumeEvent
 {
