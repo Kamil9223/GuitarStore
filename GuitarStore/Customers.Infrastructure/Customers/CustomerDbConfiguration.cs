@@ -35,33 +35,6 @@ internal class CustomerDbConfiguration : IEntityTypeConfiguration<Customer>
             builder.Property(x => x.Email).HasColumnName("Email").HasMaxLength(100);
         });
 
-        builder.OwnsOne(x => x.Cart, builder =>
-        {
-            builder.WithOwner();
-            builder.ToTable("Carts", "Customers");
-
-            builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).ValueGeneratedOnAdd();
-
-            builder.Property(x => x.CreatedAt).HasColumnName("CreatedAt");
-            builder.Ignore(x => x.TotalPrice);
-
-            builder.OwnsMany(x => x.CartItems, builder =>
-            {
-                builder.WithOwner();
-                builder.ToTable("CartItems", "Customers");
-
-                builder.HasKey(x => x.Id);
-                builder.Property(x => x.Id).ValueGeneratedOnAdd();
-
-                builder.Property(x => x.Name).HasColumnName("Name").HasMaxLength(200);
-                builder.Property(x => x.ProductId).HasColumnName("ProductId");
-                builder.Property(x => x.Quantity).HasColumnName("Quantity");
-                builder.OwnsOne(x => x.Price, builder =>
-                {
-                    builder.Property(x => x.Value).HasColumnName("Price").HasColumnType("decimal(10,2)");
-                });
-            });
-        });
+        builder.HasOne(x => x.Cart);
     }
 }
