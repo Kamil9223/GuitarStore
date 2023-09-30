@@ -6,19 +6,22 @@ namespace Customers.Domain.Carts;
 public class Cart : Entity, IIdentifiable
 {
     public int Id { get; }
+    public int CustomerId { get; }
     public ICollection<CartItem> CartItems { get; }
     public DateTime CreatedAt { get; }
+
     public decimal TotalPrice => CartItems.Sum(x => x.Price * x.Quantity);
 
-    private Cart()
+    private Cart(int customerId)
     {
+        CustomerId = customerId;
         CreatedAt = DateTime.Now;
         CartItems = new List<CartItem>();
     }
 
-    public static Cart Create()
+    public static Cart Create(int customerId)
     {
-        return new Cart();
+        return new Cart(customerId);
     }
 
     public void ClearCart() => CartItems.Clear();
@@ -45,12 +48,18 @@ public class Cart : Entity, IIdentifiable
             throw new DomainException($"Cannot remove product from cart because product with Id: [{productId}] is not stored in cart.");
         }
 
-        if (existingProduct.IsQuantityDeacrisingPossible(quantity))
-        {
-            existingProduct.DecreaseQuantity(quantity);
-            return;
-        }
+        var decreasedQuantity = existingProduct.DecreaseQuantity(quantity);
 
-        CartItems.Remove(existingProduct);
+        if (!decreasedQuantity)
+            CartItems.Remove(existingProduct);
+    }
+
+    public CheckoutCart Checkout()
+    {
+        if (CartItems.Count == 0)
+        {
+            throw new DomainException("Cannot checkout empty Cart.");
+        }
+        return new(this);
     }
 }

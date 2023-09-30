@@ -31,15 +31,16 @@ public class CartItem : Entity, IIdentifiable
 
     internal void IncreaseQuantity(int quantity) => Quantity += quantity;
 
-    internal void DecreaseQuantity(int quantity)
+    internal bool DecreaseQuantity(int quantity)
     {
-        if (quantity >= Quantity)
+        if (IsQuantityDeacrisingPossible(quantity))
         {
-            throw new DomainException($"Cannot decrease quantity of cartItem.");
+            Quantity -= quantity;
+            return true;
         }
 
-        Quantity -= quantity;
+        return false;
     }
 
-    internal bool IsQuantityDeacrisingPossible(int quantity) => Quantity > quantity;
+    private bool IsQuantityDeacrisingPossible(int quantity) => Quantity > quantity;
 }

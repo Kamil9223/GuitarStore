@@ -1,4 +1,5 @@
 ﻿using Customers.Domain.Carts;
+using Customers.Domain.Customers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,6 +13,8 @@ internal class CartDbConfiguration : IEntityTypeConfiguration<Cart>
 
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).ValueGeneratedOnAdd();
+
+        builder.HasIndex(x => x.CustomerId).IsUnique();
 
         builder.Property(x => x.CreatedAt).HasColumnName("CreatedAt");
         builder.Ignore(x => x.TotalPrice);
@@ -32,5 +35,7 @@ internal class CartDbConfiguration : IEntityTypeConfiguration<Cart>
                 builder.Property(x => x.Value).HasColumnName("Price").HasColumnType("decimal(10,2)");
             });
         });
+
+        builder.HasOne<Customer>().WithOne();
     }
 }

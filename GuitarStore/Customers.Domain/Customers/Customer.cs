@@ -11,18 +11,16 @@ public class Customer : Entity, IIdentifiable
     public string LastName { get; }
     public EmailAddress Email { get; }
     public CustomerAddress Address { get; }
-    public Cart Cart { get; }
 
     //For EF Core
     private Customer() { }
 
-    private Customer(string name, string lastName, EmailAddress email, CustomerAddress address, Cart cart)
+    private Customer(string name, string lastName, EmailAddress email, CustomerAddress address)
     {
         Name = name;
         LastName = lastName;
         Email = email;
         Address = address;
-        Cart = cart;
     }
 
     public static Customer Create(string name, string lastName, EmailAddress email, CustomerAddress address = null)
@@ -37,6 +35,6 @@ public class Customer : Entity, IIdentifiable
             throw new DomainException($"Provided property [LastName]: [{lastName}] is invalid.");
         }
 
-        return new Customer(name, lastName, email, address, Cart.Create());
+        return new Customer(name, lastName, email, address);
     }
 }

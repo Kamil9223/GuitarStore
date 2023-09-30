@@ -34,7 +34,5 @@ internal class CustomerDbConfiguration : IEntityTypeConfiguration<Customer>
         {
             builder.Property(x => x.Email).HasColumnName("Email").HasMaxLength(100);
         });
-
-        builder.HasOne(x => x.Cart);
     }
 }
