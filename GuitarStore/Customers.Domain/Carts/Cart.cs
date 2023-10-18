@@ -3,9 +3,8 @@ using Domain;
 
 namespace Customers.Domain.Carts;
 
-public class Cart : Entity, IIdentifiable
+public class Cart : Entity
 {
-    public int Id { get; }
     public int CustomerId { get; }
     public ICollection<CartItem> CartItems { get; }
     public DateTime CreatedAt { get; }

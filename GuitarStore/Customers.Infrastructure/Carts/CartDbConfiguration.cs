@@ -11,10 +11,7 @@ internal class CartDbConfiguration : IEntityTypeConfiguration<Cart>
     {
         builder.ToTable("Carts", "Customers");
 
-        builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).ValueGeneratedOnAdd();
-
-        builder.HasIndex(x => x.CustomerId).IsUnique();
+        builder.HasKey(x => x.CustomerId);
 
         builder.Property(x => x.CreatedAt).HasColumnName("CreatedAt");
         builder.Ignore(x => x.TotalPrice);
@@ -36,6 +33,7 @@ internal class CartDbConfiguration : IEntityTypeConfiguration<Cart>
             });
         });
 
-        builder.HasOne<Customer>().WithOne();
+        builder.HasOne<Customer>()
+            .WithOne();
     }
 }
