@@ -7,14 +7,12 @@ public class Cart : Entity
 {
     public int CustomerId { get; }
     public ICollection<CartItem> CartItems { get; }
-    public DateTime CreatedAt { get; }
 
     public decimal TotalPrice => CartItems.Sum(x => x.Price * x.Quantity);
 
     private Cart(int customerId)
     {
         CustomerId = customerId;
-        CreatedAt = DateTime.Now;
         CartItems = new List<CartItem>();
     }
 
