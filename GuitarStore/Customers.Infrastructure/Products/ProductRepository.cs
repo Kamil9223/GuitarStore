@@ -1,4 +1,5 @@
-﻿using Customers.Domain.Products;
+﻿using Application.Exceptions;
+using Customers.Domain.Products;
 using Customers.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -22,5 +23,14 @@ internal class ProductRepository : IProductRepository
     public async Task<bool> Exists(Expression<Func<Product, bool>> predicate)
     {
         return await _customersDbContext.Products.AnyAsync(predicate);
+    }
+
+    public async Task<Product> Get(int productId)
+    {
+        var product = await _customersDbContext.Products.SingleOrDefaultAsync(x => x.Id == productId);
+        if (product is null)
+            throw new NotFoundException($"Product with Id: {productId} not exists.");
+
+        return product;
     }
 }

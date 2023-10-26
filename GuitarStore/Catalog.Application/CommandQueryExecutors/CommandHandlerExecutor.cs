@@ -1,4 +1,4 @@
-﻿using Application;
+﻿using Application.CQRS;
 using Autofac;
 using Catalog.Application.Abstractions;
 

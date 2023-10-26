@@ -1,4 +1,4 @@
-﻿namespace Application;
+﻿namespace Application.CQRS;
 
 /// <summary>
 /// Marker interface represents command in application

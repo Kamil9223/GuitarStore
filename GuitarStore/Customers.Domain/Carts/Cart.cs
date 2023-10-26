@@ -23,17 +23,17 @@ public class Cart : Entity
 
     public void ClearCart() => CartItems.Clear();
 
-    public void AddProduct(Product product)
+    public void AddProduct(Product product, int quantity)
     {
         var existingProduct = CartItems.SingleOrDefault(x => x.Id == product.Id);
 
         if (existingProduct is not null)
         {
-            existingProduct.IncreaseQuantity(product.Quantity);
+            existingProduct.IncreaseQuantity(quantity);
             return;
         }
 
-        CartItems.Add(CartItem.Create(product.Id, product.Name, product.Price, product.Quantity));
+        CartItems.Add(CartItem.Create(product.Id, product.Name, product.Price, quantity));
     }
 
     public void RemoveProduct(int productId, int quantity)

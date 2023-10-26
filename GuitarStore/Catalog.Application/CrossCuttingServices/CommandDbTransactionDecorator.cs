@@ -1,4 +1,4 @@
-﻿using Application;
+﻿using Application.CQRS;
 using Catalog.Application.Abstractions;
 
 namespace Catalog.Application.CrossCuttingServices;
