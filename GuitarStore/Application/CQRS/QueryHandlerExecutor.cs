@@ -1,8 +1,6 @@
-﻿using Application.CQRS;
-using Autofac;
-using Catalog.Application.Abstractions;
+﻿using Autofac;
 
-namespace Catalog.Application.CommandQueryExecutors;
+namespace Application.CQRS;
 
 internal class QueryHandlerExecutor : IQueryHandlerExecutor
 {

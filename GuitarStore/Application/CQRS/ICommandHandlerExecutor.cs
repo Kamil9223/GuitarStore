@@ -1,6 +1,4 @@
-﻿using Application.CQRS;
-
-namespace Catalog.Application.Abstractions;
+﻿namespace Application.CQRS;
 
 public interface ICommandHandlerExecutor
 {

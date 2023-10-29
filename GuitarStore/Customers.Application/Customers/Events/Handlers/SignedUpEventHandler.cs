@@ -6,7 +6,7 @@ using Customers.Domain.Carts;
 using Customers.Domain.Customers;
 using Domain.ValueObjects;
 
-namespace Customers.Application.Customers.Handlers.EventHandlers;
+namespace Customers.Application.Customers.Events.Handlers;
 
 internal class SignedUpEventHandler : IIntegrationEventHandler<SignedUpEvent>
 {

@@ -1,4 +1,4 @@
-﻿using Catalog.Application.Abstractions;
+﻿using Application.CQRS;
 using Catalog.Application.Products.Dtos;
 using Catalog.Application.Products.Queries;
 using Catalog.Application.Products.Services;

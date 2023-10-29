@@ -1,4 +1,5 @@
-﻿using Application.Exceptions;
+﻿using Application.CQRS;
+using Application.Exceptions;
 using Application.RabbitMq.Abstractions;
 using Catalog.Application.Abstractions;
 using Catalog.Application.Products.Commands;

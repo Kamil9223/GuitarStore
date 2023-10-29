@@ -1,4 +1,5 @@
-﻿using Application.RabbitMq.Abstractions;
+﻿using Application.CQRS;
+using Application.RabbitMq.Abstractions;
 using Autofac;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -19,5 +20,15 @@ internal sealed class ApplicationModule : Module
             .AsClosedTypesOf(typeof(IIntegrationEventHandler<>))
             .AsImplementedInterfaces()
             .InstancePerLifetimeScope();
+
+        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            .AsClosedTypesOf(typeof(ICommandHandler<>))
+            .AsImplementedInterfaces()
+            .InstancePerLifetimeScope();
+
+        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+           .AsClosedTypesOf(typeof(IQueryHandler<,>))
+           .AsImplementedInterfaces()
+           .InstancePerLifetimeScope();
     }
 }
