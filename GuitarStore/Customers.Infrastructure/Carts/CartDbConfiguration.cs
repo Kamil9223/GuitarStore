@@ -13,7 +13,7 @@ internal class CartDbConfiguration : IEntityTypeConfiguration<CartDbModel>
 
         builder.HasKey(x => x.CustomerId);
 
-        builder.Property(x => x.Object).HasColumnType("jsonb").IsRequired();
+        builder.Property(x => x.Object).IsRequired();
 
         builder.Property(x => x.CartState).HasConversion(
                 x => x.ToString(),
