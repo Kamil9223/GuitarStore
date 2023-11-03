@@ -29,11 +29,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orders.Domain", "Orders.Dom
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GuitarStore.Catalog", "GuitarStore.Catalog", "{EE06D345-5F37-43FA-A112-133A64F077D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Domain", "Catalog.Domain\Catalog.Domain.csproj", "{B2F41158-54F2-486A-B048-2569F0F96BD1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catalog.Domain", "Catalog.Domain\Catalog.Domain.csproj", "{B2F41158-54F2-486A-B048-2569F0F96BD1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Application", "Catalog.Application\Catalog.Application.csproj", "{DE6FAD59-2F9A-468F-ACBD-8F8F082D5F0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catalog.Application", "Catalog.Application\Catalog.Application.csproj", "{DE6FAD59-2F9A-468F-ACBD-8F8F082D5F0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Infrastructure", "Catalog.Infrastructure\Catalog.Infrastructure.csproj", "{4BCF9237-6ABB-4729-8324-CBD826DB76DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catalog.Infrastructure", "Catalog.Infrastructure\Catalog.Infrastructure.csproj", "{4BCF9237-6ABB-4729-8324-CBD826DB76DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Customers.Tests", "Customers.Tests\Customers.Tests.csproj", "{75316C90-A430-47E6-852B-6D4CC1EF534B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,6 +87,10 @@ Global
 		{4BCF9237-6ABB-4729-8324-CBD826DB76DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BCF9237-6ABB-4729-8324-CBD826DB76DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4BCF9237-6ABB-4729-8324-CBD826DB76DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75316C90-A430-47E6-852B-6D4CC1EF534B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75316C90-A430-47E6-852B-6D4CC1EF534B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75316C90-A430-47E6-852B-6D4CC1EF534B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75316C90-A430-47E6-852B-6D4CC1EF534B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -100,6 +106,7 @@ Global
 		{B2F41158-54F2-486A-B048-2569F0F96BD1} = {EE06D345-5F37-43FA-A112-133A64F077D7}
 		{DE6FAD59-2F9A-468F-ACBD-8F8F082D5F0D} = {EE06D345-5F37-43FA-A112-133A64F077D7}
 		{4BCF9237-6ABB-4729-8324-CBD826DB76DF} = {EE06D345-5F37-43FA-A112-133A64F077D7}
+		{75316C90-A430-47E6-852B-6D4CC1EF534B} = {B86F2B16-1495-44FE-AFD7-A0818CECB69E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2BF2A121-5428-49C7-9A65-3F937B356484}

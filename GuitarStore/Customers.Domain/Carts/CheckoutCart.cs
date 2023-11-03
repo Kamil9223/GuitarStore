@@ -12,7 +12,7 @@ public class CheckoutCart : Entity
     internal CheckoutCart(Cart cart)
     {
         CustomerId = cart.CustomerId;
-        CartItems = cart.CartItems;
+        CartItems = cart.CartItems.ToList();
     }
 
     public void SetModelOfDelivery(Delivery delivery) => Delivery = delivery;

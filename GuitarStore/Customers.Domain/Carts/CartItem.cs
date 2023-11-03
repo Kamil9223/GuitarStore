@@ -1,12 +1,14 @@
 ﻿using Domain;
 using Domain.ValueObjects;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Customers.Tests")]
 namespace Customers.Domain.Carts;
 
 public class CartItem : Entity, IIdentifiable
 {
     public int Id { get; }
-    public int ProductId { get; set; }
+    public int ProductId { get; }
     public string Name { get; }
     public Money Price { get; }
     public int Quantity { get; private set; }
@@ -31,16 +33,15 @@ public class CartItem : Entity, IIdentifiable
 
     internal void IncreaseQuantity(int quantity) => Quantity += quantity;
 
-    internal bool DecreaseQuantity(int quantity)
+    internal void DecreaseQuantity(int quantity)
     {
-        if (IsQuantityDeacrisingPossible(quantity))
+        if (!IsDecreasingQuantityPossible(quantity))
         {
-            Quantity -= quantity;
-            return true;
+            throw new DomainException($"Cannot decrease quantity by [{quantity}] because CartItem quantity = [{Quantity}]");
         }
 
-        return false;
+        Quantity -= quantity;
     }
 
-    private bool IsQuantityDeacrisingPossible(int quantity) => Quantity > quantity;
+    internal bool IsDecreasingQuantityPossible(int quantity) => Quantity > quantity;
 }

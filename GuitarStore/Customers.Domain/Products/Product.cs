@@ -13,14 +13,15 @@ public class Product : Entity, IIdentifiable
     //For EF Core
     private Product() { }
 
-    private Product(string name, Money price, int quantity)
+    private Product(int id, string name, Money price, int quantity)
     {
+        Id = id;
         Name = name;
         Price = price;
         Quantity = quantity;
     }
 
-    public static Product Create(string name, Money price, int quantity)
+    public static Product Create(int id, string name, Money price, int quantity)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -32,7 +33,7 @@ public class Product : Entity, IIdentifiable
             throw new DomainException($"Product quantity must be greater than zero.");
         }
 
-        return new Product(name, price, quantity);
+        return new Product(id, name, price, quantity);
     }
 
     internal void IncreaseQuantity(int quantity) => Quantity += quantity;

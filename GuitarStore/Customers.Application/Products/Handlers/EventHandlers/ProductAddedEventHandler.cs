@@ -23,7 +23,7 @@ internal class ProductAddedEventHandler : IIntegrationEventHandler<ProductAddedE
         if (productExists)
             throw new GuitarStoreApplicationException($"Product with Name: [{@event.Name}] already exists.");
 
-        var product = Product.Create(@event.Name, @event.Price, @event.Quantity);
+        var product = Product.Create(default, @event.Name, @event.Price, @event.Quantity);
 
         _productRepository.Add(product);
 
