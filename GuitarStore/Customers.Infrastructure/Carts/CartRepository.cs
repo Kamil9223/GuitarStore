@@ -31,6 +31,14 @@ internal class CartRepository : ICartRepository
     {
         var dbCart = await _dbContext.Carts.SingleOrDefaultAsync(x => x.CustomerId == cart.CustomerId);
         dbCart.Object = JsonConvert.SerializeObject(cart);
+        dbCart.CartState = CartState.ContainingProducts;
+    }
+
+    public async Task Update(CheckoutCart cart)
+    {
+        var dbCart = await _dbContext.Carts.SingleOrDefaultAsync(x => x.CustomerId == cart.CustomerId);
+        dbCart.Object = JsonConvert.SerializeObject(cart);
+        dbCart.CartState = CartState.Checkouted;
     }
 
     public async Task<Cart> GetCart(int customerId)

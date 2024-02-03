@@ -17,5 +17,5 @@ public class CheckoutCart : Entity
 
     public void SetModelOfDelivery(Delivery delivery) => Delivery = delivery;
 
-    public void SetMethodOfPaymnt(Payment payment) => Payment = payment;
+    public void SetMethodOfPayment(Payment payment) => Payment = payment;
 }

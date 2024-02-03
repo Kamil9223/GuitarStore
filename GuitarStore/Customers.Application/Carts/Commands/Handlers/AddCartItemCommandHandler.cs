@@ -20,7 +20,7 @@ internal class AddCartItemCommandHandler : ICommandHandler<AddCartItemCommand>
     public async Task Handle(AddCartItemCommand command)
     {
         var cart = await _cartRepository.GetCart(command.CustomerId);
-        var product = await _productRepository.Get(command.Id);
+        var product = await _productRepository.Get(command.ProductId);
 
         cart.AddProduct(product, 1);
 
