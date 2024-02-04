@@ -1,6 +1,7 @@
 ﻿using Application.CQRS;
 using Application.RabbitMq.Abstractions;
 using Autofac;
+using Customers.Application.Carts.ModuleApi;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Module = Autofac.Module;
@@ -30,5 +31,7 @@ internal sealed class ApplicationModule : Module
            .AsClosedTypesOf(typeof(IQueryHandler<,>))
            .AsImplementedInterfaces()
            .InstancePerLifetimeScope();
+
+        builder.RegisterType<CartService>().AsImplementedInterfaces().InstancePerLifetimeScope();
     }
 }

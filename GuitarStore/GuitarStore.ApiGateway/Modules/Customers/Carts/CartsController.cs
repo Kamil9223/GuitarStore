@@ -24,4 +24,12 @@ public class CartsController : ControllerBase
 
         return Ok();
     }
+
+    [HttpPost("checkout")]
+    public async Task<IActionResult> Checkout(CheckoutCartCommand request)
+    {
+        await _commandHandlerExecutor.Execute(request);
+
+        return Ok();
+    }
 }
