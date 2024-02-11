@@ -1,5 +1,4 @@
-﻿using Customers.Domain.Carts;
-using Domain;
+﻿using Domain;
 using Domain.ValueObjects;
 
 namespace Customers.Domain.Customers;

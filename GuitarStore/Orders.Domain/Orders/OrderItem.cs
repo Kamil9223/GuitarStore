@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Orders.Domain.OrderItems;
+namespace Orders.Domain.Orders;
 
 public class OrderItem : Entity, IIdentifiable
 {

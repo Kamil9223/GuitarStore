@@ -5,9 +5,9 @@ namespace Customers.Domain.Carts;
 
 public class Cart : Entity
 {
-    public int CustomerId { get; }
-
     private List<CartItem> _cartItems;
+
+    public int CustomerId { get; }
     public IReadOnlyCollection<CartItem> CartItems => _cartItems;
 
     public decimal TotalPrice => CartItems.Sum(x => x.Price * x.Quantity);

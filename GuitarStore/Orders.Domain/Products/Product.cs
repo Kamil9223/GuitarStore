@@ -1,38 +1,45 @@
 ﻿using Domain;
+using Domain.ValueObjects;
 
 namespace Orders.Domain.Products;
 
 public class Product : Entity, IIdentifiable
 {
     public int Id { get; }
-    public ProductType ProductType { get; }
     public string Name { get; }
-    public decimal Price { get; }
+    public Money Price { get; private set; }
     public uint Quantity { get; private set; }
 
-    private Product(int id, ProductType productType, string name, decimal price, uint quantity)
+    private Product(int id, string name, decimal price, uint quantity)
     {
         Id = id;
-        ProductType = productType;
         Name = name;
         Price = price;
         Quantity = quantity;
     }
 
-    internal static Product Create(int id, ProductType productType, string name, decimal price, uint quantity)
+    public static Product Create(int id, string name, decimal price, uint quantity)
     {
-        //Check rules
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new DomainException($"Provided product name: [{name}] is not valid.");
+        }
 
-        return new Product(id, productType, name, price, quantity);
+        if (quantity <= 0)
+        {
+            throw new DomainException($"Product quantity must be greater than zero.");
+        }
+
+        return new Product(id, name, price, quantity);
     }
 
-    internal void IncreaseQuantity(uint quantity) => Quantity += quantity;
+    public void IncreaseQuantity(uint quantity) => Quantity += quantity;
 
     internal void DecreaseQuantity(uint quantity)
     {
-        if (quantity >= Quantity)
+        if (quantity > Quantity)
         {
-            throw new Exception(); //TODO: domain exception with message and code maybe
+            throw new DomainException($"Cannot decrease quantity of product.");
         }
 
         Quantity -= quantity;

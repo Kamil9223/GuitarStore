@@ -36,13 +36,13 @@ public class Product : Entity, IIdentifiable
         return new Product(id, name, price, quantity);
     }
 
-    internal void IncreaseQuantity(int quantity) => Quantity += quantity;
+    public void IncreaseQuantity(int quantity) => Quantity += quantity;
 
     internal void DecreaseQuantity(int quantity)
     {
-        if (quantity >= Quantity)
+        if (quantity > Quantity)
         {
-            throw new DomainException($"Cannot descease quantity of product.");
+            throw new DomainException($"Cannot decrease quantity of product.");
         }
 
         Quantity -= quantity;
