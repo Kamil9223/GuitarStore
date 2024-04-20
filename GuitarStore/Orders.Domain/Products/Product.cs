@@ -10,6 +10,9 @@ public class Product : Entity, IIdentifiable
     public Money Price { get; private set; }
     public uint Quantity { get; private set; }
 
+    //For EF Core
+    private Product() { }
+
     private Product(int id, string name, decimal price, uint quantity)
     {
         Id = id;

@@ -1,9 +1,4 @@
 ﻿using Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Orders.Domain.Orders;
 
@@ -12,7 +7,7 @@ public class OrderItem : Entity, IIdentifiable
     public int Id { get; }
     public string Name { get; }
     public decimal Price { get; }
-    public uint Quantity { get; private set; }
+    public uint Quantity { get; }
     public int OrderId { get; }
 
     private OrderItem(int id, string name, decimal price, uint quantity)
@@ -25,8 +20,6 @@ public class OrderItem : Entity, IIdentifiable
 
     internal static OrderItem Create(int id, string name, decimal price, uint quantity)
     {
-        //Check rules
-
         return new OrderItem(id, name, price, quantity);
     }
 }
