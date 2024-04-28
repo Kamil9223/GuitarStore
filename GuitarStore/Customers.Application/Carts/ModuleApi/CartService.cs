@@ -1,10 +1,24 @@
-﻿using Customers.Shared;
+﻿using Customers.Domain.Carts;
+using Customers.Domain.Customers;
+using Customers.Shared;
 
 namespace Customers.Application.Carts.ModuleApi;
 internal class CartService : ICartService
 {
+    private readonly ICartRepository _cartRepository;
+    private readonly ICustomerRepository _customerRepository;
+
+    public CartService(ICartRepository cartRepository, ICustomerRepository customerRepository)
+    {
+        _cartRepository = cartRepository;
+        _customerRepository = customerRepository;
+    }
+
     public async Task<CheckoutCartDto> GetCheckoutCart(int customerId)
     {
-        throw new NotImplementedException();
+        var customer = await _customerRepository.Get(customerId);
+        var checkoutCart = await _cartRepository.GetCheckoutCart(customerId);
+
+        return CheckoutCartDtoMapper.ToCheckoutCartDto(customer, checkoutCart);
     }
 }

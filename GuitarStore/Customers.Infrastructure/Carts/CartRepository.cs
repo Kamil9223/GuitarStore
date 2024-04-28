@@ -23,8 +23,7 @@ internal class CartRepository : ICartRepository
             Object = JsonConvert.SerializeObject(cart)
         };
 
-        _dbContext.Carts.Add(cartDbModel);
-        await Task.CompletedTask;
+        await _dbContext.Carts.AddAsync(cartDbModel);
     }
 
     public async Task Update(Cart cart)
@@ -53,5 +52,19 @@ internal class CartRepository : ICartRepository
 
         var cart = JsonConvert.DeserializeObject<Cart>(dbCart.Object);
         return cart;
+    }
+
+    public async Task<CheckoutCart> GetCheckoutCart(int customerId)
+    {
+        var dbCheckout = await _dbContext.Carts
+            .Where(x => x.CustomerId == customerId)
+            .Where(x => x.CartState == CartState.Checkouted)
+            .SingleOrDefaultAsync();
+
+        if (dbCheckout is null)
+            throw new NotFoundException($"Checkout cart with customerId: {customerId} not exists.");
+
+        var checkout = JsonConvert.DeserializeObject<CheckoutCart>(dbCheckout.Object);
+        return checkout;
     }
 }

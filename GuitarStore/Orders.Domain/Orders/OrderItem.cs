@@ -7,9 +7,9 @@ public class OrderItem : Entity
     public Guid Id { get; }
     public string Name { get; }
     public decimal Price { get; }
-    public uint Quantity { get; }
+    public int Quantity { get; }
 
-    private OrderItem(string name, decimal price, uint quantity)
+    private OrderItem(string name, decimal price, int quantity)
     {
         Id = Guid.NewGuid();
         Name = name;
@@ -17,7 +17,7 @@ public class OrderItem : Entity
         Quantity = quantity;
     }
 
-    public static OrderItem Create(string name, decimal price, uint quantity)
+    public static OrderItem Create(string name, decimal price, int quantity)
     {
         return new OrderItem(name, price, quantity);
     }

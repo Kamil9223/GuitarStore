@@ -6,4 +6,5 @@ public interface ICustomerRepository
 {
     void Add(Customer customer);
     Task<bool> Exists(Expression<Func<Customer, bool>> predicate);
+    Task<Customer> Get(int id);
 }

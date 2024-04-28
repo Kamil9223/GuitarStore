@@ -1,4 +1,5 @@
-﻿using Customers.Domain.Customers;
+﻿using Application.Exceptions;
+using Customers.Domain.Customers;
 using Customers.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -23,4 +24,8 @@ internal class CustomerRepository : ICustomerRepository
     {
         return await _customersDbContext.Customers.AnyAsync(predicate);
     }
+
+    public async Task<Customer> Get(int id) =>
+        await _customersDbContext.Customers.SingleOrDefaultAsync(x => x.Id == id)
+        ?? throw new NotFoundException($"Customer with Id: {id} not exists.");
 }

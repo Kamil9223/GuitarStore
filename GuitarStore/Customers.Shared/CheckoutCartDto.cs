@@ -24,6 +24,6 @@ public class CheckoutCartDto
     {
         public string Name { get; init; }
         public decimal Price { get; init; }
-        public uint Quantity { get; init; }
+        public int Quantity { get; init; }
     }
 }

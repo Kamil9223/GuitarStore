@@ -5,4 +5,5 @@ public interface ICartRepository
     Task Update(Cart cart);
     Task Update(CheckoutCart cart);
     Task<Cart> GetCart(int customerId);
+    Task<CheckoutCart> GetCheckoutCart(int customerId);
 }

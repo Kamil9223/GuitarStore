@@ -1,5 +1,6 @@
 ﻿using Application.CQRS;
 using Customers.Shared;
+using Orders.Application.Abstractions;
 using Orders.Domain.Orders;
 
 namespace Orders.Application.Orders.Commands;
@@ -9,26 +10,32 @@ public sealed record PlaceOrderCommand(int CustomerId) : ICommand;
 internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderCommand>
 {
     private readonly ICartService _cartService;
+    private readonly IOrderRepository _orderRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public PlaceOrderCommandHandler(ICartService cartService)
+    public PlaceOrderCommandHandler(ICartService cartService, IOrderRepository orderRepository, IUnitOfWork unitOfWork)
     {
         _cartService = cartService;
+        _orderRepository = orderRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task Handle(PlaceOrderCommand command)
     {
         var checkoutCart = await _cartService.GetCheckoutCart(command.CustomerId);
 
-        Order.Create(
+        var newOrder = Order.Create(
             orderItems: MapToOrderItems(checkoutCart.Items),
             customerId: checkoutCart.CustomerId,
             deliveryAddress: MapToDeliveryAddress(checkoutCart.DeliveryAddress),
             payment: new Payment(checkoutCart.PaymentId, checkoutCart.PaymentType),
             delivery: new Delivery(checkoutCart.DelivererId, checkoutCart.Deliverer));
 
-        //Add to DB and Save changes
+        await _orderRepository.Add(newOrder);
 
         //emit channel event for starting order completion
+
+        await _unitOfWork.SaveChanges();
     }
 
     private DeliveryAddress MapToDeliveryAddress(CheckoutCartDto.Address checkoutCartAddress)

@@ -10,6 +10,7 @@ internal class OrderDbConfiguration : IEntityTypeConfiguration<OrderDbModel>
         builder.ToTable("Orders", "Orders");
 
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
         builder.Property(x => x.Object).IsRequired();
 
