@@ -1,4 +1,5 @@
 ﻿namespace Customers.Shared;
+
 public class CheckoutCartDto
 {
     public int CustomerId { get; init; }

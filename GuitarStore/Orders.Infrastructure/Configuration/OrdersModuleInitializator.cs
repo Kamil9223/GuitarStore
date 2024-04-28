@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Microsoft.Extensions.Configuration;
+using Orders.Application;
 
 namespace Orders.Infrastructure.Configuration;
 public sealed class OrdersModuleInitializator : Module
@@ -14,6 +15,6 @@ public sealed class OrdersModuleInitializator : Module
     protected override void Load(ContainerBuilder builder)
     {
         builder.RegisterModule(new InfrastructureModule(_configuration));
-        //builder.RegisterModule<ApplicationModule>();
+        builder.RegisterModule<ApplicationModule>();
     }
 }
