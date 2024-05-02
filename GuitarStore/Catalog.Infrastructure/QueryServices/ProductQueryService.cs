@@ -18,14 +18,12 @@ internal class ProductQueryService : IProductQueryService
     {
         return await _catalogDbContext.Products
             .Where(p => p.Id == id)
-            .Select(p => new ProductDetailsDto
-            {
-                Name = p.Name,
-                Description = p.Description,
-                Price = p.Price,
-                Brand = p.Brand.Name,
-                Category = p.Category.CategoryName
-            })
+            .Select(p => new ProductDetailsDto(
+                p.Brand.Name,
+                p.Name,
+                p.Price,
+                p.Description,
+                p.Category.CategoryName))
             .AsNoTracking()
             .SingleOrDefaultAsync();
     }
@@ -33,12 +31,7 @@ internal class ProductQueryService : IProductQueryService
     public IEnumerable<ProductDto?> Get()
     {
         return _catalogDbContext.Products
-            .Select(p => new ProductDto
-            {
-                Name = p.Name,
-                Brand = p.Brand.Name,
-                Price = p.Price,
-            })
+            .Select(p => new ProductDto(p.Brand.Name, p.Name, p.Price))
             .AsNoTracking();
     }
 }

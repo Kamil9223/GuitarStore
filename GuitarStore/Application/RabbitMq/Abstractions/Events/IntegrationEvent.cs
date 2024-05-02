@@ -1,11 +1,9 @@
-﻿using Domain.ValueObjects;
-
-namespace Application.RabbitMq.Abstractions.Events;
+﻿namespace Application.RabbitMq.Abstractions.Events;
 
 /// <summary>
 /// Represents application event sending between modules in asynchronous way (e.g RabbitMq)
 /// </summary>
-public class IntegrationEvent : ValueObject
+public record IntegrationEvent
 {
     /// <summary>
     /// Informs when event was created

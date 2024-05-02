@@ -1,7 +1,6 @@
 ﻿using Application.RabbitMq;
 using Application.RabbitMq.Abstractions;
 using Customers.Application.Products.Events.Incoming;
-using Customers.Application.Products.Handlers.EventHandlers;
 using Infrastructure.RabbitMq;
 
 namespace Customers.Application;

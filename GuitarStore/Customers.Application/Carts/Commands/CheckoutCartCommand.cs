@@ -1,22 +1,41 @@
 ﻿using Application.CQRS;
+using Customers.Application.Abstractions;
+using Customers.Domain.Carts;
+using static Customers.Application.Carts.Commands.CheckoutCartCommand;
 
 namespace Customers.Application.Carts.Commands;
-public class CheckoutCartCommand : ICommand
+public sealed record CheckoutCartCommand(int CustomerId, PaymentCommandPart Payment, DeliveryCommandPart Delivery) : ICommand
 {
-    public int CustomerId { get; init; }
-    public PaymentCommandPart Payment { get; init; }
-    public DeliveryCommandPart Delivery { get; init; }
+    public sealed record PaymentCommandPart(int PaymentId, string PaymentType);
+    public sealed record DeliveryCommandPart(int DelivererId, string Deliverer);
+}
 
+internal sealed class CheckoutCartCommandHandler : ICommandHandler<CheckoutCartCommand>
+{
+    private readonly ICartRepository _cartRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public class PaymentCommandPart
+    public CheckoutCartCommandHandler(ICartRepository cartRepository, IUnitOfWork unitOfWork)
     {
-        public int PaymentId { get; init; }
-        public string PaymentType { get; init; }
+        _cartRepository = cartRepository;
+        _unitOfWork = unitOfWork;
     }
 
-    public class DeliveryCommandPart
+    public async Task Handle(CheckoutCartCommand command)
     {
-        public int DelivererId { get; init; }
-        public string Deliverer { get; init; }
+        var cart = await _cartRepository.GetCart(command.CustomerId);
+
+        var checkout = cart.Checkout();
+
+        checkout.SetMethodOfPayment(new Payment(
+            paymentId: command.Payment.PaymentId,
+            paymentType: command.Payment.PaymentType));
+
+        checkout.SetModelOfDelivery(new Delivery(
+            delivererId: command.Delivery.DelivererId,
+            deliverer: command.Delivery.Deliverer));
+
+        await _cartRepository.Update(checkout);
+        await _unitOfWork.SaveChanges();
     }
 }

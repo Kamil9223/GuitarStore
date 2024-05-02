@@ -1,14 +1,72 @@
 ﻿using Application.CQRS;
+using Application.Exceptions;
+using Application.RabbitMq.Abstractions;
+using Catalog.Application.Abstractions;
+using Catalog.Application.Products.Events.Outgoing;
+using Catalog.Domain;
+using Catalog.Domain.IRepositories;
 
 namespace Catalog.Application.Products.Commands;
 
-public class AddProductCommand : ICommand
+public sealed record AddProductCommand(
+    string Name,
+    string Description,
+    int CategoryId,
+    int BrandId,
+    ICollection<int> VariationOptionIds,
+    decimal Price,
+    int Quantity) : ICommand;
+
+internal sealed class AddProductCommandHandler : ICommandHandler<AddProductCommand>
 {
-    public string Name { get; init; } = null!;
-    public string Description { get; init; } = null!;
-    public int CategoryId { get; init; }
-    public int BrandId { get; init; }
-    public ICollection<int> VariationOptionIds { get; init; } = null!;
-    public decimal Price { get; init; }
-    public int Quantity { get; init; }
+    private readonly IProductRepository _productRepository;
+    private readonly IVariationOptionRepository _variationOptionRepository;
+    private readonly IBrandRepository _brandRepository;
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IIntegrationEventPublisher _integrationEventPublisher;
+
+    public AddProductCommandHandler(
+        IProductRepository productRepository,
+        IVariationOptionRepository variationOptionRepository,
+        IBrandRepository brandRepository,
+        ICategoryRepository categoryRepository,
+        IUnitOfWork unitOfWork,
+        IIntegrationEventPublisher integrationEventPublisher)
+    {
+        _productRepository = productRepository;
+        _variationOptionRepository = variationOptionRepository;
+        _brandRepository = brandRepository;
+        _categoryRepository = categoryRepository;
+        _unitOfWork = unitOfWork;
+        _integrationEventPublisher = integrationEventPublisher;
+    }
+
+    public async Task Handle(AddProductCommand command)
+    {
+        var productAlreadyExists = await _productRepository.Exists(x => x.Name == command.Name);
+        if (productAlreadyExists)
+            throw new GuitarStoreApplicationException($"Product with Name: [{command.Name}] already exists.");
+
+        var variationOptions = await _variationOptionRepository.Get(command.VariationOptionIds);
+
+        if (variationOptions.Count != command.VariationOptionIds.Count)
+            throw new GuitarStoreApplicationException("Not all of provided variation options exist.");
+
+        var brand = await _brandRepository.Get(command.BrandId);
+        if (brand is null)
+            throw new GuitarStoreApplicationException($"Brand with Id = [{command.BrandId}] not exists.");
+
+        var category = await _categoryRepository.GetCategoryThatHasNotChildren(command.CategoryId);
+        if (category is null)
+            throw new GuitarStoreApplicationException($"Category that has not children with Id = [{command.CategoryId}] not exists.");
+
+        var product = new Product(command.Name, command.Description, command.Price, command.Quantity, brand, category, variationOptions);
+
+        _productRepository.Add(product);
+
+        await _unitOfWork.SaveChanges();
+
+        await _integrationEventPublisher.Publish(new ProductAddedEvent(command.Name, command.Price, command.Quantity));
+    }
 }
