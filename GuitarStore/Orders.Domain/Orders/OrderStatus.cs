@@ -4,9 +4,11 @@
 
     Accepted = 2,
 
-    InProgress = 3,
+    Waiting = 3,
 
-    Realized = 4,
+    InProgress = 4,
 
-    Canceled = 5,
+    Realized = 5,
+
+    Canceled = 6,
 }

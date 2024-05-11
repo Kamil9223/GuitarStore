@@ -2,4 +2,4 @@
 
 namespace Catalog.Application.Products.Events.Outgoing;
 
-internal sealed record ProductAddedEvent(string Name, decimal Price, int Quantity) : IntegrationEvent, IIntegrationPublishEvent;
+internal sealed record ProductAddedEvent(int Id, string Name, decimal Price, int Quantity) : IntegrationEvent, IIntegrationPublishEvent;

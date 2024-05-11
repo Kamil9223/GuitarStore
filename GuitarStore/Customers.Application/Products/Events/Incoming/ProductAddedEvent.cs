@@ -5,7 +5,7 @@ using Customers.Domain.Products;
 
 namespace Customers.Application.Products.Events.Incoming;
 
-internal sealed record ProductAddedEvent(string Name, decimal Price, int Quantity) : IntegrationEvent, IIntegrationConsumeEvent;
+internal sealed record ProductAddedEvent(int Id, string Name, decimal Price, int Quantity) : IntegrationEvent, IIntegrationConsumeEvent;
 
 internal sealed class ProductAddedEventHandler : IIntegrationEventHandler<ProductAddedEvent>
 {
@@ -20,7 +20,7 @@ internal sealed class ProductAddedEventHandler : IIntegrationEventHandler<Produc
 
     public async Task Handle(ProductAddedEvent @event)
     {
-        var existedProduct = await _productRepository.Get(@event.Name);
+        var existedProduct = await _productRepository.Get(@event.Id);
         if (existedProduct is not null)
         {
             existedProduct.IncreaseQuantity(@event.Quantity);
@@ -28,7 +28,7 @@ internal sealed class ProductAddedEventHandler : IIntegrationEventHandler<Produc
             return;
         }
 
-        var product = Product.Create(default, @event.Name, @event.Price, @event.Quantity);
+        var product = Product.Create(@event.Id, @event.Name, @event.Price, @event.Quantity);
         _productRepository.Add(product);
         await _unitOfWork.SaveChanges();
     }

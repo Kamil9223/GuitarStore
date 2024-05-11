@@ -67,6 +67,6 @@ internal sealed class AddProductCommandHandler : ICommandHandler<AddProductComma
 
         await _unitOfWork.SaveChanges();
 
-        await _integrationEventPublisher.Publish(new ProductAddedEvent(command.Name, command.Price, command.Quantity));
+        await _integrationEventPublisher.Publish(new ProductAddedEvent(product.Id, command.Name, command.Price, command.Quantity));
     }
 }

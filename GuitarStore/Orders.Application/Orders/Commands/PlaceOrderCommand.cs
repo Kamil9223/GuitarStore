@@ -1,6 +1,8 @@
-﻿using Application.CQRS;
+﻿using Application.Channels;
+using Application.CQRS;
 using Customers.Shared;
 using Orders.Application.Abstractions;
+using Orders.Application.Orders.BackgroundJobs;
 using Orders.Domain.Orders;
 
 namespace Orders.Application.Orders.Commands;
@@ -12,12 +14,14 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderComma
     private readonly ICartService _cartService;
     private readonly IOrderRepository _orderRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IChannelPublisher<OrderCompletionChannelEvent> _orderCompletionChannelPublisher;
 
-    public PlaceOrderCommandHandler(ICartService cartService, IOrderRepository orderRepository, IUnitOfWork unitOfWork)
+    public PlaceOrderCommandHandler(ICartService cartService, IOrderRepository orderRepository, IUnitOfWork unitOfWork, IChannelPublisher<OrderCompletionChannelEvent> orderCompletionChannelPublisher)
     {
         _cartService = cartService;
         _orderRepository = orderRepository;
         _unitOfWork = unitOfWork;
+        _orderCompletionChannelPublisher = orderCompletionChannelPublisher;
     }
 
     public async Task Handle(PlaceOrderCommand command)
@@ -33,7 +37,7 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderComma
 
         await _orderRepository.Add(newOrder);
 
-        //emit channel event for starting order completion
+        await _orderCompletionChannelPublisher.Publish(new OrderCompletionChannelEvent(newOrder), CancellationToken.None);
 
         await _unitOfWork.SaveChanges();
     }

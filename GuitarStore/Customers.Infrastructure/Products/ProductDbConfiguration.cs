@@ -11,7 +11,7 @@ internal class ProductDbConfiguration : IEntityTypeConfiguration<Product>
         builder.ToTable("Products", "Customers");
 
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).ValueGeneratedOnAdd();
+        builder.Property(x => x.Id).ValueGeneratedNever();
 
         builder.Property(x => x.Name).HasMaxLength(200);
         builder.HasIndex(x => x.Name).IsUnique();
