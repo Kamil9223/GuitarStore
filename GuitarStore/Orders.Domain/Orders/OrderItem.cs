@@ -8,17 +8,19 @@ public class OrderItem : Entity
     public string Name { get; }
     public decimal Price { get; }
     public int Quantity { get; }
+    public int ProductId { get; }
 
-    private OrderItem(string name, decimal price, int quantity)
+    private OrderItem(string name, decimal price, int quantity, int productId)
     {
         Id = Guid.NewGuid();
         Name = name;
         Price = price;
         Quantity = quantity;
+        ProductId = productId;
     }
 
-    public static OrderItem Create(string name, decimal price, int quantity)
+    public static OrderItem Create(string name, decimal price, int quantity, int productId)
     {
-        return new OrderItem(name, price, quantity);
+        return new OrderItem(name, price, quantity, productId);
     }
 }

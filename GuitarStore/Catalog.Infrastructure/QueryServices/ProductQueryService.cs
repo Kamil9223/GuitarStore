@@ -34,4 +34,12 @@ internal class ProductQueryService : IProductQueryService
             .Select(p => new ProductDto(p.Brand.Name, p.Name, p.Price))
             .AsNoTracking();
     }
+
+    public async Task<IReadOnlyCollection<ProductBasedInfoDto>> GetAll()
+    {
+        return await _catalogDbContext.Products
+            .Select(p => new ProductBasedInfoDto(p.Id, p.Name, p.Price, p.Quantity))
+            .AsNoTracking()
+            .ToListAsync();
+    }
 }

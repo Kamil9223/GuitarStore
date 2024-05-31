@@ -2,6 +2,7 @@
 using Autofac;
 using Catalog.Application.Abstractions;
 using Catalog.Application.CrossCuttingServices;
+using Catalog.Application.Products.ModuleApi;
 using FluentValidation;
 using Mapster;
 using System.Reflection;
@@ -33,5 +34,7 @@ internal sealed class ApplicationModule : Module
             condition => condition.ImplementationType.Assembly.FullName == Assembly.GetExecutingAssembly().FullName);
         builder.RegisterGenericDecorator(typeof(CommandValidationDecorator<>), typeof(ICommandHandler<>),
             condition => condition.ImplementationType.Assembly.FullName == Assembly.GetExecutingAssembly().FullName);
+
+        builder.RegisterType<ProductService>().AsImplementedInterfaces().InstancePerLifetimeScope();
     }
 }

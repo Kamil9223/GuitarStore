@@ -6,4 +6,5 @@ public interface IProductQueryService
 {
     Task<ProductDetailsDto?> Get(int id);
     IEnumerable<ProductDto?> Get();
+    Task<IReadOnlyCollection<ProductBasedInfoDto>> GetAll();
 }

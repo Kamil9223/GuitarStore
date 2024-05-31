@@ -12,8 +12,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
+    <ProjectReference Include="..\Catalog.Shared\Catalog.Shared.csproj" />
     <ProjectReference Include="..\Customers.Shared\Customers.Shared.csproj" />
     <ProjectReference Include="..\Orders.Domain\Orders.Domain.csproj" />
+    <ProjectReference Include="..\Orders.Shared\Orders.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Orders\ModuleApi\" />
   </ItemGroup>
 
 </Project>

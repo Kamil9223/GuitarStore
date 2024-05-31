@@ -56,6 +56,7 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderComma
         => checkoutCartItems.Select(x => OrderItem.Create(
                 name: x.Name,
                 price: x.Price,
-                quantity: x.Quantity
+                quantity: x.Quantity,
+                productId: x.ProductId
             )).ToList();
 }

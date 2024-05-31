@@ -26,7 +26,8 @@ internal static class CheckoutCartDtoMapper
             {
                 Name = item.Name,
                 Price = item.Price,
-                Quantity = item.Quantity
+                Quantity = item.Quantity,
+                ProductId = item.ProductId,
             }).ToList()
         };
 }
