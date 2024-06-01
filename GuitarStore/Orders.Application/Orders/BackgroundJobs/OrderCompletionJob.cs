@@ -2,6 +2,7 @@
 using Autofac;
 using Catalog.Shared;
 using Microsoft.Extensions.Hosting;
+using Orders.Application.Instructions;
 using Orders.Domain.Orders;
 using Orders.Domain.Products;
 
@@ -36,6 +37,7 @@ internal sealed class OrderCompletionJob : BackgroundService
     {
         using var scope = _scope.BeginLifetimeScope();
         var productRepository = scope.Resolve<IProductRepository>();
+        var instructionsService = scope.Resolve<IInstructionService>();
         var newOrder = @event.Order;
 
         //do zastanowienia: być może trzeba całą obsługę eventu dać w jakimś Task.Runie, żeby nie blokować pracy joba w przypadku wieeelu zamwówień
@@ -60,6 +62,7 @@ internal sealed class OrderCompletionJob : BackgroundService
             //Job będzie co 15minut sprawdzał tą tabelkę i wykonywał (po statusie patrząc) jeśli jeszcze nie wykonana
             //a
             //tutaj natomiast trzeba jedynie dodać wpis do tabelki ? To musi być idempotetne zachowanie, jeśli już taki jest to ignoruj, nie dodawaj
+            await instructionsService.RegisterInstruction(InstructionType.Products_Synchronization);
         }
 
         //jaka forma płatności
