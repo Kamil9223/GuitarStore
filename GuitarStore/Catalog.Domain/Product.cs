@@ -17,7 +17,14 @@ public class Product : Entity, IIdentifiable
 
     private Product() { }
 
-    public Product(string name, string description, decimal price, int quantity, Brand brand, Category category, ICollection<VariationOption> variationOptions)
+    public Product(
+        string name,
+        string description,
+        decimal price,
+        int quantity,
+        Brand brand,
+        Category category,
+        ICollection<VariationOption> variationOptions)
     {
         Name = name;
         Description = description;
@@ -34,5 +41,13 @@ public class Product : Entity, IIdentifiable
             throw new DomainException("Product description cannot be null or white space.");
 
         Description = description;
+    }
+
+    public void DecreaseQuantity(int quantity)
+    {
+        if (Quantity < quantity)
+            throw new DomainException($"Cannot decrease quantity: {quantity} of productId: {Id}");
+
+        Quantity -= quantity;
     }
 }

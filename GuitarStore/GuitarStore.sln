@@ -43,9 +43,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orders.Infrastructure", "Or
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Customers.Shared", "Customers.Shared\Customers.Shared.csproj", "{39E8D6AE-7A4A-40DB-B8A7-FD82BE3EF99E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orders.Shared", "Orders.Shared\Orders.Shared.csproj", "{DF82C8DF-44AF-471C-BEF7-E78F5E87A375}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orders.Shared", "Orders.Shared\Orders.Shared.csproj", "{DF82C8DF-44AF-471C-BEF7-E78F5E87A375}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Shared", "Catalog.Shared\Catalog.Shared.csproj", "{9EFCCEB8-B82C-4FBB-A487-AA2DBCC565C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Catalog.Shared", "Catalog.Shared\Catalog.Shared.csproj", "{9EFCCEB8-B82C-4FBB-A487-AA2DBCC565C9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GuitarStore.Warehouse", "GuitarStore.Warehouse", "{33FAF4AE-DBC7-43D9-ADA1-FC85542D9FCB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Warehouse.Core", "Warehouse.Core\Warehouse.Core.csproj", "{2D6A6827-F47B-4C47-9FA9-AD5A310B5BA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.Shared", "Warehouse.Shared\Warehouse.Shared.csproj", "{811A4E30-368C-4DCE-83A4-8842EDF7DC25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -121,6 +127,14 @@ Global
 		{9EFCCEB8-B82C-4FBB-A487-AA2DBCC565C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9EFCCEB8-B82C-4FBB-A487-AA2DBCC565C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9EFCCEB8-B82C-4FBB-A487-AA2DBCC565C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D6A6827-F47B-4C47-9FA9-AD5A310B5BA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D6A6827-F47B-4C47-9FA9-AD5A310B5BA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D6A6827-F47B-4C47-9FA9-AD5A310B5BA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D6A6827-F47B-4C47-9FA9-AD5A310B5BA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{811A4E30-368C-4DCE-83A4-8842EDF7DC25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{811A4E30-368C-4DCE-83A4-8842EDF7DC25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{811A4E30-368C-4DCE-83A4-8842EDF7DC25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{811A4E30-368C-4DCE-83A4-8842EDF7DC25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,6 +156,8 @@ Global
 		{39E8D6AE-7A4A-40DB-B8A7-FD82BE3EF99E} = {B86F2B16-1495-44FE-AFD7-A0818CECB69E}
 		{DF82C8DF-44AF-471C-BEF7-E78F5E87A375} = {613B7BFF-5BEB-4D45-95E4-FF4163363B00}
 		{9EFCCEB8-B82C-4FBB-A487-AA2DBCC565C9} = {EE06D345-5F37-43FA-A112-133A64F077D7}
+		{2D6A6827-F47B-4C47-9FA9-AD5A310B5BA9} = {33FAF4AE-DBC7-43D9-ADA1-FC85542D9FCB}
+		{811A4E30-368C-4DCE-83A4-8842EDF7DC25} = {33FAF4AE-DBC7-43D9-ADA1-FC85542D9FCB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2BF2A121-5428-49C7-9A65-3F937B356484}

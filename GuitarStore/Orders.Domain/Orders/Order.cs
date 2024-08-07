@@ -2,11 +2,11 @@
 
 namespace Orders.Domain.Orders;
 
-public class Order : Entity, IIdentifiable
+public class Order : Entity
 {
     private List<OrderItem> _orderItems;
 
-    public int Id { get; }
+    public Guid Id { get; }
     public int CustomerId { get; }
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems;
     public DateTime CreatedAt { get; }
@@ -20,6 +20,7 @@ public class Order : Entity, IIdentifiable
 
     private Order(ICollection<OrderItem> orderItems, int customerId, DeliveryAddress deliveryAddress, Payment payment, Delivery delivery)
     {
+        Id = Guid.NewGuid();
         CreatedAt = DateTime.Now;
         Status = OrderStatus.New;
         _orderItems = orderItems.ToList();

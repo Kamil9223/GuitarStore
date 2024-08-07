@@ -4,6 +4,7 @@ using Customers.Shared;
 using Orders.Application.Abstractions;
 using Orders.Application.Orders.BackgroundJobs;
 using Orders.Domain.Orders;
+using Warehouse.Shared;
 
 namespace Orders.Application.Orders.Commands;
 
@@ -15,13 +16,20 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderComma
     private readonly IOrderRepository _orderRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IChannelPublisher<OrderCompletionChannelEvent> _orderCompletionChannelPublisher;
+    private readonly IProductReservationService _productReservationService;
 
-    public PlaceOrderCommandHandler(ICartService cartService, IOrderRepository orderRepository, IUnitOfWork unitOfWork, IChannelPublisher<OrderCompletionChannelEvent> orderCompletionChannelPublisher)
+    public PlaceOrderCommandHandler(
+        ICartService cartService,
+        IOrderRepository orderRepository,
+        IUnitOfWork unitOfWork,
+        IChannelPublisher<OrderCompletionChannelEvent> orderCompletionChannelPublisher,
+        IProductReservationService productReservationService)
     {
         _cartService = cartService;
         _orderRepository = orderRepository;
         _unitOfWork = unitOfWork;
         _orderCompletionChannelPublisher = orderCompletionChannelPublisher;
+        _productReservationService = productReservationService;
     }
 
     public async Task Handle(PlaceOrderCommand command)
@@ -29,34 +37,19 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderComma
         var checkoutCart = await _cartService.GetCheckoutCart(command.CustomerId);
 
         var newOrder = Order.Create(
-            orderItems: MapToOrderItems(checkoutCart.Items),
+            orderItems: OrdersMapper.MapToOrderItems(checkoutCart.Items),
             customerId: checkoutCart.CustomerId,
-            deliveryAddress: MapToDeliveryAddress(checkoutCart.DeliveryAddress),
+            deliveryAddress: OrdersMapper.MapToDeliveryAddress(checkoutCart.DeliveryAddress),
             payment: new Payment(checkoutCart.PaymentId, checkoutCart.PaymentType),
             delivery: new Delivery(checkoutCart.DelivererId, checkoutCart.Deliverer));
 
+        //sprawdź dostępność i zarezerwuj
+        await _productReservationService.ReserveProduct(OrdersMapper.MapToReserveProductsDto(newOrder));
+
         await _orderRepository.Add(newOrder);
 
-        await _orderCompletionChannelPublisher.Publish(new OrderCompletionChannelEvent(newOrder), CancellationToken.None);
-
         await _unitOfWork.SaveChanges();
+
+        await _orderCompletionChannelPublisher.Publish(new OrderCompletionChannelEvent(newOrder), CancellationToken.None);
     }
-
-    private DeliveryAddress MapToDeliveryAddress(CheckoutCartDto.Address checkoutCartAddress)
-        => new(
-                country: checkoutCartAddress.Country,
-                localityName: checkoutCartAddress.LocalityName,
-                postalCode: checkoutCartAddress.PostalCode,
-                houseNumber: checkoutCartAddress.HouseNumber,
-                street: checkoutCartAddress.Street,
-                localNumber: checkoutCartAddress.LocalNumber
-            );
-
-    private ICollection<OrderItem> MapToOrderItems(IReadOnlyCollection<CheckoutCartDto.CheckoutCartItem> checkoutCartItems)
-        => checkoutCartItems.Select(x => OrderItem.Create(
-                name: x.Name,
-                price: x.Price,
-                quantity: x.Quantity,
-                productId: x.ProductId
-            )).ToList();
 }

@@ -8,7 +8,7 @@ public class OrderItem : Entity
     public string Name { get; }
     public decimal Price { get; }
     public int Quantity { get; }
-    public int ProductId { get; }
+    public Guid ProductId { get; }
 
     private OrderItem(string name, decimal price, int quantity, int productId)
     {
