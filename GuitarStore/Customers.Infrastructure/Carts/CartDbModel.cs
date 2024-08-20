@@ -1,9 +1,10 @@
 ﻿using Customers.Domain.Carts;
+using Domain.StronglyTypedIds;
 
 namespace Customers.Infrastructure.Carts;
 internal class CartDbModel
 {
-    public int CustomerId { get; set; }
+    public CustomerId CustomerId { get; set; }
 
     public CartState CartState { get; set; }
 

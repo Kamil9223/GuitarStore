@@ -2,7 +2,7 @@
 
 namespace Catalog.Domain;
 
-public class Product : Entity, IIdentifiable
+public class Product : Entity
 {
     public int Id { get; private set; }
     public string Name { get; private set; } = null!;

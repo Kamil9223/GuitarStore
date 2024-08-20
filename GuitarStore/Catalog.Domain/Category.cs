@@ -2,7 +2,7 @@
 
 namespace Catalog.Domain;
 
-public class Category : Entity, IIdentifiable
+public class Category : Entity
 {
     public int Id { get; private set; }
     public string CategoryName { get; private set; } = null!;

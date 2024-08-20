@@ -1,6 +1,7 @@
 ﻿using Customers.Domain.Carts;
 using Customers.Domain.Customers;
 using Customers.Shared;
+using Domain.StronglyTypedIds;
 
 namespace Customers.Application.Carts.ModuleApi;
 internal class CartService : ICartService
@@ -14,7 +15,7 @@ internal class CartService : ICartService
         _customerRepository = customerRepository;
     }
 
-    public async Task<CheckoutCartDto> GetCheckoutCart(int customerId)
+    public async Task<CheckoutCartDto> GetCheckoutCart(CustomerId customerId)
     {
         var customer = await _customerRepository.Get(customerId);
         var checkoutCart = await _cartRepository.GetCheckoutCart(customerId);

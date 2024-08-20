@@ -1,8 +1,10 @@
-﻿namespace Warehouse.Shared;
+﻿using Domain.StronglyTypedIds;
+
+namespace Warehouse.Shared;
 public sealed record ReserveProductsDto(
-    Guid OrderId,
+    OrderId OrderId,
     IReadOnlyCollection<ReserveProductDto> Products);
 
-public sealed record ReserveProductDto(Guid ProductId, int Quantity);
+public sealed record ReserveProductDto(ProductId ProductId, int Quantity);
 
 

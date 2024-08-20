@@ -1,5 +1,6 @@
 ﻿using Customers.Domain.Products;
 using Domain;
+using Domain.StronglyTypedIds;
 
 namespace Customers.Domain.Carts;
 
@@ -7,18 +8,18 @@ public class Cart : Entity
 {
     private List<CartItem> _cartItems;
 
-    public int CustomerId { get; }
+    public CustomerId CustomerId { get; }
     public IReadOnlyCollection<CartItem> CartItems => _cartItems;
 
     public decimal TotalPrice => CartItems.Sum(x => x.Price * x.Quantity);
 
-    private Cart(int customerId)
+    private Cart(CustomerId customerId)
     {
         CustomerId = customerId;
         _cartItems = new List<CartItem>();
     }
 
-    public static Cart Create(int customerId)
+    public static Cart Create(CustomerId customerId)
     {
         return new Cart(customerId);
     }
@@ -38,7 +39,7 @@ public class Cart : Entity
         _cartItems.Add(CartItem.Create(product.Id, product.Name, product.Price, quantity));
     }
 
-    public void RemoveProduct(int productId, int quantity)
+    public void RemoveProduct(ProductId productId, int quantity)
     {
         var existingProduct = CartItems.SingleOrDefault(x => x.ProductId == productId);
 

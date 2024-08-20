@@ -2,7 +2,7 @@
 
 namespace Catalog.Domain;
 
-public class Brand : Entity, IIdentifiable
+public class Brand : Entity
 {
     public int Id { get; private set; }
 

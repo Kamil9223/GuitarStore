@@ -3,9 +3,10 @@ using Application.Exceptions;
 using Customers.Application.Abstractions;
 using Customers.Domain.Carts;
 using Customers.Domain.Products;
+using Domain.StronglyTypedIds;
 
 namespace Customers.Application.Carts.Commands;
-public sealed record AddCartItemCommand(int ProductId, int CustomerId, string Name, decimal Price) : ICommand;
+public sealed record AddCartItemCommand(ProductId ProductId, CustomerId CustomerId, string Name, decimal Price) : ICommand;
 
 internal sealed class AddCartItemCommandHandler : ICommandHandler<AddCartItemCommand>
 {

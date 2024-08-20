@@ -1,11 +1,12 @@
 ﻿using Domain;
+using Domain.StronglyTypedIds;
 using Domain.ValueObjects;
 
 namespace Customers.Domain.Products;
 
-public class Product : Entity, IIdentifiable
+public class Product : Entity
 {
-    public int Id { get; }
+    public ProductId Id { get; }
     public string Name { get; }
     public Money Price { get; private set; }
     public int Quantity { get; private set; }
@@ -13,7 +14,7 @@ public class Product : Entity, IIdentifiable
     //For EF Core
     private Product() { }
 
-    private Product(int id, string name, Money price, int quantity)
+    private Product(ProductId id, string name, Money price, int quantity)
     {
         Id = id;
         Name = name;
@@ -21,7 +22,7 @@ public class Product : Entity, IIdentifiable
         Quantity = quantity;
     }
 
-    public static Product Create(int id, string name, Money price, int quantity)
+    public static Product Create(ProductId id, string name, Money price, int quantity)
     {
         if (string.IsNullOrWhiteSpace(name))
         {

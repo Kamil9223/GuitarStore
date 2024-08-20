@@ -1,11 +1,12 @@
 ﻿using Domain;
+using Domain.StronglyTypedIds;
 using Domain.ValueObjects;
 
 namespace Customers.Domain.Customers;
 
-public class Customer : Entity, IIdentifiable
+public class Customer : Entity
 {
-    public int Id { get; }
+    public CustomerId Id { get; }
     public string Name { get; }
     public string LastName { get; }
     public EmailAddress Email { get; }
@@ -16,6 +17,7 @@ public class Customer : Entity, IIdentifiable
 
     private Customer(string name, string lastName, EmailAddress email, CustomerAddress address)
     {
+        Id = new CustomerId(Guid.NewGuid());
         Name = name;
         LastName = lastName;
         Email = email;

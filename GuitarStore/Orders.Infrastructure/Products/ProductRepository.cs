@@ -1,4 +1,5 @@
 ﻿using Application.Exceptions;
+using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using Orders.Domain.Products;
 using Orders.Infrastructure.Database;
@@ -14,7 +15,7 @@ internal class ProductRepository : IProductRepository
         _context = context;
     }
 
-    public async Task<Product> Get(int id)
+    public async Task<Product> Get(ProductId id)
         => await _context.Products.SingleOrDefaultAsync(x => x.Id == id)
         ?? throw new NotFoundException($"Product with Id: {id} not exists.");
 }

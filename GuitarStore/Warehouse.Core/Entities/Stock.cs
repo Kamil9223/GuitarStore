@@ -1,9 +1,10 @@
 ﻿using Domain;
+using Domain.StronglyTypedIds;
 
 namespace Warehouse.Core.Entities;
 public class Stock : Entity
 {
-    public Guid ProductId { get; private set; }//TODO: dedicated ValueObjectId
+    public ProductId ProductId { get; set; } = null!;//TODO: dedicated ValueObjectId
 
-    public int Quantity { get; private set; }
+    public int Quantity { get; set; }
 }

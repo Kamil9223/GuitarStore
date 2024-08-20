@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Domain.StronglyTypedIds;
 
 namespace Orders.Domain.Orders;
 
@@ -8,9 +9,9 @@ public class OrderItem : Entity
     public string Name { get; }
     public decimal Price { get; }
     public int Quantity { get; }
-    public Guid ProductId { get; }
+    public ProductId ProductId { get; }
 
-    private OrderItem(string name, decimal price, int quantity, int productId)
+    private OrderItem(string name, decimal price, int quantity, ProductId productId)
     {
         Id = Guid.NewGuid();
         Name = name;
@@ -19,7 +20,7 @@ public class OrderItem : Entity
         ProductId = productId;
     }
 
-    public static OrderItem Create(string name, decimal price, int quantity, int productId)
+    public static OrderItem Create(string name, decimal price, int quantity, ProductId productId)
     {
         return new OrderItem(name, price, quantity, productId);
     }

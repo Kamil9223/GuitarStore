@@ -1,6 +1,7 @@
 ﻿using Application.Channels;
 using Application.CQRS;
 using Customers.Shared;
+using Domain.StronglyTypedIds;
 using Orders.Application.Abstractions;
 using Orders.Application.Orders.BackgroundJobs;
 using Orders.Domain.Orders;
@@ -8,7 +9,7 @@ using Warehouse.Shared;
 
 namespace Orders.Application.Orders.Commands;
 
-public sealed record PlaceOrderCommand(int CustomerId) : ICommand;
+public sealed record PlaceOrderCommand(CustomerId CustomerId) : ICommand;
 
 internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderCommand>
 {
@@ -43,7 +44,6 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderComma
             payment: new Payment(checkoutCart.PaymentId, checkoutCart.PaymentType),
             delivery: new Delivery(checkoutCart.DelivererId, checkoutCart.Deliverer));
 
-        //sprawdź dostępność i zarezerwuj
         await _productReservationService.ReserveProduct(OrdersMapper.MapToReserveProductsDto(newOrder));
 
         await _orderRepository.Add(newOrder);

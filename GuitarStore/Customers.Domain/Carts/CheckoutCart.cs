@@ -1,10 +1,11 @@
 ﻿using Domain;
+using Domain.StronglyTypedIds;
 
 namespace Customers.Domain.Carts;
 
 public class CheckoutCart : Entity
 {
-    public int CustomerId { get; }
+    public CustomerId CustomerId { get; }
     public ICollection<CartItem> CartItems { get; }
     public Delivery Delivery { get; private set; }
     public Payment Payment { get; private set; }

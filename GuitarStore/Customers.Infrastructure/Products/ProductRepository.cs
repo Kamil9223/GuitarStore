@@ -1,5 +1,6 @@
 ﻿using Customers.Domain.Products;
 using Customers.Infrastructure.Database;
+using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -24,7 +25,7 @@ internal class ProductRepository : IProductRepository
         return await _customersDbContext.Products.AnyAsync(predicate);
     }
 
-    public async Task<Product> Get(int productId)
+    public async Task<Product> Get(ProductId productId)
     {
         return await _customersDbContext.Products.SingleOrDefaultAsync(x => x.Id == productId);
     }

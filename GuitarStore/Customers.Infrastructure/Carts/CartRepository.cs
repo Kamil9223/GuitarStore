@@ -1,6 +1,7 @@
 ﻿using Application.Exceptions;
 using Customers.Domain.Carts;
 using Customers.Infrastructure.Database;
+using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
@@ -40,7 +41,7 @@ internal class CartRepository : ICartRepository
         dbCart.CartState = CartState.Checkouted;
     }
 
-    public async Task<Cart> GetCart(int customerId)
+    public async Task<Cart> GetCart(CustomerId customerId)
     {
         var dbCart =  await _dbContext.Carts
             .Where(x => x.CustomerId == customerId)
@@ -54,7 +55,7 @@ internal class CartRepository : ICartRepository
         return cart;
     }
 
-    public async Task<CheckoutCart> GetCheckoutCart(int customerId)
+    public async Task<CheckoutCart> GetCheckoutCart(CustomerId customerId)
     {
         var dbCheckout = await _dbContext.Carts
             .Where(x => x.CustomerId == customerId)

@@ -1,5 +1,7 @@
-﻿namespace Orders.Domain.Products;
+﻿using Domain.StronglyTypedIds;
+
+namespace Orders.Domain.Products;
 public interface IProductRepository
 {
-    Task<Product> Get(int id);
+    Task<Product> Get(ProductId id);
 }

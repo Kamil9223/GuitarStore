@@ -2,7 +2,7 @@
 
 namespace Catalog.Domain;
 
-public class VariationOption : Entity, IIdentifiable
+public class VariationOption : Entity
 {
     public int Id { get; private set; }
     public string Value { get; private set; } = null!;

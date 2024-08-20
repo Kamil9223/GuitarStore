@@ -44,9 +44,4 @@ internal sealed class OrderCompletionJob : BackgroundService
 
         //jaka forma płatności
     }
-
-    private async Task CheckProductsOnStock(Order order)
-    {
-
-    }
 }

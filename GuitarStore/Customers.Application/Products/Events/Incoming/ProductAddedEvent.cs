@@ -2,10 +2,11 @@
 using Application.RabbitMq.Abstractions.Events;
 using Customers.Application.Abstractions;
 using Customers.Domain.Products;
+using Domain.StronglyTypedIds;
 
 namespace Customers.Application.Products.Events.Incoming;
 
-internal sealed record ProductAddedEvent(int Id, string Name, decimal Price, int Quantity) : IntegrationEvent, IIntegrationConsumeEvent;
+internal sealed record ProductAddedEvent(ProductId Id, string Name, decimal Price, int Quantity) : IntegrationEvent, IIntegrationConsumeEvent;
 
 internal sealed class ProductAddedEventHandler : IIntegrationEventHandler<ProductAddedEvent>
 {

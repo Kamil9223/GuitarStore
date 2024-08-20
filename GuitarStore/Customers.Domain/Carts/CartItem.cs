@@ -1,14 +1,15 @@
 ﻿using Domain;
+using Domain.StronglyTypedIds;
 using Domain.ValueObjects;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Customers.Tests")]
 namespace Customers.Domain.Carts;
 
-public class CartItem : Entity, IIdentifiable
+public class CartItem : Entity
 {
     public int Id { get; }
-    public int ProductId { get; }
+    public ProductId ProductId { get; }
     public string Name { get; }
     public Money Price { get; }
     public int Quantity { get; private set; }
@@ -16,7 +17,7 @@ public class CartItem : Entity, IIdentifiable
     //For EF Core
     private CartItem() { }
 
-    private CartItem(int productId, string name, Money price, int quantity)
+    private CartItem(ProductId productId, string name, Money price, int quantity)
     {
         ProductId = productId;
         Name = name;
@@ -24,7 +25,7 @@ public class CartItem : Entity, IIdentifiable
         Quantity = quantity;
     }
 
-    internal static CartItem Create(int productId, string name, Money price, int quantity)
+    internal static CartItem Create(ProductId productId, string name, Money price, int quantity)
     {
         //Check rules
 

@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Orders.Infrastructure.Database;
-using Orders.Infrastructure.Instructions;
 using System.Reflection;
 
 namespace Orders.Infrastructure.Configuration;
@@ -30,7 +29,5 @@ internal sealed class InfrastructureModule : Autofac.Module
             .Where(type => type.Name.EndsWith("Repository"))
             .AsImplementedInterfaces()
             .InstancePerLifetimeScope();
-
-        builder.RegisterType<InstructionService>().AsImplementedInterfaces().InstancePerLifetimeScope();
     }
 }

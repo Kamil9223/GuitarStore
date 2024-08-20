@@ -1,9 +1,11 @@
-﻿namespace Orders.Infrastructure.Orders;
+﻿using Domain.StronglyTypedIds;
+
+namespace Orders.Infrastructure.Orders;
 internal class OrderDbModel
 {
-    public int Id { get; }
+    public OrderId Id { get; } = null!;
 
-    public int? CustomerId { get; set; }
+    public CustomerId? CustomerId { get; set; }
 
     public string Object { get; set; } = null!;
 }

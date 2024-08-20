@@ -1,8 +1,10 @@
-﻿namespace Customers.Shared;
+﻿using Domain.StronglyTypedIds;
+
+namespace Customers.Shared;
 
 public class CheckoutCartDto
 {
-    public int CustomerId { get; init; }
+    public CustomerId CustomerId { get; init; }
     public int PaymentId { get; init; }
     public string PaymentType { get; init; }
     public int DelivererId { get; init; }
@@ -25,6 +27,6 @@ public class CheckoutCartDto
         public string Name { get; init; }
         public decimal Price { get; init; }
         public int Quantity { get; init; }
-        public int ProductId { get; init; }
+        public ProductId ProductId { get; init; }
     }
 }
