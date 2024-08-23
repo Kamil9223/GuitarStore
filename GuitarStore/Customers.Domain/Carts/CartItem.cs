@@ -8,7 +8,7 @@ namespace Customers.Domain.Carts;
 
 public class CartItem : Entity
 {
-    public int Id { get; }
+    public CartItemId Id { get; }
     public ProductId ProductId { get; }
     public string Name { get; }
     public Money Price { get; }
@@ -19,6 +19,7 @@ public class CartItem : Entity
 
     private CartItem(ProductId productId, string name, Money price, int quantity)
     {
+        Id = CartItemId.New();
         ProductId = productId;
         Name = name;
         Price = price;

@@ -7,8 +7,8 @@ using static Customers.Application.Carts.Commands.CheckoutCartCommand;
 namespace Customers.Application.Carts.Commands;
 public sealed record CheckoutCartCommand(CustomerId CustomerId, PaymentCommandPart Payment, DeliveryCommandPart Delivery) : ICommand
 {
-    public sealed record PaymentCommandPart(int PaymentId, string PaymentType);
-    public sealed record DeliveryCommandPart(int DelivererId, string Deliverer);
+    public sealed record PaymentCommandPart(PaymentId PaymentId, string PaymentType);
+    public sealed record DeliveryCommandPart(DelivererId DelivererId, string Deliverer);
 }
 
 internal sealed class CheckoutCartCommandHandler : ICommandHandler<CheckoutCartCommand>

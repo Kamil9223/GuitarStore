@@ -3,7 +3,7 @@
 namespace Orders.Infrastructure.Orders;
 internal class OrderDbModel
 {
-    public OrderId Id { get; } = null!;
+    public OrderId Id { get; }
 
     public CustomerId? CustomerId { get; set; }
 

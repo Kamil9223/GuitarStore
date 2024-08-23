@@ -1,2 +1,5 @@
 ﻿namespace Domain.StronglyTypedIds;
-public sealed record OrderId(Guid Value);
+public readonly record struct OrderId(Guid Value)
+{
+    public static OrderId New() => new(Guid.NewGuid());
+}

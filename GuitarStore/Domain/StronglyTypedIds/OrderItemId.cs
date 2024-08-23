@@ -1,2 +1,2 @@
 ﻿namespace Domain.StronglyTypedIds;
-public sealed record OrderItemId(Guid Value);
+public readonly record struct OrderItemId(Guid Value);

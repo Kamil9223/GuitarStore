@@ -38,7 +38,7 @@ public class Order : Entity
 
     public void AcceptOrder()
     {
-        Status = OrderStatus.Accepted;
+        Status = OrderStatus.Paid;
     }
 
     public void CancelOrder()
@@ -52,15 +52,15 @@ public class Order : Entity
     }
 }
 
-public enum OrderStatus
+public enum OrderStatus : byte
 {
     New = 1,
 
-    Accepted = 2,
+    Paid = 2,
 
-    Waiting = 3,
+    WaitingForPayment = 3,
 
-    InProgress = 4,
+    Sent = 4,
 
     Realized = 5,
 

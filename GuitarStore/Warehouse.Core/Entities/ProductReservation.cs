@@ -3,9 +3,9 @@
 namespace Warehouse.Core.Entities;
 public class ProductReservation
 {
-    public OrderId OrderId { get; set; } = null!;
+    public OrderId OrderId { get; set; }
 
-    public ProductId ProductId { get; set; } = null!;//TODO: dedicated ValueObjectId
+    public ProductId ProductId { get; set; }
 
     public int ReservedQuantity { get; set; }
 }
