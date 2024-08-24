@@ -1,6 +1,7 @@
 ﻿using Catalog.Application.Products.Dtos;
 using Catalog.Application.Products.Services;
 using Catalog.Infrastructure.Database;
+using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Infrastructure.QueryServices;
@@ -14,7 +15,7 @@ internal class ProductQueryService : IProductQueryService
         _catalogDbContext = catalogDbContext;
     }
 
-    public async Task<ProductDetailsDto?> Get(int id)
+    public async Task<ProductDetailsDto?> Get(ProductId id)
     {
         return await _catalogDbContext.Products
             .Where(p => p.Id == id)

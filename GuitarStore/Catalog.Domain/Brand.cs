@@ -1,10 +1,11 @@
 ﻿using Domain;
+using Domain.StronglyTypedIds;
 
 namespace Catalog.Domain;
 
 public class Brand : Entity
 {
-    public int Id { get; private set; }
+    public BrandId Id { get; private set; }
 
     public string Name { get; private set; }
 

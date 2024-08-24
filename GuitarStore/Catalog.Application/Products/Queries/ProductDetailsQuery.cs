@@ -2,10 +2,11 @@
 using Application.Exceptions;
 using Catalog.Application.Products.Dtos;
 using Catalog.Application.Products.Services;
+using Domain.StronglyTypedIds;
 
 namespace Catalog.Application.Products.Queries;
 
-public sealed record ProductDetailsQuery(int ProductId) : IQuery;
+public sealed record ProductDetailsQuery(ProductId ProductId) : IQuery;
 
 internal sealed class ProductDetailsQueryHandler : IQueryHandler<ProductDetailsQuery, ProductDetailsDto>
 {

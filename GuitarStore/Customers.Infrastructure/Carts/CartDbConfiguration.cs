@@ -1,5 +1,6 @@
 ﻿using Customers.Domain.Carts;
 using Customers.Domain.Customers;
+using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,6 +13,11 @@ internal class CartDbConfiguration : IEntityTypeConfiguration<CartDbModel>
         builder.ToTable("Carts", "Customers");
 
         builder.HasKey(x => x.CustomerId);
+
+        builder.Property(e => e.CustomerId)
+               .HasConversion(
+                   id => id!.Value,
+                   value => new CustomerId(value));
 
         builder.Property(x => x.Object).IsRequired();
 

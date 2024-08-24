@@ -1,6 +1,7 @@
 ﻿using Catalog.Domain;
 using Catalog.Domain.IRepositories;
 using Catalog.Infrastructure.Database;
+using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Infrastructure.Repositories;
@@ -14,7 +15,7 @@ internal class VariationOptionRepository : IVariationOptionRepository
         _catalogDbContext = catalogDbContext;
     }
 
-    public async Task<ICollection<VariationOption>> Get(IEnumerable<int> Ids)
+    public async Task<ICollection<VariationOption>> Get(IEnumerable<VariationOptionId> Ids)
     {
         return await _catalogDbContext.VariationOptions
             .Where(x => Ids.Contains(x.Id))

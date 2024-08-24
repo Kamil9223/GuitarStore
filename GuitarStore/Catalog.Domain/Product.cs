@@ -1,18 +1,19 @@
 ﻿using Domain;
+using Domain.StronglyTypedIds;
 
 namespace Catalog.Domain;
 
 public class Product : Entity
 {
-    public int Id { get; private set; }
+    public ProductId Id { get; private set; }
     public string Name { get; private set; } = null!;
     public string Description { get; private set; } = null!;
     public decimal Price { get; private set; }
     public int Quantity { get; private set; }
     public Brand Brand { get; private set; } = null!;
-    public int BrandId { get; private set; }
+    public BrandId BrandId { get; private set; }
     public Category Category { get; private set; } = null!;
-    public int CategoryId { get; private set; }
+    public CategoryId CategoryId { get; private set; }
     public ICollection<VariationOption> VariationOptions { get; private set; } = null!;
 
     private Product() { }
@@ -26,6 +27,7 @@ public class Product : Entity
         Category category,
         ICollection<VariationOption> variationOptions)
     {
+        Id = ProductId.New();
         Name = name;
         Description = description;
         Price = price;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.StronglyTypedIds;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,5 @@ namespace Catalog.Domain.IRepositories;
 
 public interface IVariationOptionRepository
 {
-    Task<ICollection<VariationOption>> Get(IEnumerable<int> Ids);
+    Task<ICollection<VariationOption>> Get(IEnumerable<VariationOptionId> Ids);
 }

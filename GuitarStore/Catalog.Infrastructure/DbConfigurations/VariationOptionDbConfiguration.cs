@@ -1,4 +1,5 @@
 ﻿using Catalog.Domain;
+using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,7 +12,11 @@ internal class VariationOptionDbConfiguration : IEntityTypeConfiguration<Variati
         builder.ToTable("VariationOptions", "Catalog");
 
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).ValueGeneratedOnAdd();
+
+        builder.Property(e => e.Id)
+               .HasConversion(
+                   id => id!.Value,
+                   value => new VariationOptionId(value));
 
         builder.Property(x => x.Value).HasMaxLength(1000);
     }

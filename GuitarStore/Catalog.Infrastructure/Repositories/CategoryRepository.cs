@@ -1,6 +1,7 @@
 ﻿using Catalog.Domain;
 using Catalog.Domain.IRepositories;
 using Catalog.Infrastructure.Database;
+using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 
 namespace Catalog.Infrastructure.Repositories;
@@ -14,7 +15,7 @@ internal class CategoryRepository : ICategoryRepository
         _catalogDbContext = catalogDbContext;
     }
 
-    public async Task<Category?> GetCategoryThatHasNotChildren(int id)
+    public async Task<Category?> GetCategoryThatHasNotChildren(CategoryId id)
     {
         return await _catalogDbContext.Categories
             .Include(x => x.SubCategories)

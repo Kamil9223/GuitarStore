@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Domain.StronglyTypedIds;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Orders.Domain.Products;
 
@@ -10,6 +11,11 @@ internal class ProductsDbConfiguration : IEntityTypeConfiguration<Product>
         builder.ToTable("Products", "Orders");
 
         builder.HasKey(x => x.Id);
+
+        builder.Property(e => e.Id)
+            .HasConversion(
+                id => id!.Value,
+                value => new ProductId(value));
 
         builder.Property(x => x.Name).HasMaxLength(200);
         builder.HasIndex(x => x.Name).IsUnique();

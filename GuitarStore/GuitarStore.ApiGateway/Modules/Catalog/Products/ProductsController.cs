@@ -2,6 +2,7 @@
 using Catalog.Application.Products.Commands;
 using Catalog.Application.Products.Dtos;
 using Catalog.Application.Products.Queries;
+using Domain.StronglyTypedIds;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GuitarStore.ApiGateway.Modules.Catalog.Products;
@@ -36,7 +37,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet("{productId}")]
-    public async Task<IActionResult> GetDetails(int productId)
+    public async Task<IActionResult> GetDetails(ProductId productId)
     {
         var productDetails = await _queryHandlerExecutor.Execute<ProductDetailsQuery, ProductDetailsDto>(new ProductDetailsQuery(productId));
 

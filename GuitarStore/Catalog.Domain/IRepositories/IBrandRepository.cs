@@ -1,6 +1,8 @@
-﻿namespace Catalog.Domain.IRepositories;
+﻿using Domain.StronglyTypedIds;
+
+namespace Catalog.Domain.IRepositories;
 
 public interface IBrandRepository
 {
-    Task<Brand> Get(int id);
+    Task<Brand?> Get(BrandId id);
 }

@@ -5,15 +5,16 @@ using Catalog.Application.Abstractions;
 using Catalog.Application.Products.Events.Outgoing;
 using Catalog.Domain;
 using Catalog.Domain.IRepositories;
+using Domain.StronglyTypedIds;
 
 namespace Catalog.Application.Products.Commands;
 
 public sealed record AddProductCommand(
     string Name,
     string Description,
-    int CategoryId,
-    int BrandId,
-    ICollection<int> VariationOptionIds,
+    CategoryId CategoryId,
+    BrandId BrandId,
+    ICollection<VariationOptionId> VariationOptionIds,
     decimal Price,
     int Quantity) : ICommand;
 

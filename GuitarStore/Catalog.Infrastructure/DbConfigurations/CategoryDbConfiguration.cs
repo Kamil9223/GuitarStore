@@ -1,4 +1,5 @@
 ﻿using Catalog.Domain;
+using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,7 +12,16 @@ internal class CategoryDbConfiguration : IEntityTypeConfiguration<Category>
         builder.ToTable("Categories", "Catalog");
 
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).ValueGeneratedOnAdd();
+
+        builder.Property(e => e.Id)
+            .HasConversion(
+                id => id!.Value,
+                value => new CategoryId(value));
+
+        builder.Property(e => e.ParentCategoryId)
+            .HasConversion<Guid?>(
+                id =>  id == null ? null : id.Value.Value,
+                value => value == null ? null : new CategoryId(value.Value));
 
         builder.Property(x => x.CategoryName).HasMaxLength(75);
 

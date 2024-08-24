@@ -17,7 +17,7 @@ public class Customer : Entity
 
     private Customer(string name, string lastName, EmailAddress email, CustomerAddress address)
     {
-        Id = new CustomerId(Guid.NewGuid());
+        Id = CustomerId.New();
         Name = name;
         LastName = lastName;
         Email = email;

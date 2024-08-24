@@ -1,6 +1,8 @@
-﻿namespace Catalog.Domain.IRepositories;
+﻿using Domain.StronglyTypedIds;
+
+namespace Catalog.Domain.IRepositories;
 
 public interface ICategoryRepository
 {
-    Task<Category?> GetCategoryThatHasNotChildren(int id);
+    Task<Category?> GetCategoryThatHasNotChildren(CategoryId id);
 }

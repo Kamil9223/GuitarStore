@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Domain.StronglyTypedIds;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Orders.Domain.Customers;
 
@@ -10,7 +11,11 @@ internal class OrderDbConfiguration : IEntityTypeConfiguration<OrderDbModel>
         builder.ToTable("Orders", "Orders");
 
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).ValueGeneratedOnAdd();
+
+        builder.Property(e => e.Id)
+               .HasConversion(
+                   id => id!.Value,
+                   value => new OrderId(value));
 
         builder.Property(x => x.Object).IsRequired();
 
