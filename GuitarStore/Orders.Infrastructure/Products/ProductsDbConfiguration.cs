@@ -2,13 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Orders.Domain.Products;
+using Orders.Infrastructure.Database;
 
 namespace Orders.Infrastructure.Products;
 internal class ProductsDbConfiguration : IEntityTypeConfiguration<Product>
 {
     public void Configure(EntityTypeBuilder<Product> builder)
     {
-        builder.ToTable("Products", "Orders");
+        builder.ToTable("Products", OrdersDbContext.Schema);
 
         builder.HasKey(x => x.Id);
 

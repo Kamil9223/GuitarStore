@@ -1,4 +1,5 @@
 ﻿using Catalog.Domain;
+using Catalog.Infrastructure.Database;
 using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -9,7 +10,7 @@ internal class CategoryDbConfiguration : IEntityTypeConfiguration<Category>
 {
     public void Configure(EntityTypeBuilder<Category> builder)
     {
-        builder.ToTable("Categories", "Catalog");
+        builder.ToTable("Categories", CatalogDbContext.Schema);
 
         builder.HasKey(x => x.Id);
 

@@ -3,6 +3,7 @@ using Catalog.Application.Abstractions;
 using Catalog.Infrastructure.Database;
 using Catalog.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
 using Module = Autofac.Module;

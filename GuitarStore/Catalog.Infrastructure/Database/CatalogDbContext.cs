@@ -5,6 +5,8 @@ namespace Catalog.Infrastructure.Database;
 
 internal class CatalogDbContext : DbContext
 {
+    public const string Schema = "Catalog";
+
     public DbSet<Product> Products { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Brand> Brands { get; set; }

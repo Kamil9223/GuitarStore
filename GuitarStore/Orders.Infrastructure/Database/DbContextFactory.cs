@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 
 namespace Orders.Infrastructure.Database;
@@ -20,7 +21,9 @@ internal class DbContextFactory : IDesignTimeDbContextFactory<OrdersDbContext>
 
         var sqlConnectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
 
-        optionsBuilder.UseSqlServer(sqlConnectionStringBuilder.ConnectionString);
+        optionsBuilder.UseSqlServer(
+            sqlConnectionStringBuilder.ConnectionString,
+            x => x.MigrationsHistoryTable(HistoryRepository.DefaultTableName, OrdersDbContext.Schema));
         return new OrdersDbContext(optionsBuilder.Options);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 
 namespace Customers.Infrastructure.Database;
@@ -21,7 +22,9 @@ internal class DbContextFactory : IDesignTimeDbContextFactory<CustomersDbContext
 
         var sqlConnectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
 
-        optionsBuilder.UseSqlServer(sqlConnectionStringBuilder.ConnectionString);
+        optionsBuilder.UseSqlServer(
+            sqlConnectionStringBuilder.ConnectionString,
+            x => x.MigrationsHistoryTable(HistoryRepository.DefaultTableName, CustomersDbContext.Schema));
         return new CustomersDbContext(optionsBuilder.Options);
     }
 }

@@ -6,6 +6,8 @@ using Orders.Infrastructure.Orders;
 namespace Orders.Infrastructure.Database;
 internal class OrdersDbContext : DbContext
 {
+    public const string Schema = "Orders";
+
     public DbSet<Customer> Customers { get; set; } = null!;
 
     public DbSet<Product> Products { get; set; } = null!;

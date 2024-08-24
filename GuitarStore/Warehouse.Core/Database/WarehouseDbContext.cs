@@ -5,6 +5,8 @@ using Warehouse.Core.Entities;
 namespace Warehouse.Core.Database;
 internal class WarehouseDbContext : DbContext
 {
+    public const string Schema = "Warehouse";
+
     public DbSet<ProductReservation> ProductReservations { get; set; } = null!;
     public DbSet<Stock> Stock {  get; set; } = null!;
 
@@ -14,7 +16,7 @@ internal class WarehouseDbContext : DbContext
     {
         modelBuilder.Entity<ProductReservation>(builder =>
         {
-            builder.ToTable("ProductReservations", "Warehouse");
+            builder.ToTable("ProductReservations", Schema);
             builder.HasKey(e => new { e.OrderId, e.ProductId });
 
             builder.Property(e => e.OrderId)
@@ -30,7 +32,7 @@ internal class WarehouseDbContext : DbContext
 
         modelBuilder.Entity<Stock>(builder =>
         {
-            builder.ToTable("Stock", "Warehouse");
+            builder.ToTable("Stock", Schema);
             builder.HasKey(e => e.ProductId);
 
             builder.Property(e => e.ProductId)

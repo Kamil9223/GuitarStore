@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Orders.Infrastructure.Database;
 using System.Reflection;

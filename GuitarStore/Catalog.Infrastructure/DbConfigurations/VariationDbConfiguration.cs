@@ -1,4 +1,5 @@
 ﻿using Catalog.Domain;
+using Catalog.Infrastructure.Database;
 using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -9,7 +10,7 @@ internal class VariationDbConfiguration : IEntityTypeConfiguration<Variation>
 {
     public void Configure(EntityTypeBuilder<Variation> builder)
     {
-        builder.ToTable("Variations", "Catalog");
+        builder.ToTable("Variations", CatalogDbContext.Schema);
 
         builder.HasKey(x => x.Id);
 

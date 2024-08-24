@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 
 namespace Catalog.Infrastructure.Database;
@@ -22,7 +23,9 @@ internal class DbContextFactory : IDesignTimeDbContextFactory<CatalogDbContext>
 
         var sqlConnectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
 
-        optionsBuilder.UseSqlServer(sqlConnectionStringBuilder.ConnectionString);
+        optionsBuilder.UseSqlServer(
+            sqlConnectionStringBuilder.ConnectionString,
+            x => x.MigrationsHistoryTable(HistoryRepository.DefaultTableName, CatalogDbContext.Schema));
         return new CatalogDbContext(optionsBuilder.Options);
     }
 }

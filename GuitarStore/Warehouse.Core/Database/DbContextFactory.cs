@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Warehouse.Core.Database;
 internal class DbContextFactory : IDesignTimeDbContextFactory<WarehouseDbContext>
@@ -20,7 +21,9 @@ internal class DbContextFactory : IDesignTimeDbContextFactory<WarehouseDbContext
 
         var sqlConnectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
 
-        optionsBuilder.UseSqlServer(sqlConnectionStringBuilder.ConnectionString);
+        optionsBuilder.UseSqlServer(
+            sqlConnectionStringBuilder.ConnectionString,
+            x => x.MigrationsHistoryTable(HistoryRepository.DefaultTableName, WarehouseDbContext.Schema));
         return new WarehouseDbContext(optionsBuilder.Options);
     }
 }

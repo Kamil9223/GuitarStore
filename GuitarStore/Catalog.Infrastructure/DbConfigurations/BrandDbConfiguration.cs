@@ -1,4 +1,5 @@
 ﻿using Catalog.Domain;
+using Catalog.Infrastructure.Database;
 using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -9,7 +10,7 @@ internal class BrandDbConfiguration : IEntityTypeConfiguration<Brand>
 {
     public void Configure(EntityTypeBuilder<Brand> builder)
     {
-        builder.ToTable("Brands", "Catalog");
+        builder.ToTable("Brands", CatalogDbContext.Schema);
 
         builder.HasKey(x => x.Id);
 

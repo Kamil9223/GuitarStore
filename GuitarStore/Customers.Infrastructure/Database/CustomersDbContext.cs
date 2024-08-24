@@ -7,6 +7,8 @@ namespace Customers.Infrastructure.Database;
 
 internal class CustomersDbContext : DbContext
 {
+    public const string Schema = "Customers";
+
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<CartDbModel> Carts { get; set; }

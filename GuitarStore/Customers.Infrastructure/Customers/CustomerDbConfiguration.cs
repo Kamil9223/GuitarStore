@@ -1,4 +1,5 @@
 ﻿using Customers.Domain.Customers;
+using Customers.Infrastructure.Database;
 using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -9,7 +10,7 @@ internal class CustomerDbConfiguration : IEntityTypeConfiguration<Customer>
 {
     public void Configure(EntityTypeBuilder<Customer> builder)
     {
-        builder.ToTable("Customers", "Customers");
+        builder.ToTable("Customers", CustomersDbContext.Schema);
 
         builder.HasKey(x => x.Id);
 

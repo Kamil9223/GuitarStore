@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Customers.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
 

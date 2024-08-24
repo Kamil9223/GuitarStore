@@ -24,11 +24,8 @@ namespace Orders.Infrastructure.Migrations
 
             modelBuilder.Entity("Orders.Domain.Customers.Customer", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -47,11 +44,8 @@ namespace Orders.Infrastructure.Migrations
 
             modelBuilder.Entity("Orders.Domain.Products.Product", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -71,14 +65,11 @@ namespace Orders.Infrastructure.Migrations
 
             modelBuilder.Entity("Orders.Infrastructure.Orders.OrderDbModel", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int?>("CustomerId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Object")
                         .IsRequired()
@@ -95,8 +86,8 @@ namespace Orders.Infrastructure.Migrations
                 {
                     b.OwnsOne("Domain.ValueObjects.EmailAddress", "Email", b1 =>
                         {
-                            b1.Property<int>("CustomerId")
-                                .HasColumnType("int");
+                            b1.Property<Guid>("CustomerId")
+                                .HasColumnType("uniqueidentifier");
 
                             b1.Property<string>("Email")
                                 .IsRequired()
@@ -120,8 +111,8 @@ namespace Orders.Infrastructure.Migrations
                 {
                     b.OwnsOne("Domain.ValueObjects.Money", "Price", b1 =>
                         {
-                            b1.Property<int>("ProductId")
-                                .HasColumnType("int");
+                            b1.Property<Guid>("ProductId")
+                                .HasColumnType("uniqueidentifier");
 
                             b1.Property<decimal>("Value")
                                 .HasColumnType("decimal(10,2)")
