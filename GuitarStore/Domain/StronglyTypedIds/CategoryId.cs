@@ -1,5 +1,15 @@
-﻿namespace Domain.StronglyTypedIds;
-public readonly record struct CategoryId(Guid Value)
+﻿using Domain.StronglyTypedIds.Helpers;
+using SequentialGuid;
+using System.ComponentModel;
+using System.Text.Json.Serialization;
+
+namespace Domain.StronglyTypedIds;
+
+[TypeConverter(typeof(StrongTypeIdConverter<CategoryId>))]
+[JsonConverter(typeof(StronglyTypedIdJsonConverter<CategoryId>))]
+public readonly record struct CategoryId(Guid Value) : IStronglyTypedId
 {
-    public static CategoryId New() => new(Guid.NewGuid());
+    public static CategoryId New() => new(SequentialGuidGenerator.Instance.NewGuid());
+
+    public override string ToString() => Value.ToString();
 }
