@@ -60,15 +60,19 @@ internal class RabbitMqSetupBackgroundService : IHostedService
     {
         var consumerEventType = typeof(IIntegrationConsumeEvent);
 
-        var catalogPublisherEvents = GetModuleConsumerEvents("Catalog.Application", consumerEventType);
-        //var ordersPublisherEvents = GetModulePublisherEvents("Orders.Application", publisherEventType);
-        var customersPublisherEvents = GetModuleConsumerEvents("Customers.Application", consumerEventType);
-        //var authPublisherEvents = GetModulePublisherEvents("Auth.Application", publisherEventType);
+        var catalogConsumerEvents = GetModuleConsumerEvents("Catalog.Application", consumerEventType);
+        var ordersConsumerEvents = GetModuleConsumerEvents("Orders.Application", consumerEventType);
+        var customersConsumerEvents = GetModuleConsumerEvents("Customers.Application", consumerEventType);
+        var authConsumerEvents = GetModuleConsumerEvents("Auth.Application", consumerEventType);
+        var paymentsConsumerEvents = GetModuleConsumerEvents("Payments.Core", consumerEventType);
+        var warehouseConsumerEvents = GetModuleConsumerEvents("Warehouse.Core", consumerEventType);
 
-        BindQueues(RabbitMqQueueName.CatalogQueue, catalogPublisherEvents);
-        //BindQueues(RabbitMqQueueName.OrdersQueue, ordersPublisherEvents);
-        BindQueues(RabbitMqQueueName.CustomersQueue, customersPublisherEvents);
-        //BindQueues(RabbitMqQueueName.AuthQueue, authPublisherEvents);
+        BindQueues(RabbitMqQueueName.CatalogQueue, catalogConsumerEvents);
+        BindQueues(RabbitMqQueueName.OrdersQueue, ordersConsumerEvents);
+        BindQueues(RabbitMqQueueName.CustomersQueue, customersConsumerEvents);
+        BindQueues(RabbitMqQueueName.AuthQueue, authConsumerEvents);
+        BindQueues(RabbitMqQueueName.PaymentsQueue, paymentsConsumerEvents);
+        BindQueues(RabbitMqQueueName.WarehouseQueue, warehouseConsumerEvents);
 
         IEnumerable<Type> GetModuleConsumerEvents(string appModuleName, Type consumerEventType)
             => Assembly

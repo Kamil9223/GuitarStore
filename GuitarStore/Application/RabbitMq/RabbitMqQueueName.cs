@@ -13,6 +13,8 @@ public class RabbitMqQueueName
     public static RabbitMqQueueName CustomersQueue => new RabbitMqQueueName("GuitarStore.CustomersQueue");
     public static RabbitMqQueueName OrdersQueue = new RabbitMqQueueName("GuitarStore.OrdersQueue");
     public static RabbitMqQueueName CatalogQueue = new RabbitMqQueueName("GuitarStore.CatalogQueue");
+    public static RabbitMqQueueName PaymentsQueue = new RabbitMqQueueName("GuitarStore.PaymentsQueue");
+    public static RabbitMqQueueName WarehouseQueue = new RabbitMqQueueName("GuitarStore.WarehouseQueue");
 
     public static implicit operator RabbitMqQueueName(string queueName) => new(queueName);
     public static implicit operator string(RabbitMqQueueName value) => value.QueueName;
@@ -22,6 +24,8 @@ public class RabbitMqQueueName
             AuthQueue,
             CustomersQueue,
             OrdersQueue,
-            CatalogQueue
+            CatalogQueue,
+            PaymentsQueue,
+            WarehouseQueue
         };
 }

@@ -22,6 +22,6 @@ public class OrdersController : ControllerBase
     {
         await _commandHandlerExecutor.Execute(request);
 
-        return Ok();
+        return Accepted();
     }
 }

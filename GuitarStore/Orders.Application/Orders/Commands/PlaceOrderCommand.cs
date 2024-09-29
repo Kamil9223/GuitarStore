@@ -1,9 +1,9 @@
-﻿using Application.Channels;
-using Application.CQRS;
+﻿using Application.CQRS;
+using Application.RabbitMq.Abstractions;
 using Customers.Shared;
 using Domain.StronglyTypedIds;
 using Orders.Application.Abstractions;
-using Orders.Application.Orders.BackgroundJobs;
+using Orders.Application.Orders.Events.Outgoing;
 using Orders.Domain.Orders;
 using Warehouse.Shared;
 
@@ -16,21 +16,21 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderComma
     private readonly ICartService _cartService;
     private readonly IOrderRepository _orderRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IChannelPublisher<OrderCompletionChannelEvent> _orderCompletionChannelPublisher;
     private readonly IProductReservationService _productReservationService;
+    private readonly IIntegrationEventPublisher _integrationEventPublisher;
 
     public PlaceOrderCommandHandler(
         ICartService cartService,
         IOrderRepository orderRepository,
         IUnitOfWork unitOfWork,
-        IChannelPublisher<OrderCompletionChannelEvent> orderCompletionChannelPublisher,
-        IProductReservationService productReservationService)
+        IProductReservationService productReservationService,
+        IIntegrationEventPublisher integrationEventPublisher)
     {
         _cartService = cartService;
         _orderRepository = orderRepository;
         _unitOfWork = unitOfWork;
-        _orderCompletionChannelPublisher = orderCompletionChannelPublisher;
         _productReservationService = productReservationService;
+        _integrationEventPublisher = integrationEventPublisher;
     }
 
     public async Task Handle(PlaceOrderCommand command)
@@ -48,8 +48,8 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderComma
 
         await _orderRepository.Add(newOrder);
 
-        await _unitOfWork.SaveChanges();
+        await _integrationEventPublisher.Publish(new CreatedOrderEvent());
 
-        await _orderCompletionChannelPublisher.Publish(new OrderCompletionChannelEvent(newOrder), CancellationToken.None);
+        await _unitOfWork.SaveChanges();
     }
 }

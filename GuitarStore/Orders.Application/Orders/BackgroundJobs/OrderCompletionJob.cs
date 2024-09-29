@@ -40,8 +40,12 @@ internal sealed class OrderCompletionJob : BackgroundService
         //do zastanowienia: być może trzeba całą obsługę eventu dać w jakimś Task.Runie, żeby nie blokować pracy joba w przypadku wieeelu zamwówień
         //przemyśleć tutaj kwestię bezpieczeństwa wątków
 
+        //1. Jesli platność z góry, to info przez API do modułu platności
+        //2. Moduł platności po przeprocesowaniu zwraca info ze statusem (zaplacono, bądź lipa, nie przeszło)
+        //3. Po zatwierdzeniu płatności leci info do Warehouse o skompletowaniu zamówienia
+        //4. Po skompletowaniu paczka przekazana do kuriera, info do Orders, status na Sent
+        //5. Zamówienie przekazane do kuriera (moduł Shiping?) gdzie jest możliwość śledzenia paczki
 
 
-        //jaka forma płatności
     }
 }
