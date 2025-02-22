@@ -2,12 +2,12 @@
 using Customers.Application.Abstractions;
 using Customers.Domain.Carts;
 using Domain.StronglyTypedIds;
+using Domain.ValueObjects;
 using static Customers.Application.Carts.Commands.CheckoutCartCommand;
 
 namespace Customers.Application.Carts.Commands;
-public sealed record CheckoutCartCommand(CustomerId CustomerId, PaymentCommandPart Payment, DeliveryCommandPart Delivery) : ICommand
+public sealed record CheckoutCartCommand(CustomerId CustomerId, PaymentMethod Payment, DeliveryCommandPart Delivery) : ICommand
 {
-    public sealed record PaymentCommandPart(PaymentId PaymentId, string PaymentType);
     public sealed record DeliveryCommandPart(DelivererId DelivererId, string Deliverer);
 }
 
@@ -28,9 +28,7 @@ internal sealed class CheckoutCartCommandHandler : ICommandHandler<CheckoutCartC
 
         var checkout = cart.Checkout();
 
-        checkout.SetMethodOfPayment(new Payment(
-            paymentId: command.Payment.PaymentId,
-            paymentType: command.Payment.PaymentType));
+        checkout.Payment = command.Payment;
 
         checkout.SetModelOfDelivery(new Delivery(
             delivererId: command.Delivery.DelivererId,

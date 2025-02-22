@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Domain.StronglyTypedIds;
+using Domain.ValueObjects;
 
 namespace Orders.Domain.Orders;
 
@@ -13,13 +14,13 @@ public class Order : Entity
     public DateTime CreatedAt { get; }
     public OrderStatus Status { get; private set; }
     public DeliveryAddress DeliveryAddress { get; } = null!;
-    public Payment Payment { get; } = null!;
+    public PaymentMethod Payment { get; }
     public Delivery Delivery { get; } = null!;
 
 
     public decimal TotalPrice { get => _orderItems.Sum(x => x.Price * x.Quantity); }
 
-    private Order(ICollection<OrderItem> orderItems, CustomerId customerId, DeliveryAddress deliveryAddress, Payment payment, Delivery delivery)
+    private Order(ICollection<OrderItem> orderItems, CustomerId customerId, DeliveryAddress deliveryAddress, PaymentMethod payment, Delivery delivery)
     {
         Id = new OrderId(Guid.NewGuid());
         CreatedAt = DateTime.Now;
@@ -31,7 +32,7 @@ public class Order : Entity
         Delivery = delivery;
     }
 
-    public static Order Create(ICollection<OrderItem> orderItems, CustomerId customerId, DeliveryAddress deliveryAddress, Payment payment, Delivery delivery)
+    public static Order Create(ICollection<OrderItem> orderItems, CustomerId customerId, DeliveryAddress deliveryAddress, PaymentMethod payment, Delivery delivery)
     {
         return new Order(orderItems, customerId, deliveryAddress, payment, delivery);
     }

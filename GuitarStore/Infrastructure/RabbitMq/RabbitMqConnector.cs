@@ -58,7 +58,7 @@ internal class RabbitMqConnector : IRabbitMqConnector, IRabbitMqChannel
         {
             _connection.Dispose();
         }
-        catch (IOException ex)
+        catch (Exception ex)
         {
             //_logger.LogCritical(ex.ToString());
         }

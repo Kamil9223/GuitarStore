@@ -2,6 +2,7 @@
 using Application.RabbitMq.Abstractions;
 using Customers.Shared;
 using Domain.StronglyTypedIds;
+using Domain.ValueObjects;
 using Orders.Application.Abstractions;
 using Orders.Application.Orders.Events.Outgoing;
 using Orders.Domain.Orders;
@@ -41,15 +42,30 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderComma
             orderItems: OrdersMapper.MapToOrderItems(checkoutCart.Items),
             customerId: checkoutCart.CustomerId,
             deliveryAddress: OrdersMapper.MapToDeliveryAddress(checkoutCart.DeliveryAddress),
-            payment: new Payment(checkoutCart.PaymentId, checkoutCart.PaymentType),
+            payment: checkoutCart.PaymentMethod,
             delivery: new Delivery(checkoutCart.DelivererId, checkoutCart.Deliverer));
 
         await _productReservationService.ReserveProduct(OrdersMapper.MapToReserveProductsDto(newOrder));
 
         await _orderRepository.Add(newOrder);
 
-        await _integrationEventPublisher.Publish(new CreatedOrderEvent());
+        await _integrationEventPublisher.Publish(new CreatedOrderEvent(
+            OrderId: newOrder.Id,
+            TotalAmount: newOrder.TotalPrice,
+            Currency: Currency.PLN,
+            PaymentMethod: checkoutCart.PaymentMethod));
 
         await _unitOfWork.SaveChanges();
+    }
+
+    private static Payments.Shared.Contracts.PaymentMethod MapPaymentMethod(PaymentMethod pm)
+    {
+        return pm switch
+        {
+            PaymentMethod.Card => Payments.Shared.Contracts.PaymentMethod.Card,
+            PaymentMethod.Blik => Payments.Shared.Contracts.PaymentMethod.Blik,
+            PaymentMethod.Link => Payments.Shared.Contracts.PaymentMethod.Link,
+            _ => throw new NotImplementedException()
+        };
     }
 }

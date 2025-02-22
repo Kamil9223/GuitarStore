@@ -1,12 +1,12 @@
 ﻿using Domain.StronglyTypedIds;
+using Domain.ValueObjects;
 
 namespace Customers.Shared;
 
 public class CheckoutCartDto
 {
     public CustomerId CustomerId { get; init; }
-    public PaymentId PaymentId { get; init; }
-    public string PaymentType { get; init; }
+    public PaymentMethod PaymentMethod { get; init; }
     public DelivererId DelivererId { get; init; }
     public string Deliverer {  get; init; }
     public Address DeliveryAddress { get; init; }

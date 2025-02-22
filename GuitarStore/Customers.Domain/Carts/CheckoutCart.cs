@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Domain.StronglyTypedIds;
+using Domain.ValueObjects;
 
 namespace Customers.Domain.Carts;
 
@@ -8,7 +9,7 @@ public class CheckoutCart : Entity
     public CustomerId CustomerId { get; }
     public ICollection<CartItem> CartItems { get; }
     public Delivery Delivery { get; private set; }
-    public Payment Payment { get; private set; }
+    public PaymentMethod Payment { get; set; }
 
     internal CheckoutCart(Cart cart)
     {
@@ -17,6 +18,4 @@ public class CheckoutCart : Entity
     }
 
     public void SetModelOfDelivery(Delivery delivery) => Delivery = delivery;
-
-    public void SetMethodOfPayment(Payment payment) => Payment = payment;
 }

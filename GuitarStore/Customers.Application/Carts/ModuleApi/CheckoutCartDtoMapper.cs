@@ -20,8 +20,7 @@ internal static class CheckoutCartDtoMapper
             },
             Deliverer = checkout.Delivery.Deliverer,
             DelivererId = checkout.Delivery.DelivererId,
-            PaymentType = checkout.Payment.PaymentType,
-            PaymentId = checkout.Payment.PaymentId,
+            PaymentMethod = checkout.Payment,
             Items = checkout.CartItems.Select(item => new CheckoutCartDto.CheckoutCartItem
             {
                 Name = item.Name,
