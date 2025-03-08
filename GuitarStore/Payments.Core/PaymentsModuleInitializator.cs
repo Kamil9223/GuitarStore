@@ -2,6 +2,7 @@
 using Autofac;
 using Payments.Core.Services;
 using Stripe;
+using Stripe.Checkout;
 using System.Reflection;
 
 namespace Payments.Core;
@@ -20,7 +21,6 @@ public sealed class PaymentsModuleInitializator : Autofac.Module
            .InstancePerLifetimeScope();
 
         builder.RegisterType<StripeService>().AsImplementedInterfaces().InstancePerLifetimeScope();
-        builder.RegisterType<PaymentIntentService>().AsSelf().InstancePerLifetimeScope();
-        builder.RegisterType<PaymentMethodService>().AsSelf().InstancePerLifetimeScope();
+        builder.RegisterType<SessionService>().AsSelf().InstancePerLifetimeScope();
     }
 }

@@ -9,7 +9,6 @@ public class CheckoutCart : Entity
     public CustomerId CustomerId { get; }
     public ICollection<CartItem> CartItems { get; }
     public Delivery Delivery { get; private set; }
-    public PaymentMethod Payment { get; set; }
 
     internal CheckoutCart(Cart cart)
     {

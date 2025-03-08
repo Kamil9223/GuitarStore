@@ -3,59 +3,51 @@ using Microsoft.Extensions.Configuration;
 using Payments.Shared.Contracts;
 using Payments.Shared.Services;
 using Stripe;
+using Stripe.Checkout;
 
 namespace Payments.Core.Services;
 internal class StripeService : IStripeService
 {
     private readonly IConfiguration _configuration;
-    private readonly PaymentIntentService _intentService;
-    private readonly PaymentMethodService _methodService;
+    private readonly SessionService _sessionService;
 
-    public StripeService(IConfiguration configuration, PaymentIntentService intentService, PaymentMethodService methodService)
+    public StripeService(
+        IConfiguration configuration,
+        SessionService sessionService)
     {
         _configuration = configuration;
-        _intentService = intentService;
-
-        StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];
-        _methodService = methodService;
+        _sessionService = sessionService;
+        StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];     
         //zapisac gdzieś klucze konfiguracyjne, appSettings ?
         //StripeConfiguration.ApiKey = _configuration["Stripe:PublicKey"];
     }
 
-    public async Task<CreatePaymentResponse> CreatePaymentIntent(CreatePaymentRequest request)
+    public async Task<string> CreateCheckoutSession(CheckoutSessionRequest request)
     {
-        var options = new PaymentIntentCreateOptions
+        var options = new SessionCreateOptions
         {
-            Currency = request.Currency,
-            Amount = (long)request.Amount,
-            AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions() { Enabled = true }
+            LineItems = request.Products
+                .Select(x => new SessionLineItemOptions
+                {
+                    Quantity = x.Quantity,
+                    PriceData = new SessionLineItemPriceDataOptions
+                    {
+                        Currency = x.Currency,
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = x.Name
+                        },
+                        UnitAmountDecimal = x.Price,
+                    }
+                })
+                .ToList(),
+            SuccessUrl = "https://www.youtube.com",//for tests
+            CancelUrl = "https://www.google.com", //for tests
+            Mode = "payment"
         };
 
-        var paymentIntent = await _intentService.CreateAsync(options);
-
-        return new CreatePaymentResponse(paymentIntent.Id);
-    }
-
-    public async Task<ConfirmPaymentResponse> ConfirmPayment(ConfirmPaymentRequest request)
-    {
-        var stripePaymentResponse = await _intentService.ConfirmAsync(request.PaymentId, new PaymentIntentConfirmOptions
-        {
-            ReturnUrl = request.ReturnUrl,
-            PaymentMethod = request.PaymentMethod == Shared.Contracts.PaymentMethod.Card
-                ? "pm_card_visa"
-                : request.PaymentMethod.ToString().ToLowerInvariant(),
-        });
-
-        return new ConfirmPaymentResponse(
-            stripePaymentResponse.Status,
-            stripePaymentResponse.LatestChargeId,
-            stripePaymentResponse.PaymentMethodId);
-    }
-
-    public async Task<StripeList<Stripe.PaymentMethod>> Test()
-    {
-        var response = await _methodService.ListAsync();
-        return response;
+        var session = await _sessionService.CreateAsync(options);
+        return session.Url;       
     }
 
     //webhoooki i potem testy. Wywalic kontroler, dodać komunikację z Orders i tak spróbować całość przejść narazie bez zapisu w bazie

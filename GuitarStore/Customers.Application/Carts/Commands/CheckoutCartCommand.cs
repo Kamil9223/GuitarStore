@@ -6,7 +6,7 @@ using Domain.ValueObjects;
 using static Customers.Application.Carts.Commands.CheckoutCartCommand;
 
 namespace Customers.Application.Carts.Commands;
-public sealed record CheckoutCartCommand(CustomerId CustomerId, PaymentMethod Payment, DeliveryCommandPart Delivery) : ICommand
+public sealed record CheckoutCartCommand(CustomerId CustomerId, DeliveryCommandPart Delivery) : ICommand
 {
     public sealed record DeliveryCommandPart(DelivererId DelivererId, string Deliverer);
 }
@@ -27,8 +27,6 @@ internal sealed class CheckoutCartCommandHandler : ICommandHandler<CheckoutCartC
         var cart = await _cartRepository.GetCart(command.CustomerId);
 
         var checkout = cart.Checkout();
-
-        checkout.Payment = command.Payment;
 
         checkout.SetModelOfDelivery(new Delivery(
             delivererId: command.Delivery.DelivererId,

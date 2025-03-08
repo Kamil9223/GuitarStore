@@ -6,7 +6,6 @@ namespace Customers.Shared;
 public class CheckoutCartDto
 {
     public CustomerId CustomerId { get; init; }
-    public PaymentMethod PaymentMethod { get; init; }
     public DelivererId DelivererId { get; init; }
     public string Deliverer {  get; init; }
     public Address DeliveryAddress { get; init; }

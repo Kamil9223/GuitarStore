@@ -8,6 +8,8 @@ public sealed class Currency : ValueObject
         "USD", "EUR", "GBP", "JPY", "PLN"
     };
 
+    public Currency() { }
+
     private Currency(string value)
     {
         Value = value;

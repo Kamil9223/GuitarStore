@@ -6,6 +6,8 @@ using Domain.ValueObjects;
 using Orders.Application.Abstractions;
 using Orders.Application.Orders.Events.Outgoing;
 using Orders.Domain.Orders;
+using Payments.Shared.Contracts;
+using Payments.Shared.Services;
 using Warehouse.Shared;
 
 namespace Orders.Application.Orders.Commands;
@@ -19,19 +21,22 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderComma
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProductReservationService _productReservationService;
     private readonly IIntegrationEventPublisher _integrationEventPublisher;
+    private readonly IStripeService _stripeService;
 
     public PlaceOrderCommandHandler(
         ICartService cartService,
         IOrderRepository orderRepository,
         IUnitOfWork unitOfWork,
         IProductReservationService productReservationService,
-        IIntegrationEventPublisher integrationEventPublisher)
+        IIntegrationEventPublisher integrationEventPublisher,
+        IStripeService stripeService)
     {
         _cartService = cartService;
         _orderRepository = orderRepository;
         _unitOfWork = unitOfWork;
         _productReservationService = productReservationService;
         _integrationEventPublisher = integrationEventPublisher;
+        _stripeService = stripeService;
     }
 
     public async Task Handle(PlaceOrderCommand command)
@@ -42,30 +47,30 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderComma
             orderItems: OrdersMapper.MapToOrderItems(checkoutCart.Items),
             customerId: checkoutCart.CustomerId,
             deliveryAddress: OrdersMapper.MapToDeliveryAddress(checkoutCart.DeliveryAddress),
-            payment: checkoutCart.PaymentMethod,
             delivery: new Delivery(checkoutCart.DelivererId, checkoutCart.Deliverer));
 
-        await _productReservationService.ReserveProduct(OrdersMapper.MapToReserveProductsDto(newOrder));
+        await _productReservationService.ReserveProduct(OrdersMapper.MapToReserveProductsDto(newOrder));//TODO: obsługa błędu
+
+        var checkoutSession = new CheckoutSessionRequest
+        {
+            Products = checkoutCart.Items.Select(x => new CheckoutSessionRequest.ProductItem
+            {
+                Currency = Currency.PLN,
+                Name = x.Name,
+                Price = x.Price,//TO ma być w groszach
+                Quantity = x.Quantity,
+            }).ToList()
+        };
+        var paymentUrl = await _stripeService.CreateCheckoutSession(checkoutSession);
+        //TODO: obsługa błędu, retry, empty Order created. Powinno zwrócić też id
 
         await _orderRepository.Add(newOrder);
 
         await _integrationEventPublisher.Publish(new CreatedOrderEvent(
             OrderId: newOrder.Id,
             TotalAmount: newOrder.TotalPrice,
-            Currency: Currency.PLN,
-            PaymentMethod: checkoutCart.PaymentMethod));
+            Currency: Currency.PLN));
 
         await _unitOfWork.SaveChanges();
-    }
-
-    private static Payments.Shared.Contracts.PaymentMethod MapPaymentMethod(PaymentMethod pm)
-    {
-        return pm switch
-        {
-            PaymentMethod.Card => Payments.Shared.Contracts.PaymentMethod.Card,
-            PaymentMethod.Blik => Payments.Shared.Contracts.PaymentMethod.Blik,
-            PaymentMethod.Link => Payments.Shared.Contracts.PaymentMethod.Link,
-            _ => throw new NotImplementedException()
-        };
     }
 }

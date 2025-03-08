@@ -6,6 +6,5 @@ namespace Orders.Application.Orders.Events.Outgoing;
 internal sealed record CreatedOrderEvent(
     OrderId OrderId,
     decimal TotalAmount,
-    Currency Currency,
-    PaymentMethod PaymentMethod)
+    Currency Currency)
     : IntegrationEvent, IIntegrationPublishEvent;

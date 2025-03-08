@@ -1,5 +1,6 @@
 ﻿using Application.CQRS;
 using Microsoft.AspNetCore.Mvc;
+using Payments.Shared.Contracts;
 using Payments.Shared.Services;
 
 namespace GuitarStore.ApiGateway.Modules.Payments;
@@ -18,12 +19,5 @@ public class PaymentsController : ControllerBase
         _commandHandlerExecutor = commandHandlerExecutor;
         _queryHandlerExecutor = queryHandlerExecutor;
         _stripeService = stripeService;
-    }
-
-    [HttpGet("xD")]
-    public async Task<IActionResult> Test()
-    {
-        var response = await _stripeService.Test();
-        return Ok(response);
     }
 }
