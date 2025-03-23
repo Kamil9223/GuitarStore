@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Orders.Infrastructure.Database;
 using System.Reflection;
@@ -30,5 +29,9 @@ internal sealed class InfrastructureModule : Autofac.Module
             .Where(type => type.Name.EndsWith("Repository"))
             .AsImplementedInterfaces()
             .InstancePerLifetimeScope();
+
+        builder.RegisterType<UnitOfWork>()
+           .AsImplementedInterfaces()
+           .InstancePerLifetimeScope();
     }
 }

@@ -14,7 +14,7 @@ namespace Orders.Application.Orders.Commands;
 
 public sealed record PlaceOrderCommand(CustomerId CustomerId) : ICommand;
 
-internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderCommand>
+internal sealed class PlaceOrderCommandHandler : ICommandHandler<string, PlaceOrderCommand>
 {
     private readonly ICartService _cartService;
     private readonly IOrderRepository _orderRepository;
@@ -39,7 +39,7 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderComma
         _stripeService = stripeService;
     }
 
-    public async Task Handle(PlaceOrderCommand command)
+    public async Task<string> Handle(PlaceOrderCommand command)
     {
         var checkoutCart = await _cartService.GetCheckoutCart(command.CustomerId);
 
@@ -66,11 +66,27 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderComma
 
         await _orderRepository.Add(newOrder);
 
-        await _integrationEventPublisher.Publish(new CreatedOrderEvent(
-            OrderId: newOrder.Id,
-            TotalAmount: newOrder.TotalPrice,
-            Currency: Currency.PLN));
+        //await _integrationEventPublisher.Publish(new CreatedOrderEvent(
+        //    OrderId: newOrder.Id,
+        //    TotalAmount: newOrder.TotalPrice,
+        //    Currency: Currency.PLN));
 
         await _unitOfWork.SaveChanges();
+        return paymentUrl;
+
+        //var checkoutSession = new CheckoutSessionRequest
+        //{
+        //    Products = new List<CheckoutSessionRequest.ProductItem>
+        //    {
+        //        new CheckoutSessionRequest.ProductItem
+        //        {
+        //            Currency = Currency.PLN,
+        //            Name = "Test_1",
+        //            Price = 123,//TO ma być w groszach
+        //            Quantity = 6,
+        //        }
+        //    }
+        //};
+        //var paymentUrl = await _stripeService.CreateCheckoutSession(checkoutSession);
     }
 }

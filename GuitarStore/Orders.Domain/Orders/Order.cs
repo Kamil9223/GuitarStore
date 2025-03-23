@@ -56,11 +56,9 @@ public enum OrderStatus : byte
 
     Paid = 2,
 
-    WaitingForPayment = 3,
+    Sent = 3,
 
-    Sent = 4,
+    Realized = 4,
 
-    Realized = 5,
-
-    Canceled = 6,
+    Canceled = 5,
 }

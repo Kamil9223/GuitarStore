@@ -18,6 +18,11 @@ internal sealed class ApplicationModule : Autofac.Module
             .InstancePerLifetimeScope();
 
         builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            .AsClosedTypesOf(typeof(ICommandHandler<,>))
+            .AsImplementedInterfaces()
+            .InstancePerLifetimeScope();
+
+        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
            .AsClosedTypesOf(typeof(IQueryHandler<,>))
            .AsImplementedInterfaces()
            .InstancePerLifetimeScope();

@@ -17,4 +17,11 @@ internal class CommandHandlerExecutor : ICommandHandlerExecutor
         var handler = scope.Resolve<ICommandHandler<TCommand>>();
         await handler.Handle(command);
     }
+
+    public async Task<TResponse> Execute<TResponse, TCommand>(TCommand command) where TCommand : ICommand
+    {
+        using var scope = _scope.BeginLifetimeScope();
+        var handler = scope.Resolve<ICommandHandler<TResponse, TCommand>>();
+        return await handler.Handle(command);
+    }
 }
