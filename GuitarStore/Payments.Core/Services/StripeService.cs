@@ -1,5 +1,4 @@
-﻿using Domain.ValueObjects;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Payments.Shared.Contracts;
 using Payments.Shared.Services;
 using Stripe;
@@ -18,11 +17,9 @@ internal class StripeService : IStripeService
         _configuration = configuration;
         _sessionService = sessionService;
         StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];     
-        //zapisac gdzieś klucze konfiguracyjne, appSettings ?
-        //StripeConfiguration.ApiKey = _configuration["Stripe:PublicKey"];
     }
 
-    public async Task<string> CreateCheckoutSession(CheckoutSessionRequest request)
+    public async Task<CheckoutSessionResponse> CreateCheckoutSession(CheckoutSessionRequest request)
     {
         var options = new SessionCreateOptions
         {
@@ -37,7 +34,7 @@ internal class StripeService : IStripeService
                         {
                             Name = x.Name
                         },
-                        UnitAmountDecimal = x.Price,
+                        UnitAmountDecimal = x.Amount,
                     }
                 })
                 .ToList(),
@@ -46,10 +43,20 @@ internal class StripeService : IStripeService
             Mode = "payment"
         };
 
-        var session = await _sessionService.CreateAsync(options);
-        return session.Url;       
+        try
+        {
+            var session = await _sessionService.CreateAsync(options);
+            return new CheckoutSessionResponse
+            {
+                Url = session.Url,
+                SessionId = session.Id,
+            };
+        }
+        catch (Exception ex)
+        {
+            throw new Exception();//W niektorych przypadkach blad, w niektorych response z url do strony gdzie jest info ze platnosc
+            //nie poszla (bo 500 np) wtedy order stworzony ale nieoplacony, bedzie retry np za godzine i za 6 i na drugi dzien. jak nie pojdzie
+            //to notyfikacja ze anulujemy to zamowienie i sorry
+        }
     }
-
-    //webhoooki i potem testy. Wywalic kontroler, dodać komunikację z Orders i tak spróbować całość przejść narazie bez zapisu w bazie
-    //potem pomyśleć o persystencji oraz retry'ach
 }

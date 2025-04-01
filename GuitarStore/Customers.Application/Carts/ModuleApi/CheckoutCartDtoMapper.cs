@@ -23,7 +23,7 @@ internal static class CheckoutCartDtoMapper
             Items = checkout.CartItems.Select(item => new CheckoutCartDto.CheckoutCartItem
             {
                 Name = item.Name,
-                Price = item.Price,
+                Amount = item.Price,
                 Quantity = item.Quantity,
                 ProductId = item.ProductId,
             }).ToList()

@@ -18,7 +18,7 @@ public static class OrdersMapper
     public static ICollection<OrderItem> MapToOrderItems(IReadOnlyCollection<CheckoutCartDto.CheckoutCartItem> checkoutCartItems)
         => checkoutCartItems.Select(x => OrderItem.Create(
                 name: x.Name,
-                price: x.Price,
+                price: x.Amount,
                 quantity: x.Quantity,
                 productId: x.ProductId
             )).ToList();

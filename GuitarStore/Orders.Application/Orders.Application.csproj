@@ -21,7 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Orders\Events\Incoming\" />
     <Folder Include="Orders\ModuleApi\" />
   </ItemGroup>
 

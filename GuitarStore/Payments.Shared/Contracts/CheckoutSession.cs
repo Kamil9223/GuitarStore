@@ -7,9 +7,16 @@ public sealed record CheckoutSessionRequest
 
     public sealed record ProductItem
     {
-        public decimal Price { get; init; }
+        public decimal Amount { get; init; }
         public Currency Currency { get; init; } = null!;
         public long Quantity { get; init; }
         public string Name { get; init; } = null!;
     }
 }
+
+public sealed record CheckoutSessionResponse
+{
+    public string Url { get; init; } = null!;
+    public string SessionId { get; set; } = null!;
+}
+

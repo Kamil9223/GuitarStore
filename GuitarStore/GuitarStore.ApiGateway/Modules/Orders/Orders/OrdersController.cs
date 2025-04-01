@@ -20,7 +20,7 @@ public class OrdersController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PlaceOrder(PlaceOrderCommand request)
     {
-        var response = await _commandHandlerExecutor.Execute<string, PlaceOrderCommand>(request);
+        var response = await _commandHandlerExecutor.Execute<PlaceOrderResponse, PlaceOrderCommand>(request);
 
         return Ok(response);
     }

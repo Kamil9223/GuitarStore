@@ -1,7 +1,7 @@
 ﻿using Application.CQRS;
+using Application.RabbitMq.Abstractions;
 using Autofac;
 using Payments.Core.Services;
-using Stripe;
 using Stripe.Checkout;
 using System.Reflection;
 
@@ -19,6 +19,11 @@ public sealed class PaymentsModuleInitializator : Autofac.Module
            .AsClosedTypesOf(typeof(IQueryHandler<,>))
            .AsImplementedInterfaces()
            .InstancePerLifetimeScope();
+
+        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            .AsClosedTypesOf(typeof(IIntegrationEventHandler<>))
+            .AsImplementedInterfaces()
+            .InstancePerLifetimeScope();
 
         builder.RegisterType<StripeService>().AsImplementedInterfaces().InstancePerLifetimeScope();
         builder.RegisterType<SessionService>().AsSelf().InstancePerLifetimeScope();

@@ -5,6 +5,7 @@ using Infrastructure.Configuration;
 using Orders.Infrastructure.Configuration;
 using Payments.Core;
 using Warehouse.Core;
+using Delivery.Core;
 
 namespace GuitarStore.ApiGateway.Configuration;
 
@@ -24,6 +25,7 @@ internal class ModulesInitializator : Module
         builder.RegisterModule(new OrdersModuleInitializator(_configuration));
         builder.RegisterModule(new WarehouseModuleInitializator(_configuration));
         builder.RegisterModule(new PaymentsModuleInitializator());
+        builder.RegisterModule(new DeliveryModuleInitializator());
         builder.RegisterModule<ApiModule>();
     }
 }

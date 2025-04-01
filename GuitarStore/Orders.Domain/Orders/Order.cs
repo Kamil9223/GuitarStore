@@ -48,6 +48,11 @@ public class Order : Entity
 
         Status = OrderStatus.Canceled;
     }
+
+    public void PayOrder()
+    {
+        Status = OrderStatus.Paid;
+    }
 }
 
 public enum OrderStatus : byte

@@ -3,5 +3,5 @@
 namespace Payments.Shared.Services;
 public interface IStripeService
 {
-    Task<string> CreateCheckoutSession(CheckoutSessionRequest request);
+    Task<CheckoutSessionResponse> CreateCheckoutSession(CheckoutSessionRequest request);
 }
