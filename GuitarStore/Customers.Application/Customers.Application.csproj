@@ -1,20 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
   </PropertyGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Autofac" Version="6.3.0" />
-		<PackageReference Include="FluentValidation" Version="10.4.0" />
-	</ItemGroup>
-
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.3.0" />
+    <PackageReference Include="FluentValidation" Version="10.4.0" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Customers.Domain\Customers.Domain.csproj" />
     <ProjectReference Include="..\Customers.Shared\Customers.Shared.csproj" />
   </ItemGroup>
-
 </Project>

@@ -1,11 +1,11 @@
 ﻿using Autofac;
 using Catalog.Infrastructure.Configuration;
 using Customers.Infrastructure.Configuration;
+using Delivery.Core;
 using Infrastructure.Configuration;
 using Orders.Infrastructure.Configuration;
 using Payments.Core;
 using Warehouse.Core;
-using Delivery.Core;
 
 namespace GuitarStore.ApiGateway.Configuration;
 
