@@ -66,6 +66,7 @@ internal class RabbitMqSetupBackgroundService : IHostedService
         var authConsumerEvents = GetModuleConsumerEvents("Auth.Application", consumerEventType);
         var paymentsConsumerEvents = GetModuleConsumerEvents("Payments.Core", consumerEventType);
         var warehouseConsumerEvents = GetModuleConsumerEvents("Warehouse.Core", consumerEventType);
+        var deliveryConsumerEvents = GetModuleConsumerEvents("Delivery.Core", consumerEventType);
 
         BindQueues(RabbitMqQueueName.CatalogQueue, catalogConsumerEvents);
         BindQueues(RabbitMqQueueName.OrdersQueue, ordersConsumerEvents);
@@ -73,6 +74,7 @@ internal class RabbitMqSetupBackgroundService : IHostedService
         BindQueues(RabbitMqQueueName.AuthQueue, authConsumerEvents);
         BindQueues(RabbitMqQueueName.PaymentsQueue, paymentsConsumerEvents);
         BindQueues(RabbitMqQueueName.WarehouseQueue, warehouseConsumerEvents);
+        BindQueues(RabbitMqQueueName.DeliveryQueue, deliveryConsumerEvents);
 
         IEnumerable<Type> GetModuleConsumerEvents(string appModuleName, Type consumerEventType)
             => Assembly
