@@ -1,7 +1,9 @@
 ﻿using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 using Warehouse.Core.Entities;
 
+[assembly: InternalsVisibleTo("Tests.EndToEnd")]
 namespace Warehouse.Core.Database;
 internal class WarehouseDbContext : DbContext
 {

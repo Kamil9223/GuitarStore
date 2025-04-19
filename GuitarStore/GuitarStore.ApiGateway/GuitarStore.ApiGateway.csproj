@@ -4,13 +4,22 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>60d4231d-afd3-4ed8-ba6e-f1c414eb7251</UserSecretsId>
+    <OpenApiDocumentsDirectory>$(MSBuildProjectDirectory)\OpenApis</OpenApiDocumentsDirectory>
+    <OpenApiGeneratedDocuments>true</OpenApiGeneratedDocuments>
+    <OpenApiGenerateDocumentsOnBuild>true</OpenApiGenerateDocumentsOnBuild>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <MainOpenApiDocument>$(OpenApiDocumentsDirectory)\GuitarStore.ApiGateway.json</MainOpenApiDocument>
+  </PropertyGroup>
+	
   <ItemGroup>
     <PackageReference Include="Autofac" Version="6.3.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.14" />
+    <PackageReference Include="Microsoft.Extensions.ApiDescription.Server" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Catalog.Infrastructure\Catalog.Infrastructure.csproj" />
@@ -19,5 +28,11 @@
     <ProjectReference Include="..\Orders.Infrastructure\Orders.Infrastructure.csproj" />
     <ProjectReference Include="..\Payments.Core\Payments.Core.csproj" />
     <ProjectReference Include="..\Warehouse.Core\Warehouse.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="OpenApis\GuitarStore.Api.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include ="OpenApis\" />
   </ItemGroup>
 </Project>

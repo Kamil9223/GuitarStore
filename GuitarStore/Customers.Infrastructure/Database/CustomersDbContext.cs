@@ -2,7 +2,9 @@
 using Customers.Domain.Products;
 using Customers.Infrastructure.Carts;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Tests.EndToEnd")]
 namespace Customers.Infrastructure.Database;
 
 internal class CustomersDbContext : DbContext

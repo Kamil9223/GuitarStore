@@ -1,6 +1,8 @@
 ﻿using Catalog.Domain;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Tests.EndToEnd")]
 namespace Catalog.Infrastructure.Database;
 
 internal class CatalogDbContext : DbContext

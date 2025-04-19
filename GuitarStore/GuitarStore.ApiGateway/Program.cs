@@ -5,42 +5,50 @@ using GuitarStore.ApiGateway.Helpers.StronglyTypedIdsConfig;
 using GuitarStore.ApiGateway.MiddleWares;
 using Microsoft.OpenApi.Models;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
-builder.Host.ConfigureContainer<ContainerBuilder>(autoFacBuilder =>
+public class Program
 {
-    autoFacBuilder.RegisterModule(new ModulesInitializator(builder.Configuration));
-});
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-    options.SchemaFilter<StronglyTypedIdSchemaFilter>();
-});
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
+    public static void Main(string[] args)
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "GuitarStore API V1");
-    });
+        var builder = WebApplication.CreateBuilder(args);
+
+        // Add services to the container.
+        builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+        builder.Host.ConfigureContainer<ContainerBuilder>(autoFacBuilder =>
+        {
+            autoFacBuilder.RegisterModule(new ModulesInitializator(builder.Configuration));
+        });
+
+        builder.Services.AddControllers();
+        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+            options.SchemaFilter<StronglyTypedIdSchemaFilter>();
+        });
+
+        var app = builder.Build();
+
+        app.MapGet("/test", () => Results.Ok("Hello World!"));
+
+        // Configure the HTTP request pipeline.
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "GuitarStore API V1");
+            });
+        }
+
+        //app.UseHttpsRedirection();
+
+        app.UseAuthorization();
+
+        app.UseMiddleware<ExceptionsMiddleware>();
+
+        app.MapControllers();
+
+        app.Run();
+    }
 }
-
-//app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.UseMiddleware<ExceptionsMiddleware>();
-
-app.MapControllers();
-
-app.Run();

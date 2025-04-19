@@ -2,7 +2,9 @@
 using Orders.Domain.Customers;
 using Orders.Domain.Products;
 using Orders.Infrastructure.Orders;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Tests.EndToEnd")]
 namespace Orders.Infrastructure.Database;
 internal class OrdersDbContext : DbContext
 {
