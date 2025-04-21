@@ -63,7 +63,7 @@ internal class RabbitMqSetupBackgroundService : IHostedService
         var catalogConsumerEvents = GetModuleConsumerEvents("Catalog.Application", consumerEventType);
         var ordersConsumerEvents = GetModuleConsumerEvents("Orders.Application", consumerEventType);
         var customersConsumerEvents = GetModuleConsumerEvents("Customers.Application", consumerEventType);
-        var authConsumerEvents = GetModuleConsumerEvents("Auth.Application", consumerEventType);
+        //var authConsumerEvents = GetModuleConsumerEvents("Auth.Application", consumerEventType);
         var paymentsConsumerEvents = GetModuleConsumerEvents("Payments.Core", consumerEventType);
         var warehouseConsumerEvents = GetModuleConsumerEvents("Warehouse.Core", consumerEventType);
         var deliveryConsumerEvents = GetModuleConsumerEvents("Delivery.Core", consumerEventType);
@@ -71,7 +71,7 @@ internal class RabbitMqSetupBackgroundService : IHostedService
         BindQueues(RabbitMqQueueName.CatalogQueue, catalogConsumerEvents);
         BindQueues(RabbitMqQueueName.OrdersQueue, ordersConsumerEvents);
         BindQueues(RabbitMqQueueName.CustomersQueue, customersConsumerEvents);
-        BindQueues(RabbitMqQueueName.AuthQueue, authConsumerEvents);
+        //BindQueues(RabbitMqQueueName.AuthQueue, authConsumerEvents);
         BindQueues(RabbitMqQueueName.PaymentsQueue, paymentsConsumerEvents);
         BindQueues(RabbitMqQueueName.WarehouseQueue, warehouseConsumerEvents);
         BindQueues(RabbitMqQueueName.DeliveryQueue, deliveryConsumerEvents);

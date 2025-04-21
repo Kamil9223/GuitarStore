@@ -1,5 +1,6 @@
 ﻿using GuitarStore.Api.Client;
 using Microsoft.Extensions.DependencyInjection;
+using Tests.EndToEnd.Setup.Modules.Common;
 using Xunit;
 using Xunit.Extensions.AssemblyFixture;
 
@@ -7,9 +8,9 @@ namespace Tests.EndToEnd.Setup;
 public class EndToEndTestBase : IAsyncLifetime, IAssemblyFixture<Application>
 {
     protected readonly Application _webApp;
-    protected IServiceScope Scope { get; private set; } = null!;
-    //protected MrpDbContext Context => ServiceProvider.GetRequiredService<MrpDbContext>();
 
+    protected IServiceScope Scope { get; private set; } = null!;
+    protected DbsAccessor Databases { get; private set; } = null!;
     protected TestContext TestContext { get; private set; } = null!;
 
     protected EndToEndTestBase(Application webApp)
@@ -20,6 +21,7 @@ public class EndToEndTestBase : IAsyncLifetime, IAssemblyFixture<Application>
     public virtual Task InitializeAsync()
     {
         Scope = _webApp.ServiceProvider.CreateScope();
+        Databases = new(Scope.ServiceProvider);
         TestContext = new(_webApp.GetAuthorizedClient());
         return Task.CompletedTask;
     }

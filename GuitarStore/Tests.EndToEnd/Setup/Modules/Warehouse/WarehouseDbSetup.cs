@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Tests.EndToEnd.Setup.Modules.Common;
 using Warehouse.Core.Database;
 
 namespace Tests.EndToEnd.Setup.Modules.Warehouse;

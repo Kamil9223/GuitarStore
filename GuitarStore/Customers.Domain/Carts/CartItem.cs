@@ -17,7 +17,7 @@ public class CartItem : Entity
     //For EF Core
     private CartItem() { }
 
-    private CartItem(ProductId productId, string name, Money price, int quantity)
+    public CartItem(ProductId productId, string name, Money price, int quantity)
     {
         Id = CartItemId.New();
         ProductId = productId;

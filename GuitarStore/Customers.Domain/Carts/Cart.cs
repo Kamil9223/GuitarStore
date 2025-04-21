@@ -13,10 +13,10 @@ public class Cart : Entity
 
     public decimal TotalPrice => CartItems.Sum(x => x.Price * x.Quantity);
 
-    private Cart(CustomerId customerId)
+    public Cart(CustomerId customerId, IReadOnlyCollection<CartItem> cartItems = null)
     {
         CustomerId = customerId;
-        _cartItems = new List<CartItem>();
+        _cartItems = cartItems?.ToList() ?? [];
     }
 
     public static Cart Create(CustomerId customerId)

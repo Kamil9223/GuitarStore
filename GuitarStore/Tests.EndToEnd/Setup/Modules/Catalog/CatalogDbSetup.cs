@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Tests.EndToEnd.Setup.Modules.Common;
 
 namespace Tests.EndToEnd.Setup.Modules.Catalog;
 internal class CatalogDbSetup : IDbSetup

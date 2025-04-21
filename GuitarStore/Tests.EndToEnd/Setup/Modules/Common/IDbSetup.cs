@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Tests.EndToEnd.Setup.Modules;
+namespace Tests.EndToEnd.Setup.Modules.Common;
 internal interface IDbSetup
 {
     void SetupDb(IServiceCollection services, string connectionString);

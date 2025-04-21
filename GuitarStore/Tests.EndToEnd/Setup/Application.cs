@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Tests.EndToEnd.Setup.Modules;
+using Tests.EndToEnd.Setup.Modules.Common;
 using Xunit;
 
 namespace Tests.EndToEnd.Setup;

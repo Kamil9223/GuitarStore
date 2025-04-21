@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Orders.Infrastructure.Database;
+using Tests.EndToEnd.Setup.Modules.Common;
 
 namespace Tests.EndToEnd.Setup.Modules.Orders;
 internal class OrdersDbSetup : IDbSetup
