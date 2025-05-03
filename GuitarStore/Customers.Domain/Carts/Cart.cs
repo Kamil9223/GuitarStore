@@ -1,5 +1,6 @@
 ﻿using Customers.Domain.Products;
 using Domain;
+using Domain.Exceptions;
 using Domain.StronglyTypedIds;
 
 namespace Customers.Domain.Carts;

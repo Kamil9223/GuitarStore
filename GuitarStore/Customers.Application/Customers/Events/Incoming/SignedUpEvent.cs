@@ -1,9 +1,9 @@
-﻿using Application.Exceptions;
-using Application.RabbitMq.Abstractions;
+﻿using Application.RabbitMq.Abstractions;
 using Application.RabbitMq.Abstractions.Events;
 using Customers.Application.Abstractions;
 using Customers.Domain.Carts;
 using Customers.Domain.Customers;
+using Domain.Exceptions;
 using Domain.ValueObjects;
 
 namespace Customers.Application.Customers.Events.Incoming;
@@ -27,7 +27,7 @@ internal sealed class SignedUpEventHandler : IIntegrationEventHandler<SignedUpEv
     {
         var customerExists = await _customerRepository.Exists(x => x.Email == @event.Email);
         if (customerExists)
-            throw new GuitarStoreApplicationException($"Customer with Email: [{@event.Email}] already exists.");
+            throw new DomainException($"Customer with Email: [{@event.Email}] already exists.");
 
         var validEmail = EmailAddress.Create(@event.Email);
 

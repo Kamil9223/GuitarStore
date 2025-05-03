@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Domain.Exceptions;
 using Domain.StronglyTypedIds;
 
 namespace Catalog.Domain;

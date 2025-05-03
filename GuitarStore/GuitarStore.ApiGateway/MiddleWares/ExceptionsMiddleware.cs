@@ -1,5 +1,5 @@
-﻿using Application.Exceptions;
-using Domain;
+﻿using Domain.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
 
@@ -21,18 +21,41 @@ public class ExceptionsMiddleware : IMiddleware
 
     private async Task HandleException(Exception ex, HttpContext context)
     {
-        var responseModel = ex switch
+        var problemDetails = ex switch
         {
-            ValidationException => new ResponseModel(HttpStatusCode.BadRequest, ex.Message, null),
-            NotFoundException => new ResponseModel(HttpStatusCode.NotFound, ex.Message, null),
-            DomainException => new ResponseModel(HttpStatusCode.Conflict, ex.Message, null),
-            GuitarStoreApplicationException => new ResponseModel(HttpStatusCode.Conflict, ex.Message, null),
-            _ => new ResponseModel(HttpStatusCode.InternalServerError, ex.Message, null)
+            ValidationException => new ProblemDetails
+            {
+                Title = "Bad_Request",
+                Status = (int)HttpStatusCode.BadRequest,
+                Detail = ex.Message,
+                Instance = context.Request.Path
+            },
+            NotFoundException => new ProblemDetails
+            {
+                Title = "Not_Found",
+                Status = (int)HttpStatusCode.NotFound,
+                Detail = ex.Message,
+                Instance = context.Request.Path
+            },
+            DomainException => new ProblemDetails
+            {
+                Title = "Business_Logic_Rule_Error",
+                Status = (int)HttpStatusCode.Conflict,
+                Detail = ex.Message,
+                Instance = context.Request.Path
+            },
+            _ => new ProblemDetails
+            {
+                Title = "Unknow_Error",
+                Status = (int)HttpStatusCode.InternalServerError,
+                Detail = ex.Message,
+                Instance = context.Request.Path
+            },
         };
 
         context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)responseModel.HttpStatusCode;
+        context.Response.StatusCode = problemDetails.Status!.Value;
 
-        await context.Response.WriteAsync(JsonConvert.SerializeObject(responseModel));
+        await context.Response.WriteAsync(JsonConvert.SerializeObject(problemDetails));
     }
 }

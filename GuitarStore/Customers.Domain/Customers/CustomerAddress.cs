@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Domain.Exceptions;
 using Domain.ValueObjects;
 
 namespace Customers.Domain.Customers;

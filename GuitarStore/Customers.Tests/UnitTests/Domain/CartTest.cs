@@ -1,6 +1,6 @@
 ﻿using Customers.Domain.Carts;
 using Customers.Domain.Products;
-using Domain;
+using Domain.Exceptions;
 using Domain.StronglyTypedIds;
 using Xunit;
 

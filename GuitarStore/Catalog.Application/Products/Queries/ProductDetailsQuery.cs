@@ -1,7 +1,7 @@
 ﻿using Application.CQRS;
-using Application.Exceptions;
 using Catalog.Application.Products.Dtos;
 using Catalog.Application.Products.Services;
+using Domain.Exceptions;
 using Domain.StronglyTypedIds;
 
 namespace Catalog.Application.Products.Queries;
@@ -22,7 +22,7 @@ internal sealed class ProductDetailsQueryHandler : IQueryHandler<ProductDetailsQ
         var product = await _productQueryService.Get(query.ProductId);
         if (product is null)
         {
-            throw new NotFoundException($"Product with Id: [{query.ProductId}] not exists.");
+            throw new NotFoundException(query.ProductId);
         }
 
         return product;

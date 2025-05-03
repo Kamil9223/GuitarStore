@@ -1,6 +1,6 @@
-﻿using Application.Exceptions;
-using Customers.Domain.Carts;
+﻿using Customers.Domain.Carts;
 using Customers.Infrastructure.Database;
+using Domain.Exceptions;
 using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -49,7 +49,7 @@ internal class CartRepository : ICartRepository
             .SingleOrDefaultAsync();
 
         if (dbCart is null)
-            throw new NotFoundException($"Cart with customerId: {customerId} not exists.");
+            throw new NotFoundException(customerId);
 
         var cart = JsonConvert.DeserializeObject<Cart>(dbCart.Object);
         return cart;
@@ -63,7 +63,7 @@ internal class CartRepository : ICartRepository
             .SingleOrDefaultAsync();
 
         if (dbCheckout is null)
-            throw new NotFoundException($"Checkout cart with customerId: {customerId} not exists.");
+            throw new NotFoundException(customerId);
 
         var checkout = JsonConvert.DeserializeObject<CheckoutCart>(dbCheckout.Object);
         return checkout;

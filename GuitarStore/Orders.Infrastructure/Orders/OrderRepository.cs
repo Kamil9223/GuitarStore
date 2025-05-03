@@ -1,4 +1,4 @@
-﻿using Application.Exceptions;
+﻿using Domain.Exceptions;
 using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -19,7 +19,7 @@ internal class OrderRepository : IOrderRepository
     {
         var dbOrder = await _dbContext.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
         if (dbOrder is null)
-            throw new NotFoundException($"Order with Id: {orderId} not exists.");
+            throw new NotFoundException(orderId);
 
         var order = JsonConvert.DeserializeObject<Order>(dbOrder.Object)!;
         return order;

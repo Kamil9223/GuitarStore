@@ -1,10 +1,8 @@
 ﻿using Application.CQRS;
-using Application.RabbitMq.Abstractions;
 using Customers.Shared;
 using Domain.StronglyTypedIds;
 using Domain.ValueObjects;
 using Orders.Application.Abstractions;
-using Orders.Application.Orders.Events.Outgoing;
 using Orders.Domain.Orders;
 using Payments.Shared.Contracts;
 using Payments.Shared.Services;
@@ -22,7 +20,6 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
     private readonly IOrderRepository _orderRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IProductReservationService _productReservationService;
-    private readonly IIntegrationEventPublisher _integrationEventPublisher;
     private readonly IStripeService _stripeService;
 
     public PlaceOrderCommandHandler(
@@ -30,14 +27,12 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
         IOrderRepository orderRepository,
         IUnitOfWork unitOfWork,
         IProductReservationService productReservationService,
-        IIntegrationEventPublisher integrationEventPublisher,
         IStripeService stripeService)
     {
         _cartService = cartService;
         _orderRepository = orderRepository;
         _unitOfWork = unitOfWork;
         _productReservationService = productReservationService;
-        _integrationEventPublisher = integrationEventPublisher;
         _stripeService = stripeService;
     }
 
@@ -66,11 +61,6 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
         var session = await _stripeService.CreateCheckoutSession(checkoutSession);
 
         await _orderRepository.Add(newOrder);
-
-        //await _integrationEventPublisher.Publish(new CreatedOrderEvent(
-        //    OrderId: newOrder.Id,
-        //    TotalAmount: newOrder.TotalPrice,
-        //    Currency: Currency.PLN));
 
         await _unitOfWork.SaveChanges();
         return new PlaceOrderResponse(session.Url, session.SessionId);

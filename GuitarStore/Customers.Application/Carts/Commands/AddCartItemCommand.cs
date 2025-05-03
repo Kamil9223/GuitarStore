@@ -1,8 +1,8 @@
 ﻿using Application.CQRS;
-using Application.Exceptions;
 using Customers.Application.Abstractions;
 using Customers.Domain.Carts;
 using Customers.Domain.Products;
+using Domain.Exceptions;
 using Domain.StronglyTypedIds;
 
 namespace Customers.Application.Carts.Commands;
@@ -26,7 +26,7 @@ internal sealed class AddCartItemCommandHandler : ICommandHandler<AddCartItemCom
         var cart = await _cartRepository.GetCart(command.CustomerId);
         var product = await _productRepository.Get(command.ProductId);
         if (product is null)
-            throw new NotFoundException($"Product with Id: {command.ProductId} not exists.");
+            throw new NotFoundException(command.ProductId);
 
         cart.AddProduct(product, 1);
 

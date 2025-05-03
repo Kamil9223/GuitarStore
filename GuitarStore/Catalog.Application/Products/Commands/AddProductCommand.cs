@@ -1,10 +1,10 @@
 ﻿using Application.CQRS;
-using Application.Exceptions;
 using Application.RabbitMq.Abstractions;
 using Catalog.Application.Abstractions;
 using Catalog.Application.Products.Events.Outgoing;
 using Catalog.Domain;
 using Catalog.Domain.IRepositories;
+using Domain.Exceptions;
 using Domain.StronglyTypedIds;
 
 namespace Catalog.Application.Products.Commands;
@@ -47,20 +47,20 @@ internal sealed class AddProductCommandHandler : ICommandHandler<AddProductComma
     {
         var productAlreadyExists = await _productRepository.Exists(x => x.Name == command.Name);
         if (productAlreadyExists)
-            throw new GuitarStoreApplicationException($"Product with Name: [{command.Name}] already exists.");
+            throw new DomainException($"Product with Name: [{command.Name}] already exists.");
 
         var variationOptions = await _variationOptionRepository.Get(command.VariationOptionIds);
 
         if (variationOptions.Count != command.VariationOptionIds.Count)
-            throw new GuitarStoreApplicationException("Not all of provided variation options exist.");
+            throw new DomainException("Not all of provided variation options exist.");
 
         var brand = await _brandRepository.Get(command.BrandId);
         if (brand is null)
-            throw new GuitarStoreApplicationException($"Brand with Id = [{command.BrandId}] not exists.");
+            throw new DomainException($"Brand with Id = [{command.BrandId}] not exists.");
 
         var category = await _categoryRepository.GetCategoryThatHasNotChildren(command.CategoryId);
         if (category is null)
-            throw new GuitarStoreApplicationException($"Category that has not children with Id = [{command.CategoryId}] not exists.");
+            throw new DomainException($"Category that has not children with Id = [{command.CategoryId}] not exists.");
 
         var product = new Product(command.Name, command.Description, command.Price, command.Quantity, brand, category, variationOptions);
 
