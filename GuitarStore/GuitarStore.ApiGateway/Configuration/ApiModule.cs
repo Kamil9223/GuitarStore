@@ -1,12 +1,13 @@
-﻿using Autofac;
-using GuitarStore.ApiGateway.MiddleWares;
+﻿using GuitarStore.ApiGateway.MiddleWares;
 
 namespace GuitarStore.ApiGateway.Configuration;
 
-internal class ApiModule : Module
+internal static class ApiModule
 {
-    protected override void Load(ContainerBuilder builder)
+    public static IServiceCollection AddApiModule(this IServiceCollection services, IConfiguration configuration)
     {
-        builder.RegisterType<ExceptionsMiddleware>().AsSelf().InstancePerDependency();
+        services.AddTransient<ExceptionsMiddleware>();
+
+        return services;
     }
 }

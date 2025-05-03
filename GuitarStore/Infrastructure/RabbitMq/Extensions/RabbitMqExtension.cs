@@ -1,37 +1,31 @@
-﻿using Autofac;
+﻿using Application.RabbitMq.Abstractions;
+using Infrastructure.RabbitMq.Abstractions;
 using Infrastructure.RabbitMq.Implementations;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.RabbitMq.Extensions;
 
 internal static class RabbitMqExtension
 {
-    public static ContainerBuilder RabbitMqConnection(this ContainerBuilder builder)
+    public static IServiceCollection AddRabbitMq(this IServiceCollection services)
     {
-        builder.RegisterType<RabbitMqConnector>()
-            .AsImplementedInterfaces()
-            .SingleInstance();
+        services.AddSingleton<RabbitMqConnector>();
+        services.AddSingleton<IRabbitMqConnector>(provider =>
+            provider.GetRequiredService<RabbitMqConnector>());
+        services.AddSingleton<IRabbitMqChannel>(provider =>
+            provider.GetRequiredService<RabbitMqConnector>());
 
-        builder.RegisterType<IntegrationEventPublisher>()
-            .AsImplementedInterfaces()
-            .InstancePerLifetimeScope();
+        services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
+        services.AddSingleton<IIntegrationEventSubscriber, IntegrationEventSubscriber>();
+        services.AddSingleton<IntegrationEventsSubscriptionManager>();
 
-        builder.RegisterType<IntegrationEventSubscriber>()
-            .AsImplementedInterfaces()
-            .SingleInstance();
+        return services;
+    }
 
-        builder.RegisterType<IntegrationEventsSubscriptionManager>()
-            .AsSelf()
-            .SingleInstance();
-
-        builder.RegisterType<RabbitMqSetupBackgroundService>()
-            .As<IHostedService>()
-            .SingleInstance();
-
-        builder.RegisterType<RabbitMqSubscriptionBackgroundService>()
-            .As<IHostedService>()
-            .SingleInstance();
-
-        return builder;
+    public static IServiceCollection RegisterRabbitMqBackgroundWorkers(this IServiceCollection services)
+    {
+        services.AddHostedService<RabbitMqSetupBackgroundService>();
+        services.AddHostedService<RabbitMqSubscriptionBackgroundService>();
+        return services;
     }
 }

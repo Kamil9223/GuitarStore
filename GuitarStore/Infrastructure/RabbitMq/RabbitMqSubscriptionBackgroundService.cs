@@ -1,22 +1,22 @@
 ﻿using Application.RabbitMq;
-using Autofac;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Infrastructure.RabbitMq;
 
 internal class RabbitMqSubscriptionBackgroundService : IHostedService
 {
-    private readonly ILifetimeScope _scope;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public RabbitMqSubscriptionBackgroundService(ILifetimeScope scope)
+    public RabbitMqSubscriptionBackgroundService(IServiceScopeFactory serviceScopeFactory)
     {
-        _scope = scope;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        using var scope = _scope.BeginLifetimeScope();
-        var subscriptionManagers = scope.Resolve<IEnumerable<IEventBusSubscriptionManager>>();
+        using var scope = _serviceScopeFactory.CreateScope();
+        var subscriptionManagers = scope.ServiceProvider.GetRequiredService<IEnumerable<IEventBusSubscriptionManager>>();
         foreach (var sub in subscriptionManagers)
             sub.SubscribeToEvents();
 

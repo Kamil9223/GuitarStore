@@ -1,20 +1,14 @@
-﻿using Autofac;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Orders.Application;
 
 namespace Orders.Infrastructure.Configuration;
-public sealed class OrdersModuleInitializator : Module
+public static class OrdersModuleInitializator
 {
-    private readonly IConfiguration _configuration;
-
-    public OrdersModuleInitializator(IConfiguration configuration)
+    public static IServiceCollection AddOrdersModule(this IServiceCollection services, IConfiguration configuration)
     {
-        _configuration = configuration;
-    }
-
-    protected override void Load(ContainerBuilder builder)
-    {
-        builder.RegisterModule(new InfrastructureModule(_configuration));
-        builder.RegisterModule<ApplicationModule>();
+        services.AddInfrastructureModule(configuration);
+        services.AddApplicationModule();
+        return services;
     }
 }

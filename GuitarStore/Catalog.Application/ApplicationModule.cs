@@ -1,40 +1,37 @@
 ﻿using Application.CQRS;
-using Autofac;
 using Catalog.Application.Abstractions;
 using Catalog.Application.CrossCuttingServices;
+using Catalog.Application.Products.Commands;
 using Catalog.Application.Products.ModuleApi;
+using Catalog.Shared;
 using FluentValidation;
-using Mapster;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Module = Autofac.Module;
 
 [assembly: InternalsVisibleTo("Catalog.Infrastructure")]
 namespace Catalog.Application;
 
-internal sealed class ApplicationModule : Module
+internal static class ApplicationModule
 {
-    protected override void Load(ContainerBuilder builder)
+    internal static void AddApplicationModule(this IServiceCollection services)
     {
-        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-            .Where(type => type.Name.EndsWith("Handler"))
-            .AsImplementedInterfaces()
-            .InstancePerLifetimeScope();
+        var assembly = Assembly.GetExecutingAssembly();
+        services.Scan(scan => scan
+            .FromAssemblies(assembly)
+            .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(c => c.AssignableTo(typeof(IValidator<>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+        );
 
-        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-            .AsClosedTypesOf(typeof(IValidator<>))
-            .AsImplementedInterfaces()
-            .InstancePerLifetimeScope();
+        services.AddScoped(typeof(IValidationService<>), typeof(ValidationService<>));
+        services.AddScoped<IProductService, ProductService>();
 
-        TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetExecutingAssembly());
-
-        builder.RegisterGeneric(typeof(ValidationService<>)).As(typeof(IValidationService<>)).InstancePerLifetimeScope();
-
-        builder.RegisterGenericDecorator(typeof(CommandDbTransactionDecorator<>), typeof(ICommandHandler<>),
-            condition => condition.ImplementationType.Assembly.FullName == Assembly.GetExecutingAssembly().FullName);
-        builder.RegisterGenericDecorator(typeof(CommandValidationDecorator<>), typeof(ICommandHandler<>),
-            condition => condition.ImplementationType.Assembly.FullName == Assembly.GetExecutingAssembly().FullName);
-
-        builder.RegisterType<ProductService>().AsImplementedInterfaces().InstancePerLifetimeScope();
+        services.AddScoped<ICommandHandler<AddProductCommand>, AddProductCommandHandler>();
+        services.Decorate<ICommandHandler<AddProductCommand>, CommandValidationDecorator<AddProductCommand>>();
+        services.Decorate<ICommandHandler<AddProductCommand>, CommandDbTransactionDecorator<AddProductCommand>>();
     }
 }

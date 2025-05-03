@@ -1,31 +1,28 @@
-﻿using Autofac;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Warehouse.Core.Database;
 using Warehouse.Core.InternalModuleApi;
+using Warehouse.Shared;
 
 namespace Warehouse.Core;
-public sealed class WarehouseModuleInitializator : Module
+public static class WarehouseModuleInitializator
 {
-    private readonly IConfiguration _configuration;
-
-    public WarehouseModuleInitializator(IConfiguration configuration)
+    public static IServiceCollection AddWarehouseModule(this IServiceCollection services, IConfiguration configuration)
     {
-        _configuration = configuration;
-    }
-
-    protected override void Load(ContainerBuilder builder)
-    {
-        builder.Register(context =>
+        services.AddScoped<WarehouseDbContext>(provider =>
         {
-            var dbOptions = new DbContextOptionsBuilder<WarehouseDbContext>();
-            dbOptions.UseSqlServer(_configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value!);
-            return new WarehouseDbContext(dbOptions.Options);
-        })
-       .As<WarehouseDbContext>()
-       .InstancePerLifetimeScope();
+            var connectionString = configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value!;
 
-        builder.RegisterType<ProductReservationService>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            var dbOptions = new DbContextOptionsBuilder<WarehouseDbContext>()
+                .UseSqlServer(connectionString)
+                .Options;
+
+            return new WarehouseDbContext(dbOptions);
+        });
+
+        services.AddScoped<IProductReservationService, ProductReservationService>();
+
+        return services;
     }
 }

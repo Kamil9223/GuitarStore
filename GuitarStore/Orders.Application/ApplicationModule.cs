@@ -1,38 +1,27 @@
 ﻿using Application.CQRS;
-using Autofac;
-using Microsoft.Extensions.Hosting;
-using Orders.Application.Orders.BackgroundJobs;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Orders.Infrastructure")]
 namespace Orders.Application;
 
-internal sealed class ApplicationModule : Autofac.Module
+internal static class ApplicationModule
 {
-    protected override void Load(ContainerBuilder builder)
+    internal static void AddApplicationModule(this IServiceCollection services)
     {
-        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-            .AsClosedTypesOf(typeof(ICommandHandler<>))
-            .AsImplementedInterfaces()
-            .InstancePerLifetimeScope();
-
-        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-            .AsClosedTypesOf(typeof(ICommandHandler<,>))
-            .AsImplementedInterfaces()
-            .InstancePerLifetimeScope();
-
-        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-           .AsClosedTypesOf(typeof(IQueryHandler<,>))
-           .AsImplementedInterfaces()
-           .InstancePerLifetimeScope();
-
-        builder.RegisterType<OrderCompletionChannel>()
-            .AsImplementedInterfaces()
-            .SingleInstance();
-
-        builder.RegisterType<OrderCompletionJob>()
-            .As<BackgroundService>()
-            .SingleInstance();
+        var assembly = Assembly.GetExecutingAssembly();
+        services.Scan(scan => scan
+            .FromAssemblies(assembly)
+            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<,>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+        );
     }
 }

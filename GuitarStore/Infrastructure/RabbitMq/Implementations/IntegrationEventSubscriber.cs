@@ -1,7 +1,7 @@
 ﻿using Application.RabbitMq.Abstractions;
 using Application.RabbitMq.Abstractions.Events;
-using Autofac;
 using Infrastructure.RabbitMq.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -12,13 +12,13 @@ namespace Infrastructure.RabbitMq.Implementations;
 internal class IntegrationEventSubscriber : IIntegrationEventSubscriber
 {
     private readonly IRabbitMqChannel _rabbitMqChannel;
-    private readonly ILifetimeScope _scope;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly IntegrationEventsSubscriptionManager _integrationEventsSubscriptionManager;
 
-    public IntegrationEventSubscriber(IRabbitMqChannel rabbitMqChannel, ILifetimeScope scope, IntegrationEventsSubscriptionManager integrationEventsSubscriptionManager)
+    public IntegrationEventSubscriber(IRabbitMqChannel rabbitMqChannel, IServiceScopeFactory serviceScopeFactory, IntegrationEventsSubscriptionManager integrationEventsSubscriptionManager)
     {
         _rabbitMqChannel = rabbitMqChannel;
-        _scope = scope;
+        _serviceScopeFactory = serviceScopeFactory;
         _integrationEventsSubscriptionManager = integrationEventsSubscriptionManager;
     }
 
@@ -46,12 +46,12 @@ internal class IntegrationEventSubscriber : IIntegrationEventSubscriber
                 var message = Encoding.UTF8.GetString(@event.Body.Span);
                 var integrationEvent = JsonConvert.DeserializeObject<TEvent>(message);
 
-                using var scope = _scope.BeginLifetimeScope();
+                using var scope = _serviceScopeFactory.CreateScope();
                 var handlerType = _integrationEventsSubscriptionManager.GetHandlerTypeForEvent(typeof(TEvent));
 
-                var handler = scope.Resolve(handlerType);
+                var handler = scope.ServiceProvider.GetRequiredService(handlerType);
                 var typedHandler = handler as IIntegrationEventHandler<TEvent>;
-                await typedHandler.Handle(integrationEvent);
+                await typedHandler!.Handle(integrationEvent!);
             }
             catch (Exception ex)
             {

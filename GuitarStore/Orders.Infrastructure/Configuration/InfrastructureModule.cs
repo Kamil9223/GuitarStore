@@ -1,37 +1,35 @@
-﻿using Autofac;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Orders.Application.Abstractions;
 using Orders.Infrastructure.Database;
 using System.Reflection;
 
 namespace Orders.Infrastructure.Configuration;
-internal sealed class InfrastructureModule : Autofac.Module
+
+internal static class InfrastructureModule
 {
-    private readonly IConfiguration _configuration;
-
-    public InfrastructureModule(IConfiguration configuration)
+    internal static void AddInfrastructureModule(this IServiceCollection services, IConfiguration configuration)
     {
-        _configuration = configuration;
-    }
-
-    protected override void Load(ContainerBuilder builder)
-    {
-        builder.Register(context =>
+        var assembly = Assembly.GetExecutingAssembly();
+        services.AddScoped<OrdersDbContext>(provider =>
         {
-            var dbOptions = new DbContextOptionsBuilder<OrdersDbContext>();
-            dbOptions.UseSqlServer(_configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value!);
-            return new OrdersDbContext(dbOptions.Options);
-        })
-        .As<OrdersDbContext>()
-        .InstancePerLifetimeScope();
+            var connectionString = configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value!;
 
-        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-            .Where(type => type.Name.EndsWith("Repository"))
-            .AsImplementedInterfaces()
-            .InstancePerLifetimeScope();
+            var dbOptions = new DbContextOptionsBuilder<OrdersDbContext>()
+                .UseSqlServer(connectionString)
+                .Options;
 
-        builder.RegisterType<UnitOfWork>()
-           .AsImplementedInterfaces()
-           .InstancePerLifetimeScope();
+            return new OrdersDbContext(dbOptions);
+        });
+
+        services.Scan(scan => scan
+            .FromAssemblies(assembly)
+            .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Repository")), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+        );
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
 }

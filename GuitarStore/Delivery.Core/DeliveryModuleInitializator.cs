@@ -1,15 +1,31 @@
-﻿using Application.RabbitMq.Abstractions;
-using Autofac;
+﻿using Application.CQRS;
+using Application.RabbitMq.Abstractions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
 namespace Delivery.Core;
-public sealed class DeliveryModuleInitializator : Autofac.Module
+public static class DeliveryModuleInitializator
 {
-    protected override void Load(ContainerBuilder builder)
+    public static IServiceCollection AddDeliveryModule(this IServiceCollection services, IConfiguration configuration)
     {
-        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-            .AsClosedTypesOf(typeof(IIntegrationEventHandler<>))
-            .AsImplementedInterfaces()
-            .InstancePerLifetimeScope();
+        var assembly = Assembly.GetExecutingAssembly();
+        services.Scan(scan => scan
+            .FromAssemblies(assembly)
+            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<,>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo(typeof(IIntegrationEventHandler<>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+        );
+
+        return services;
     }
 }

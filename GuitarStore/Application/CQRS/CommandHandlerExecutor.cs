@@ -1,27 +1,27 @@
-﻿using Autofac;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Application.CQRS;
 
 internal class CommandHandlerExecutor : ICommandHandlerExecutor
 {
-    private readonly ILifetimeScope _scope;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public CommandHandlerExecutor(ILifetimeScope scope)
+    public CommandHandlerExecutor(IServiceScopeFactory serviceScopeFactory)
     {
-        _scope = scope;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task Execute<TCommand>(TCommand command) where TCommand : ICommand
     {
-        using var scope = _scope.BeginLifetimeScope();
-        var handler = scope.Resolve<ICommandHandler<TCommand>>();
+        using var scope = _serviceScopeFactory.CreateScope();
+        var handler = scope.ServiceProvider.GetRequiredService<ICommandHandler<TCommand>>();
         await handler.Handle(command);
     }
 
     public async Task<TResponse> Execute<TResponse, TCommand>(TCommand command) where TCommand : ICommand
     {
-        using var scope = _scope.BeginLifetimeScope();
-        var handler = scope.Resolve<ICommandHandler<TResponse, TCommand>>();
+        using var scope = _serviceScopeFactory.CreateScope();
+        var handler = scope.ServiceProvider.GetRequiredService<ICommandHandler<TResponse, TCommand>>();
         return await handler.Handle(command);
     }
 }

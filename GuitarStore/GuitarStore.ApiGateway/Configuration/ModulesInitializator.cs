@@ -1,5 +1,4 @@
-﻿using Autofac;
-using Catalog.Infrastructure.Configuration;
+﻿using Catalog.Infrastructure.Configuration;
 using Customers.Infrastructure.Configuration;
 using Delivery.Core;
 using Infrastructure.Configuration;
@@ -9,23 +8,20 @@ using Warehouse.Core;
 
 namespace GuitarStore.ApiGateway.Configuration;
 
-internal class ModulesInitializator : Module
+internal static class ModulesInitializator
 {
-    private readonly IConfiguration _configuration;
+    public static IServiceCollection InitializeModules(this IServiceCollection services, IConfiguration configuration)
+    {
+        services
+            .AddCommonModule()
+            .AddCatalogModule(configuration)
+            .AddCustomersModule(configuration)
+            .AddOrdersModule(configuration)
+            .AddWarehouseModule(configuration)
+            .AddPaymentsModule(configuration)
+            .AddDeliveryModule(configuration)
+            .AddApiModule(configuration);
 
-    internal ModulesInitializator(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
-    protected override void Load(ContainerBuilder builder)
-    {
-        builder.RegisterModule<CommonModule>();
-        builder.RegisterModule(new CatalogModuleInitializator(_configuration));
-        builder.RegisterModule(new CustomersModuleInitializator(_configuration));
-        builder.RegisterModule(new OrdersModuleInitializator(_configuration));
-        builder.RegisterModule(new WarehouseModuleInitializator(_configuration));
-        builder.RegisterModule(new PaymentsModuleInitializator());
-        builder.RegisterModule(new DeliveryModuleInitializator());
-        builder.RegisterModule<ApiModule>();
+        return services;
     }
 }

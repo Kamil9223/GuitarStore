@@ -1,37 +1,37 @@
 ﻿using Application.CQRS;
+using Application.RabbitMq;
 using Application.RabbitMq.Abstractions;
-using Autofac;
 using Customers.Application.Carts.ModuleApi;
+using Customers.Shared;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using Module = Autofac.Module;
 
 [assembly: InternalsVisibleTo("Customers.Infrastructure")]
 namespace Customers.Application;
 
-internal sealed class ApplicationModule : Module
+internal static class ApplicationModule
 {
-    protected override void Load(ContainerBuilder builder)
+    internal static void AddApplicationModule(this IServiceCollection services)
     {
-        builder.RegisterType<EventBusSubscriptionManager>()
-            .AsImplementedInterfaces()
-            .SingleInstance();
+        var assembly = Assembly.GetExecutingAssembly();
+        services.Scan(scan => scan
+            .FromAssemblies(assembly)
+            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<,>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo(typeof(IIntegrationEventHandler<>)), publicOnly: false)
+                 .AsImplementedInterfaces()
+                .WithScopedLifetime()
+        );
 
-        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-            .AsClosedTypesOf(typeof(IIntegrationEventHandler<>))
-            .AsImplementedInterfaces()
-            .InstancePerLifetimeScope();
-
-        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-            .AsClosedTypesOf(typeof(ICommandHandler<>))
-            .AsImplementedInterfaces()
-            .InstancePerLifetimeScope();
-
-        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-           .AsClosedTypesOf(typeof(IQueryHandler<,>))
-           .AsImplementedInterfaces()
-           .InstancePerLifetimeScope();
-
-        builder.RegisterType<CartService>().AsImplementedInterfaces().InstancePerLifetimeScope();
+        services.AddSingleton<IEventBusSubscriptionManager, EventBusSubscriptionManager>();
+        services.AddScoped<ICartService, CartService>();
     }
 }

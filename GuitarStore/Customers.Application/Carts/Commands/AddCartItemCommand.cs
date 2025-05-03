@@ -32,5 +32,5 @@ internal sealed class AddCartItemCommandHandler : ICommandHandler<AddCartItemCom
 
         await _cartRepository.Update(cart);
         await _unitOfWork.SaveChanges();
-}
     }
+}

@@ -1,31 +1,37 @@
 ﻿using Application.CQRS;
 using Application.RabbitMq.Abstractions;
-using Autofac;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Payments.Core.Services;
+using Payments.Shared.Services;
 using Stripe.Checkout;
 using System.Reflection;
 
 namespace Payments.Core;
-public sealed class PaymentsModuleInitializator : Autofac.Module
+public static class PaymentsModuleInitializator
 {
-    protected override void Load(ContainerBuilder builder)
+    public static IServiceCollection AddPaymentsModule(this IServiceCollection services, IConfiguration configuration)
     {
-        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-           .AsClosedTypesOf(typeof(ICommandHandler<>))
-           .AsImplementedInterfaces()
-           .InstancePerLifetimeScope();
+        var assembly = Assembly.GetExecutingAssembly();
+        services.Scan(scan => scan
+            .FromAssemblies(assembly)
+            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<,>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo(typeof(IIntegrationEventHandler<>)), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+        );
 
-        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-           .AsClosedTypesOf(typeof(IQueryHandler<,>))
-           .AsImplementedInterfaces()
-           .InstancePerLifetimeScope();
+        services.AddScoped<IStripeService, StripeService>();
+        services.AddScoped<SessionService>();
 
-        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-            .AsClosedTypesOf(typeof(IIntegrationEventHandler<>))
-            .AsImplementedInterfaces()
-            .InstancePerLifetimeScope();
-
-        builder.RegisterType<StripeService>().AsImplementedInterfaces().InstancePerLifetimeScope();
-        builder.RegisterType<SessionService>().AsSelf().InstancePerLifetimeScope();
+        return services;
     }
 }

@@ -1,52 +1,49 @@
-﻿using Autofac;
-using Catalog.Application.Abstractions;
+﻿using Catalog.Application.Abstractions;
 using Catalog.Infrastructure.Database;
 using Catalog.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-using Module = Autofac.Module;
 
 namespace Catalog.Infrastructure.Configuration;
 
-internal sealed class InfrastructureModule : Module
+internal static class InfrastructureModule
 {
-    private readonly IConfiguration _configuration;
-
-    public InfrastructureModule(IConfiguration configuration)
+    internal static void AddInfrastructureModule(this IServiceCollection services, IConfiguration configuration)
     {
-        _configuration = configuration;
-    }
-
-    protected override void Load(ContainerBuilder builder)
-    {
-        builder.Register(context =>
+        var assembly = Assembly.GetExecutingAssembly();
+        services.AddScoped<CatalogDbContext>(provider =>
         {
-            var dbOptions = new DbContextOptionsBuilder<CatalogDbContext>();
-            dbOptions.UseSqlServer(_configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value!);
-            return new CatalogDbContext(dbOptions.Options);
-        })
-        .As<CatalogDbContext>()
-        .InstancePerLifetimeScope();
+            var connectionString = configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value!;
 
-        builder.RegisterType<SqlConnectionFactory>()
-            .As<ISqlConnectionFactory>()
-            .WithParameter("connectionString", _configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value!)
-            .InstancePerLifetimeScope();
+            var dbOptions = new DbContextOptionsBuilder<CatalogDbContext>()
+                .UseSqlServer(connectionString)
+                .Options;
 
-        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-            .Where(type => type.Name.EndsWith("Repository"))
-            .AsImplementedInterfaces()
-            .InstancePerLifetimeScope();
+            return new CatalogDbContext(dbOptions);
+        });
 
-        builder.RegisterType<UnitOfWork>()
-            .AsImplementedInterfaces()
-            .InstancePerLifetimeScope();
+        services.Scan(scan => scan
+            .FromAssemblies(assembly)
+            .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Repository")), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+        );
 
-        builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-            .Where(type => type.Name.EndsWith("QueryService"))
-            .AsImplementedInterfaces()
-            .InstancePerLifetimeScope();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        services.Scan(scan => scan
+            .FromAssemblies(assembly)
+            .AddClasses(classes => classes.Where(type => type.Name.EndsWith("QueryService")), publicOnly: false)
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+        );
+
+        services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>(provider =>
+        {
+            var connectionString = configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value!;
+            return new SqlConnectionFactory(connectionString);
+        });
     }
 }

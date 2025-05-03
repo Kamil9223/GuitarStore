@@ -1,20 +1,15 @@
-﻿using Autofac;
-using Catalog.Application;
+﻿using Catalog.Application;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Catalog.Infrastructure.Configuration;
 
-public sealed class CatalogModuleInitializator : Module
+public static class CatalogModuleInitializator
 {
-    private readonly IConfiguration _configuration;
-
-    public CatalogModuleInitializator(IConfiguration configuration)
+    public static IServiceCollection AddCatalogModule(this IServiceCollection services, IConfiguration configuration)
     {
-        _configuration = configuration;
-    }
-    protected override void Load(ContainerBuilder builder)
-    {
-        builder.RegisterModule(new InfrastructureModule(_configuration));
-        builder.RegisterModule<ApplicationModule>();
+        services.AddInfrastructureModule(configuration);
+        services.AddApplicationModule();
+        return services;
     }
 }
