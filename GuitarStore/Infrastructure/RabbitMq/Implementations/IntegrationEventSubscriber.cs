@@ -47,9 +47,11 @@ internal class IntegrationEventSubscriber : IIntegrationEventSubscriber
                 var integrationEvent = JsonConvert.DeserializeObject<TEvent>(message);
 
                 using var scope = _serviceScopeFactory.CreateScope();
-                var handlerType = _integrationEventsSubscriptionManager.GetHandlerTypeForEvent(typeof(TEvent));
+                //var handlerType = _integrationEventsSubscriptionManager.GetHandlerTypeForEvent(typeof(TEvent));
+                var handlerAbstractionType = typeof(IIntegrationEventHandler<>).MakeGenericType(typeof(TEvent));
 
-                var handler = scope.ServiceProvider.GetRequiredService(handlerType);
+                var handler = scope.ServiceProvider.GetRequiredService(handlerAbstractionType);
+                
                 var typedHandler = handler as IIntegrationEventHandler<TEvent>;
                 await typedHandler!.Handle(integrationEvent!);
             }

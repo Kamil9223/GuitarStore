@@ -27,7 +27,7 @@ internal static class ApplicationModule
                 .AsImplementedInterfaces()
                 .WithScopedLifetime()
             .AddClasses(classes => classes.AssignableTo(typeof(IIntegrationEventHandler<>)), publicOnly: false)
-                 .AsImplementedInterfaces()
+                .AsImplementedInterfaces()
                 .WithScopedLifetime()
         );
 

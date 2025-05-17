@@ -1,5 +1,6 @@
 ﻿using Application.CQRS;
 using Common.EfCore.Transactions;
+using Customers.Application.Abstractions;
 using Customers.Domain.Carts;
 using Domain.StronglyTypedIds;
 using Domain.ValueObjects;
@@ -14,9 +15,9 @@ public sealed record CheckoutCartCommand(CustomerId CustomerId, DeliveryCommandP
 internal sealed class CheckoutCartCommandHandler : ICommandHandler<CheckoutCartCommand>
 {
     private readonly ICartRepository _cartRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly ICustomersUnitOfWork _unitOfWork;
 
-    public CheckoutCartCommandHandler(ICartRepository cartRepository, IUnitOfWork unitOfWork)
+    public CheckoutCartCommandHandler(ICartRepository cartRepository, ICustomersUnitOfWork unitOfWork)
     {
         _cartRepository = cartRepository;
         _unitOfWork = unitOfWork;

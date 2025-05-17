@@ -22,7 +22,7 @@ public class Application : IAsyncLifetime
 
         _app = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder => builder
-                .UseEnvironment("Production")
+                .UseEnvironment("TestContainers")
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .ConfigureAppConfiguration(config =>
                 {

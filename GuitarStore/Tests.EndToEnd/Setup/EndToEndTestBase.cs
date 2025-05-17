@@ -1,4 +1,5 @@
 ﻿using GuitarStore.Api.Client;
+using Infrastructure.RabbitMq.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Tests.EndToEnd.Setup.Modules.Common;
 using Xunit;
@@ -12,6 +13,7 @@ public class EndToEndTestBase : IAsyncLifetime, IAssemblyFixture<Application>
     protected IServiceScope Scope { get; private set; } = null!;
     protected DbsAccessor Databases { get; private set; } = null!;
     protected TestContext TestContext { get; private set; } = null!;
+    protected IRabbitMqChannel RabbitMqChannel { get; private set; } = null!;
 
     protected EndToEndTestBase(Application webApp)
     {
@@ -23,6 +25,7 @@ public class EndToEndTestBase : IAsyncLifetime, IAssemblyFixture<Application>
         Scope = _webApp.ServiceProvider.CreateScope();
         Databases = new(Scope.ServiceProvider);
         TestContext = new(_webApp.GetAuthorizedClient());
+        RabbitMqChannel = Scope.ServiceProvider.GetRequiredService<IRabbitMqChannel>();
         return Task.CompletedTask;
     }
 

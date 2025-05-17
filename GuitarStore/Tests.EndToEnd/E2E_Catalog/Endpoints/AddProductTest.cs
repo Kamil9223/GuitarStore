@@ -1,9 +1,11 @@
-﻿using GuitarStore.Api.Client;
+﻿using Catalog.Application.Products.Events.Outgoing;
+using GuitarStore.Api.Client;
 using Microsoft.EntityFrameworkCore;
 using Shouldly;
 using System.Net;
 using Tests.EndToEnd.Setup;
 using Tests.EndToEnd.Setup.Modules.Catalog;
+using Tests.EndToEnd.Setup.TestsHelpers;
 using Xunit;
 
 namespace Tests.EndToEnd.E2E_Catalog.Endpoints;
@@ -31,6 +33,8 @@ public sealed class AddProductTest(Setup.Application app) : EndToEndTestBase(app
             Description = "sample description"
         };
 
+        var tcs = RabbitMqChannel.CreateTestConsumerForPublishing<ProductAddedEvent>();
+
         //Act
         await TestContext.GuitarStoreClient.ProductsPOSTAsync(request);
 
@@ -39,6 +43,9 @@ public sealed class AddProductTest(Setup.Application app) : EndToEndTestBase(app
         product.ShouldNotBeNull();
         product.Price.ShouldBe(100);
         product.Quantity.ShouldBe(5);
+
+        var eventPublished = await tcs.Task.WaitAsync(TimeSpan.FromSeconds(1));
+        eventPublished.ShouldBeTrue();
     }
 
     [Fact]

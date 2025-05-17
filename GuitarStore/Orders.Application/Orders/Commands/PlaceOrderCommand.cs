@@ -3,6 +3,7 @@ using Common.EfCore.Transactions;
 using Customers.Shared;
 using Domain.StronglyTypedIds;
 using Domain.ValueObjects;
+using Orders.Application.Abstractions;
 using Orders.Domain.Orders;
 using Payments.Shared.Contracts;
 using Payments.Shared.Services;
@@ -18,14 +19,14 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
 {
     private readonly ICartService _cartService;
     private readonly IOrderRepository _orderRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IOrdersUnitOfWork _unitOfWork;
     private readonly IProductReservationService _productReservationService;
     private readonly IStripeService _stripeService;
 
     public PlaceOrderCommandHandler(
         ICartService cartService,
         IOrderRepository orderRepository,
-        IUnitOfWork unitOfWork,
+        IOrdersUnitOfWork unitOfWork,
         IProductReservationService productReservationService,
         IStripeService stripeService)
     {

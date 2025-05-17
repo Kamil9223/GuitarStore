@@ -1,6 +1,6 @@
 ﻿using Application.RabbitMq.Abstractions;
 using Application.RabbitMq.Abstractions.Events;
-using Common.EfCore.Transactions;
+using Customers.Application.Abstractions;
 using Customers.Domain.Products;
 using Domain.StronglyTypedIds;
 
@@ -11,15 +11,15 @@ internal sealed record ProductAddedEvent(ProductId Id, string Name, decimal Pric
 internal sealed class ProductAddedEventHandler : IIntegrationEventHandler<ProductAddedEvent>
 {
     private readonly IProductRepository _productRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly ICustomersUnitOfWork _unitOfWork;
 
-    public ProductAddedEventHandler(IProductRepository productRepository, IUnitOfWork unitOfWork)
+    public ProductAddedEventHandler(IProductRepository productRepository, ICustomersUnitOfWork unitOfWork)
     {
         _productRepository = productRepository;
         _unitOfWork = unitOfWork;
     }
 
-    public async Task Handle(ProductAddedEvent @event)
+    public async Task Handle(ProductAddedEvent @event)//TODO: do podnoszenia quantity raczej osobny event. Tutaj zastanowić się nad upsertem
     {
         var existedProduct = await _productRepository.Get(@event.Id);
         if (existedProduct is not null)

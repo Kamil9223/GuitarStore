@@ -2,6 +2,7 @@
 using Application.RabbitMq.Abstractions.Events;
 using Common.EfCore.Transactions;
 using Domain.StronglyTypedIds;
+using Orders.Application.Abstractions;
 using Orders.Domain.Orders;
 
 namespace Orders.Application.Orders.Events.Incoming;
@@ -10,9 +11,9 @@ internal sealed record OrderPaidEvent(OrderId OrderId) : IntegrationEvent, IInte
 internal sealed class OrderPaidEventHandler : IIntegrationEventHandler<OrderPaidEvent>
 {
     private readonly IOrderRepository _orderRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IOrdersUnitOfWork _unitOfWork;
 
-    public OrderPaidEventHandler(IOrderRepository orderRepository, IUnitOfWork unitOfWork)
+    public OrderPaidEventHandler(IOrderRepository orderRepository, IOrdersUnitOfWork unitOfWork)
     {
         _orderRepository = orderRepository;
         _unitOfWork = unitOfWork;
