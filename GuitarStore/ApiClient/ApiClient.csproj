@@ -8,16 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <OpenApiReference Include="..\GuitarStore.ApiGateway\OpenApis\GuitarStore.ApiGateway.json"
-					  CodeGenerator="NSwagCSharp" 
-					  Namespace="GuitarStore.Api.Client" 
-					  ClassName="GuitarStoreClient" 
-					  GenerateOptionalParameters="true">
+    <OpenApiReference Include="..\GuitarStore.ApiGateway\OpenApis\GuitarStore.ApiGateway.json" CodeGenerator="NSwagCSharp" Namespace="GuitarStore.Api.Client" ClassName="GuitarStoreClient" GenerateOptionalParameters="true">
     <!--<SourceUri>https://localhost:7028/swagger/v1/swagger.json</SourceUri>-->
     </OpenApiReference>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.0" />
     <PackageReference Include="Microsoft.Extensions.ApiDescription.Client" Version="8.0.15">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -30,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include ="OpenApis\" />
+    <Folder Include="OpenApis\" />
   </ItemGroup>
 	
 </Project>

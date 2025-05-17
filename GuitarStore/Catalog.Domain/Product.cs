@@ -6,16 +6,16 @@ namespace Catalog.Domain;
 
 public class Product : Entity
 {
-    public ProductId Id { get; private set; }
-    public string Name { get; private set; } = null!;
-    public string Description { get; private set; } = null!;
-    public decimal Price { get; private set; }
-    public int Quantity { get; private set; }
-    public Brand Brand { get; private set; } = null!;
-    public BrandId BrandId { get; private set; }
-    public Category Category { get; private set; } = null!;
-    public CategoryId CategoryId { get; private set; }
-    public ICollection<VariationOption> VariationOptions { get; private set; } = null!;
+    public ProductId Id { get; init; }
+    public string Name { get; init; } = null!;
+    public string Description { get; set; } = null!;
+    public decimal Price { get; init; }
+    public int Quantity { get; set; }
+    public Brand Brand { get; init; } = null!;
+    public BrandId BrandId { get; init; }
+    public Category Category { get; init; } = null!;
+    public CategoryId CategoryId { get; init; }
+    public ICollection<VariationOption> VariationOptions { get; init; } = null!;
 
     private Product() { }
 

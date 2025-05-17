@@ -1,4 +1,5 @@
-﻿using Infrastructure.RabbitMq.Extensions;
+﻿using Common.EfCore.Transactions;
+using Infrastructure.RabbitMq.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Configuration;

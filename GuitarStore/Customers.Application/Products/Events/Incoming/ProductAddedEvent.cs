@@ -1,6 +1,6 @@
 ﻿using Application.RabbitMq.Abstractions;
 using Application.RabbitMq.Abstractions.Events;
-using Customers.Application.Abstractions;
+using Common.EfCore.Transactions;
 using Customers.Domain.Products;
 using Domain.StronglyTypedIds;
 
@@ -25,12 +25,12 @@ internal sealed class ProductAddedEventHandler : IIntegrationEventHandler<Produc
         if (existedProduct is not null)
         {
             existedProduct.IncreaseQuantity(@event.Quantity);
-            await _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
             return;
         }
 
         var product = Product.Create(@event.Id, @event.Name, @event.Price, @event.Quantity);
         _productRepository.Add(product);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 }

@@ -9,20 +9,16 @@ namespace Catalog.Application.CrossCuttingServices;
 internal class ValidationService<TCommand> : IValidationService<TCommand>
     where TCommand : ICommand
 {
-    private readonly IList<IValidator<TCommand>> _validators;
+    private readonly IValidator<TCommand> _validator;
 
-    public ValidationService(IList<IValidator<TCommand>> validators)
+    public ValidationService(IValidator<TCommand> validator)
     {
-        _validators = validators;
+        _validator = validator;
     }
 
     public void Validate(TCommand command)
     {
-        var validator = _validators.SingleOrDefault();
-        if (validator is null)
-            return;
-
-        var validationResult = validator.Validate(command);
+        var validationResult = _validator.Validate(command);
         if (!validationResult.IsValid)
         {
             var errorBuilder = new StringBuilder();

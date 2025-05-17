@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Common.EfCore.Transactions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Orders.Application.Abstractions;
@@ -30,6 +31,6 @@ internal static class InfrastructureModule
                 .WithScopedLifetime()
         );
 
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IOrdersUnitOfWork, OrdersUnitOfWork>();
     }
 }

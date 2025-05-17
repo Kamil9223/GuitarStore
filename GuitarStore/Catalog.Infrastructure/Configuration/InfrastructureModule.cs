@@ -1,6 +1,5 @@
 ﻿using Catalog.Application.Abstractions;
 using Catalog.Infrastructure.Database;
-using Catalog.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +22,7 @@ internal static class InfrastructureModule
 
             return new CatalogDbContext(dbOptions);
         });
+        services.AddScoped<ICatalogDbContext>(sp => sp.GetRequiredService<CatalogDbContext>());
 
         services.Scan(scan => scan
             .FromAssemblies(assembly)
@@ -31,14 +31,14 @@ internal static class InfrastructureModule
                 .WithScopedLifetime()
         );
 
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
-
         services.Scan(scan => scan
             .FromAssemblies(assembly)
             .AddClasses(classes => classes.Where(type => type.Name.EndsWith("QueryService")), publicOnly: false)
                 .AsImplementedInterfaces()
                 .WithScopedLifetime()
         );
+
+        services.AddScoped<ICatalogUnitOfWork, CatalogUnitOfWork>();
 
         services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>(provider =>
         {

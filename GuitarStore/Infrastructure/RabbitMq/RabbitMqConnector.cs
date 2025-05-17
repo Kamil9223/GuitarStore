@@ -18,7 +18,7 @@ internal class RabbitMqConnector : IRabbitMqConnector, IRabbitMqChannel
 
     public bool IsConnected => _connection is not null && _connection is { IsOpen: true } && !Disposed;
 
-    public IModel Channel { get; private set; }
+    public IModel Channel { get; private set; } = null!;
 
     public IModel CreateChannel()
     {

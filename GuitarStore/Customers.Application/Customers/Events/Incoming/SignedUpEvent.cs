@@ -13,10 +13,10 @@ internal sealed record SignedUpEvent(string Name, string LastName, string Email)
 internal sealed class SignedUpEventHandler : IIntegrationEventHandler<SignedUpEvent>
 {
     private readonly ICustomerRepository _customerRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly ICustomersUnitOfWork _unitOfWork;
     private readonly ICartRepository _cartRepository;
 
-    public SignedUpEventHandler(ICustomerRepository productRepository, IUnitOfWork unitOfWork, ICartRepository cartRepository)
+    public SignedUpEventHandler(ICustomerRepository productRepository, ICustomersUnitOfWork unitOfWork, ICartRepository cartRepository)
     {
         _customerRepository = productRepository;
         _unitOfWork = unitOfWork;
@@ -31,14 +31,11 @@ internal sealed class SignedUpEventHandler : IIntegrationEventHandler<SignedUpEv
 
         var validEmail = EmailAddress.Create(@event.Email);
 
-        using var dbTransaction = await _unitOfWork.BeginTransaction();
-
         var customer = Customer.Create(@event.Name, @event.LastName, validEmail);
         _customerRepository.Add(customer);
-        await _unitOfWork.SaveChanges();
         var cart = Cart.Create(customer.Id);
         await _cartRepository.Add(cart);
 
-        dbTransaction.Commit();
+        await _unitOfWork.SaveChangesAsync();
     }
 }

@@ -1,9 +1,11 @@
-﻿using Catalog.Domain;
+﻿using Catalog.Application.Abstractions;
+using Catalog.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Catalog.Infrastructure.Database;
 
-internal class CatalogDbContext : DbContext
+internal class CatalogDbContext : DbContext, ICatalogDbContext
 {
     public const string Schema = "Catalog";
 
@@ -21,4 +23,8 @@ internal class CatalogDbContext : DbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(CatalogDbContext).Assembly);
     }
+
+    public Task<IDbContextTransaction> BeginTransactionAsync() => Database.BeginTransactionAsync();
+
+    public async Task SaveChangesAsync() => await base.SaveChangesAsync();
 }

@@ -30,6 +30,6 @@ internal static class InfrastructureModule
                 .WithScopedLifetime()
         );
 
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<ICustomersUnitOfWork, CustomersUnitOfWork>();
     }
 }

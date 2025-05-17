@@ -24,7 +24,7 @@ internal sealed class AddProductCommandHandler : ICommandHandler<AddProductComma
     private readonly IVariationOptionRepository _variationOptionRepository;
     private readonly IBrandRepository _brandRepository;
     private readonly ICategoryRepository _categoryRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly ICatalogUnitOfWork _unitOfWork;
     private readonly IIntegrationEventPublisher _integrationEventPublisher;
 
     public AddProductCommandHandler(
@@ -32,7 +32,7 @@ internal sealed class AddProductCommandHandler : ICommandHandler<AddProductComma
         IVariationOptionRepository variationOptionRepository,
         IBrandRepository brandRepository,
         ICategoryRepository categoryRepository,
-        IUnitOfWork unitOfWork,
+        ICatalogUnitOfWork unitOfWork,
         IIntegrationEventPublisher integrationEventPublisher)
     {
         _productRepository = productRepository;
@@ -66,7 +66,7 @@ internal sealed class AddProductCommandHandler : ICommandHandler<AddProductComma
 
         _productRepository.Add(product);
 
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
 
         await _integrationEventPublisher.Publish(new ProductAddedEvent(product.Id, command.Name, command.Price, command.Quantity));
     }

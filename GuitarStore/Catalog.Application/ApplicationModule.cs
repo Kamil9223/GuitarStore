@@ -4,6 +4,7 @@ using Catalog.Application.CrossCuttingServices;
 using Catalog.Application.Products.Commands;
 using Catalog.Application.Products.ModuleApi;
 using Catalog.Shared;
+using Common.EfCore.Transactions;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -22,7 +23,7 @@ internal static class ApplicationModule
             .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)), publicOnly: false)
                 .AsImplementedInterfaces()
                 .WithScopedLifetime()
-            .AddClasses(c => c.AssignableTo(typeof(IValidator<>)), publicOnly: false)
+            .AddClasses(classes => classes.AssignableTo(typeof(IValidator<>)), publicOnly: false)
                 .AsImplementedInterfaces()
                 .WithScopedLifetime()
         );
@@ -32,6 +33,6 @@ internal static class ApplicationModule
 
         services.AddScoped<ICommandHandler<AddProductCommand>, AddProductCommandHandler>();
         services.Decorate<ICommandHandler<AddProductCommand>, CommandValidationDecorator<AddProductCommand>>();
-        services.Decorate<ICommandHandler<AddProductCommand>, CommandDbTransactionDecorator<AddProductCommand>>();
+        services.Decorate<ICommandHandler<AddProductCommand>, DbContextTransactionDecorator<ICatalogDbContext, AddProductCommand>>();
     }
 }

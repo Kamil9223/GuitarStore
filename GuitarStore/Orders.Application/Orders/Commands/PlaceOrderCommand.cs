@@ -1,8 +1,8 @@
 ﻿using Application.CQRS;
+using Common.EfCore.Transactions;
 using Customers.Shared;
 using Domain.StronglyTypedIds;
 using Domain.ValueObjects;
-using Orders.Application.Abstractions;
 using Orders.Domain.Orders;
 using Payments.Shared.Contracts;
 using Payments.Shared.Services;
@@ -46,7 +46,7 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
             deliveryAddress: OrdersMapper.MapToDeliveryAddress(checkoutCart.DeliveryAddress),
             delivery: new Delivery(checkoutCart.DelivererId, checkoutCart.Deliverer));
 
-        await _productReservationService.ReserveProduct(OrdersMapper.MapToReserveProductsDto(newOrder));//TODO: obsługa błędu
+        await _productReservationService.ReserveProduct(OrdersMapper.MapToReserveProductsDto(newOrder));
 
         var checkoutSession = new CheckoutSessionRequest
         {
@@ -61,8 +61,7 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
         var session = await _stripeService.CreateCheckoutSession(checkoutSession);
 
         await _orderRepository.Add(newOrder);
-
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
         return new PlaceOrderResponse(session.Url, session.SessionId);
     }
 }

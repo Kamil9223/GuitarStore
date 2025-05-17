@@ -11,7 +11,7 @@ internal class TestsContainers : IAsyncDisposable
     private readonly IContainer _stripeContainer;
 
     internal string MsSqlContainerConnectionString => _msSqlContainer.GetConnectionString();
-    internal string RabbitMqContainerConnectionString => _rabbitMqContainer.GetConnectionString();
+    internal string RabbitMqContainerConnectionString => _rabbitMqContainer.GetConnectionString().Replace("127.0.0.1", "localhost");
     internal string StripeBaseUrl => "http://localhost:12111";
 
     internal TestsContainers()

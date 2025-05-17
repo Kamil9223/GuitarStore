@@ -17,6 +17,7 @@ public class Brand : Entity
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Brand Name cannot be null or white space.");
 
+        Id = BrandId.New();
         Name = name;
     }
 }

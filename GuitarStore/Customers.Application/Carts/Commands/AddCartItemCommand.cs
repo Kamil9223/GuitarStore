@@ -12,9 +12,9 @@ internal sealed class AddCartItemCommandHandler : ICommandHandler<AddCartItemCom
 {
     private readonly ICartRepository _cartRepository;
     private readonly IProductRepository _productRepository;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly ICustomersUnitOfWork _unitOfWork;
 
-    public AddCartItemCommandHandler(ICartRepository cartRepository, IProductRepository productRepository, IUnitOfWork unitOfWork)
+    public AddCartItemCommandHandler(ICartRepository cartRepository, IProductRepository productRepository, ICustomersUnitOfWork unitOfWork)
     {
         _cartRepository = cartRepository;
         _productRepository = productRepository;
@@ -31,6 +31,6 @@ internal sealed class AddCartItemCommandHandler : ICommandHandler<AddCartItemCom
         cart.AddProduct(product, 1);
 
         await _cartRepository.Update(cart);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 }

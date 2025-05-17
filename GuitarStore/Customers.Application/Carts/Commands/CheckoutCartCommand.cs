@@ -1,5 +1,5 @@
 ﻿using Application.CQRS;
-using Customers.Application.Abstractions;
+using Common.EfCore.Transactions;
 using Customers.Domain.Carts;
 using Domain.StronglyTypedIds;
 using Domain.ValueObjects;
@@ -33,6 +33,6 @@ internal sealed class CheckoutCartCommandHandler : ICommandHandler<CheckoutCartC
             deliverer: command.Delivery.Deliverer));
 
         await _cartRepository.Update(checkout);
-        await _unitOfWork.SaveChanges();
+        await _unitOfWork.SaveChangesAsync();
     }
 }
