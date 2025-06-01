@@ -1,5 +1,4 @@
 ﻿using Application.CQRS;
-using Common.EfCore.Transactions;
 using Customers.Shared;
 using Domain.StronglyTypedIds;
 using Domain.ValueObjects;

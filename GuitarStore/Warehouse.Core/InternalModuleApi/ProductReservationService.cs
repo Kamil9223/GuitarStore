@@ -40,8 +40,3 @@ internal class ProductReservationService : IProductReservationService
         await _dbContext.SaveChangesAsync();
     }
 }
-//dodac w infraatructure generyczny transactionWrapper
-//oraz jak sugeruje gpt taki wraper na cross modulowe transakcje
-//wynieść ten decorator do pojedynczego contextu do libki
-//unitOfWork -> tylko abstrakcja na kontext żeby robić SaveChanges
-//rejestrować te dekoratory per konkretny typ tam gdzie trzeba po prostu

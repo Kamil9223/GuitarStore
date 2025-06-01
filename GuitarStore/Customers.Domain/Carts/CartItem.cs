@@ -2,6 +2,7 @@
 using Domain.Exceptions;
 using Domain.StronglyTypedIds;
 using Domain.ValueObjects;
+using Newtonsoft.Json;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Customers.Tests")]
@@ -9,11 +10,11 @@ namespace Customers.Domain.Carts;
 
 public class CartItem : Entity
 {
-    public CartItemId Id { get; }
-    public ProductId ProductId { get; }
-    public string Name { get; }
-    public Money Price { get; }
-    public int Quantity { get; private set; }
+    public CartItemId Id { get; init; }
+    public ProductId ProductId { get; init; }
+    public string Name { get; init; }
+    public Money Price { get; init; }
+    public int Quantity { get; set; }
 
     //For EF Core
     private CartItem() { }

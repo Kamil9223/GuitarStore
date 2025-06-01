@@ -20,6 +20,7 @@ public static class WarehouseModuleInitializator
 
             return new WarehouseDbContext(dbOptions);
         });
+        services.AddScoped<IWarehouseDbContext>(sp => sp.GetRequiredService<WarehouseDbContext>());
 
         services.AddScoped<IProductReservationService, ProductReservationService>();
 

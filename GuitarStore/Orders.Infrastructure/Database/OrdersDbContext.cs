@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Orders.Application.Abstractions;
 using Orders.Domain.Customers;
 using Orders.Domain.Products;
 using Orders.Infrastructure.Orders;
@@ -6,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Tests.EndToEnd")]
 namespace Orders.Infrastructure.Database;
-internal class OrdersDbContext : DbContext
+internal class OrdersDbContext : DbContext, IOrdersDbContext
 {
     public const string Schema = "Orders";
 
@@ -22,4 +24,8 @@ internal class OrdersDbContext : DbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrdersDbContext).Assembly);
     }
+
+    public Task<IDbContextTransaction> BeginTransactionAsync() => Database.BeginTransactionAsync();
+
+    public async Task SaveChangesAsync() => await base.SaveChangesAsync();
 }

@@ -1,11 +1,12 @@
 ﻿using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System.Runtime.CompilerServices;
 using Warehouse.Core.Entities;
 
 [assembly: InternalsVisibleTo("Tests.EndToEnd")]
 namespace Warehouse.Core.Database;
-internal class WarehouseDbContext : DbContext
+internal class WarehouseDbContext : DbContext, IWarehouseDbContext
 {
     public const string Schema = "Warehouse";
 
@@ -43,4 +44,8 @@ internal class WarehouseDbContext : DbContext
                    value => new ProductId(value));
         });
     }
+
+    public Task<IDbContextTransaction> BeginTransactionAsync() => Database.BeginTransactionAsync();
+
+    public async Task SaveChangesAsync() => await base.SaveChangesAsync();
 }

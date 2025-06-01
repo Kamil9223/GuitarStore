@@ -20,9 +20,9 @@ public class Cart : Entity
         _cartItems = cartItems?.ToList() ?? [];
     }
 
-    public static Cart Create(CustomerId customerId)
+    public static Cart Create(CustomerId customerId, IReadOnlyCollection<CartItem> cartItems = null)
     {
-        return new Cart(customerId);
+        return new Cart(customerId, cartItems);
     }
 
     public void ClearCart() => _cartItems.Clear();

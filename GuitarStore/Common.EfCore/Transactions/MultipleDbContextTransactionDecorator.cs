@@ -1,47 +1,80 @@
 ﻿using Application.CQRS;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
+using System.Transactions;
 
 namespace Common.EfCore.Transactions;
+
+public delegate IReadOnlyCollection<IDbContext> ResolveDbContextsDelegate();
+
 public class MultipleDbContextTransactionDecorator<TCommand> : ICommandHandler<TCommand>
     where TCommand : class, ICommand
 {
     private readonly ICommandHandler<TCommand> _inner;
-    private readonly IReadOnlyCollection<DbContext> _dbContexts;
+    private readonly ResolveDbContextsDelegate _resolveDbContexts;
 
-    public MultipleDbContextTransactionDecorator(ICommandHandler<TCommand> inner, IReadOnlyCollection<DbContext> dbContexts)
+    public MultipleDbContextTransactionDecorator(
+        ICommandHandler<TCommand> inner,
+        ResolveDbContextsDelegate resolveDbContexts)
     {
         _inner = inner;
-        _dbContexts = dbContexts;
+        _resolveDbContexts = resolveDbContexts;
     }
 
     public async Task Handle(TCommand command)
     {
-        var primary = _dbContexts.First();
-        await using var transaction = await primary.Database.BeginTransactionAsync();
+        var dbContexts = _resolveDbContexts().ToList();
 
-        try
+        if (dbContexts.Count == 0)
         {
-            var dbTransaction = primary.Database.CurrentTransaction!.GetDbTransaction();
-
-            foreach (var ctx in _dbContexts.Skip(1))
-            {
-                await ctx.Database.UseTransactionAsync(dbTransaction);
-            }
-
             await _inner.Handle(command);
-
-            foreach (var ctx in _dbContexts)
-            {
-                await ctx.SaveChangesAsync();
-            }
-
-            await transaction.CommitAsync();
+            return;
         }
-        catch
+
+        using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+        await _inner.Handle(command);
+
+        //foreach (var ctx in dbContexts)
+        //{
+        //    await ctx.SaveChangesAsync();
+        //}
+
+        scope.Complete();
+    }
+}
+
+public class MultipleDbContextTransactionDecorator<TResponse, TCommand> : ICommandHandler<TResponse, TCommand>
+    where TCommand : class, ICommand
+{
+    private readonly ICommandHandler<TResponse, TCommand> _inner;
+    private readonly ResolveDbContextsDelegate _resolveDbContexts;
+
+    public MultipleDbContextTransactionDecorator(
+        ICommandHandler<TResponse, TCommand> inner,
+        ResolveDbContextsDelegate resolveDbContexts)
+    {
+        _inner = inner;
+        _resolveDbContexts = resolveDbContexts;
+    }
+
+    public async Task<TResponse> Handle(TCommand command)
+    {
+        var dbContexts = _resolveDbContexts().ToList();
+
+        if (dbContexts.Count == 0)
         {
-            await transaction.RollbackAsync();
-            throw;
+            return await _inner.Handle(command);
         }
+
+        using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+        var response = await _inner.Handle(command);
+
+        //foreach (var ctx in dbContexts)
+        //{
+        //    await ctx.SaveChangesAsync();
+        //}
+
+        scope.Complete();
+        return response;
     }
 }

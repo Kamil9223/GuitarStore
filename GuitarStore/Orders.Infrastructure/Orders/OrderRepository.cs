@@ -29,6 +29,7 @@ internal class OrderRepository : IOrderRepository
     {
         var orderDbModel = new OrderDbModel
         {
+            Id = order.Id,
             CustomerId = order.CustomerId,
             Object = JsonConvert.SerializeObject(order)
         };

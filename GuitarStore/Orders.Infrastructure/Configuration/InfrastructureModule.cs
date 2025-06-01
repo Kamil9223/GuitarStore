@@ -23,6 +23,7 @@ internal static class InfrastructureModule
 
             return new OrdersDbContext(dbOptions);
         });
+        services.AddScoped<IOrdersDbContext>(sp => sp.GetRequiredService<OrdersDbContext>());
 
         services.Scan(scan => scan
             .FromAssemblies(assembly)

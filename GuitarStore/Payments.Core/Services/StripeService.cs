@@ -7,16 +7,13 @@ using Stripe.Checkout;
 namespace Payments.Core.Services;
 internal class StripeService : IStripeService
 {
-    private readonly IConfiguration _configuration;
     private readonly SessionService _sessionService;
 
     public StripeService(
         IConfiguration configuration,
-        SessionService sessionService)
+        StripeClient stripeClient)
     {
-        _configuration = configuration;
-        _sessionService = sessionService;
-        StripeConfiguration.ApiKey = _configuration["Stripe:SecretKey"];     
+        _sessionService = new SessionService(stripeClient);
     }
 
     public async Task<CheckoutSessionResponse> CreateCheckoutSession(CheckoutSessionRequest request)

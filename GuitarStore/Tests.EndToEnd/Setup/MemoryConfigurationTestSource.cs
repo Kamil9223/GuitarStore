@@ -10,7 +10,9 @@ internal static class MemoryConfigurationTestSource
             InitialData =
             [
                 new("ConnectionStrings:GuitarStore", containers.MsSqlContainerConnectionString),
-                new("ConnectionStrings:RabbitMq", containers.RabbitMqContainerConnectionString)
+                new("ConnectionStrings:RabbitMq", containers.RabbitMqContainerConnectionString),
+                new("Stripe:Url", containers.StripeBaseUrl),
+                new("Stripe:SecretKey", "sk_test_123")
             ]
         };
     }

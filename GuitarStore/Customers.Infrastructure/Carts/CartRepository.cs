@@ -65,7 +65,13 @@ internal class CartRepository : ICartRepository
         if (dbCheckout is null)
             throw new NotFoundException(customerId);
 
-        var checkout = JsonConvert.DeserializeObject<CheckoutCart>(dbCheckout.Object);
+        var settings = new JsonSerializerSettings
+        {
+            ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
+        };
+
+
+        var checkout = JsonConvert.DeserializeObject<CheckoutCart>(dbCheckout.Object, settings);
         return checkout;
     }
 }

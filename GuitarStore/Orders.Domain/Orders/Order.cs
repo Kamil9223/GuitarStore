@@ -21,7 +21,7 @@ public class Order : Entity
 
     private Order(ICollection<OrderItem> orderItems, CustomerId customerId, DeliveryAddress deliveryAddress, Delivery delivery)
     {
-        Id = new OrderId(Guid.NewGuid());
+        Id = OrderId.New();
         CreatedAt = DateTime.Now;
         Status = OrderStatus.New;
         _orderItems = orderItems.ToList();

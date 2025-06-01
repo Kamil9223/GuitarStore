@@ -54,20 +54,8 @@ public class Application : IAsyncLifetime
 
     private void ConfigureTestServices(IServiceCollection services)
     {
-        // sql context
         DbSetup.SetupAllModules(services, _containers.MsSqlContainerConnectionString);
-
-        // eventing
-        //services.AddRabbitMqInfraServices(new RabbitMqSettings
-        //{
-        //    Enabled = true,
-        //    ConnectionString = _webFixture.RabbitMqContainer!.GetConnectionString(),
-        //    Exchange = "Mrp.events",
-        //    ConsumptionQueue = "Mrp.events.consumer.self"
-        //});
-
-        //services.AddOverrides();
-        //services.AddTestRunIdMiddleware();
+        OverrideServicesSetup.SetupServicesOverrides(services);
     }
 
     public HttpClient GetHttpClient() => _app!.CreateClient();
