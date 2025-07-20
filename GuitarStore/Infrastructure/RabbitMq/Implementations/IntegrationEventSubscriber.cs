@@ -13,21 +13,17 @@ internal class IntegrationEventSubscriber : IIntegrationEventSubscriber
 {
     private readonly IRabbitMqChannel _rabbitMqChannel;
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly IntegrationEventsSubscriptionManager _integrationEventsSubscriptionManager;
 
-    public IntegrationEventSubscriber(IRabbitMqChannel rabbitMqChannel, IServiceScopeFactory serviceScopeFactory, IntegrationEventsSubscriptionManager integrationEventsSubscriptionManager)
+    public IntegrationEventSubscriber(IRabbitMqChannel rabbitMqChannel, IServiceScopeFactory serviceScopeFactory)
     {
         _rabbitMqChannel = rabbitMqChannel;
         _serviceScopeFactory = serviceScopeFactory;
-        _integrationEventsSubscriptionManager = integrationEventsSubscriptionManager;
     }
 
     public void Subscribe<TEvent, TEventHandler>(RabbitMqQueueName queueName)
         where TEvent : IntegrationEvent, IIntegrationConsumeEvent
         where TEventHandler : IIntegrationEventHandler<TEvent>
     {
-        _integrationEventsSubscriptionManager.AddSubscription<TEvent, TEventHandler>();
-
         var channel = _rabbitMqChannel.Channel;
 
         var consumer = new AsyncEventingBasicConsumer(channel);
@@ -47,7 +43,6 @@ internal class IntegrationEventSubscriber : IIntegrationEventSubscriber
                 var integrationEvent = JsonConvert.DeserializeObject<TEvent>(message);
 
                 using var scope = _serviceScopeFactory.CreateScope();
-                //var handlerType = _integrationEventsSubscriptionManager.GetHandlerTypeForEvent(typeof(TEvent));
                 var handlerAbstractionType = typeof(IIntegrationEventHandler<>).MakeGenericType(typeof(TEvent));
 
                 var handler = scope.ServiceProvider.GetRequiredService(handlerAbstractionType);
@@ -57,6 +52,7 @@ internal class IntegrationEventSubscriber : IIntegrationEventSubscriber
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 //logg exception
             }
 

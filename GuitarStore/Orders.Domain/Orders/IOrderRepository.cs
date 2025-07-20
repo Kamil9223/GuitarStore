@@ -5,4 +5,5 @@ public interface IOrderRepository
 {
     Task<Order> Get(OrderId orderId);
     Task Add(Order order);
+    Task Update(Order order);
 }

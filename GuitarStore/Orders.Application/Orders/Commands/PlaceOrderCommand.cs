@@ -1,5 +1,6 @@
 ﻿using Application.CQRS;
 using Customers.Shared;
+using Domain.Exceptions;
 using Domain.StronglyTypedIds;
 using Domain.ValueObjects;
 using Orders.Application.Abstractions;
@@ -10,7 +11,8 @@ using Warehouse.Shared;
 
 namespace Orders.Application.Orders.Commands;
 
-public sealed record PlaceOrderCommand(CustomerId CustomerId) : ICommand;
+public sealed record PlaceOrderCommand(
+    CustomerId CustomerId, bool ProvideDeliveryAddress, DeliveryAddress? DeliveryAddress) : ICommand;
 
 public sealed record PlaceOrderResponse(string PaymentUrl, string SessionId);
 
@@ -40,16 +42,25 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
     {
         var checkoutCart = await _cartService.GetCheckoutCart(command.CustomerId);
 
+        var deliveryAddressMissed = checkoutCart.DeliveryAddress is null && !command.ProvideDeliveryAddress;
+        if (deliveryAddressMissed)
+            throw new DomainException("delivery address must be defined to place order.");
+
+        var deliveryAddress = command.ProvideDeliveryAddress
+            ? command.DeliveryAddress
+            : OrdersMapper.MapToDeliveryAddress(checkoutCart.DeliveryAddress!);
+
         var newOrder = Order.Create(
             orderItems: OrdersMapper.MapToOrderItems(checkoutCart.Items),
             customerId: checkoutCart.CustomerId,
-            deliveryAddress: OrdersMapper.MapToDeliveryAddress(checkoutCart.DeliveryAddress),
+            deliveryAddress: deliveryAddress,
             delivery: new Delivery(checkoutCart.DelivererId, checkoutCart.Deliverer));
 
         await _productReservationService.ReserveProduct(OrdersMapper.MapToReserveProductsDto(newOrder));
 
         var checkoutSession = new CheckoutSessionRequest
         {
+            OrderId = newOrder.Id,
             Products = checkoutCart.Items.Select(x => new CheckoutSessionRequest.ProductItem
             {
                 Currency = Currency.PLN,

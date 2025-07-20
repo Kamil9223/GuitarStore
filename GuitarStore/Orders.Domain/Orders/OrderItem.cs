@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Domain.StronglyTypedIds;
+using Newtonsoft.Json;
 
 namespace Orders.Domain.Orders;
 
@@ -11,9 +12,11 @@ public class OrderItem : Entity
     public int Quantity { get; }
     public ProductId ProductId { get; }
 
-    private OrderItem(string name, decimal price, int quantity, ProductId productId)
+    //For deserialization
+    [JsonConstructor]
+    private OrderItem(Guid id, string name, decimal price, int quantity, ProductId productId)
     {
-        Id = Guid.NewGuid();
+        Id = id;
         Name = name;
         Price = price;
         Quantity = quantity;
@@ -22,6 +25,6 @@ public class OrderItem : Entity
 
     public static OrderItem Create(string name, decimal price, int quantity, ProductId productId)
     {
-        return new OrderItem(name, price, quantity, productId);
+        return new OrderItem(Guid.NewGuid(), name, price, quantity, productId);
     }
 }

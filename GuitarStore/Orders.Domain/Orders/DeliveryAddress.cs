@@ -8,9 +8,9 @@ public class DeliveryAddress : ValueObject
     public string PostalCode { get; }
     public string HouseNumber { get; }
     public string Street { get; }
-    public string LocalNumber { get; }
+    public string? LocalNumber { get; }
 
-    public DeliveryAddress(string country, string localityName, string postalCode, string houseNumber, string street, string localNumber)
+    public DeliveryAddress(string country, string localityName, string postalCode, string houseNumber, string street, string? localNumber)
     {
         Country = country;
         LocalityName = localityName;

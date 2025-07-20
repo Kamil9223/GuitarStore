@@ -1,7 +1,10 @@
 ﻿using Application.CQRS;
+using Application.RabbitMq;
+using Application.RabbitMq.Abstractions;
 using Common.EfCore.Transactions;
 using Microsoft.Extensions.DependencyInjection;
 using Orders.Application.Orders.Commands;
+using Orders.Application.Orders.Events.Incoming;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -25,5 +28,8 @@ internal static class ApplicationModule
 
         services.AddScoped<ICommandHandler<PlaceOrderResponse, PlaceOrderCommand>, PlaceOrderCommandHandler>();
         services.AddTransactionalDecorator<PlaceOrderResponse, PlaceOrderCommand>(placeOrderCommandTransactionDbContextsFunc);
+
+        services.AddSingleton<IEventBusSubscriptionManager, EventBusSubscriptionManager>();
+        services.AddScoped<IIntegrationEventHandler<OrderPaidEvent>, OrderPaidEventHandler>();
     }
 }

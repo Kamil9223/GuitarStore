@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Payments.Shared.Contracts;
+﻿using Payments.Shared.Contracts;
 using Payments.Shared.Services;
 using Stripe;
 using Stripe.Checkout;
@@ -9,9 +8,7 @@ internal class StripeService : IStripeService
 {
     private readonly SessionService _sessionService;
 
-    public StripeService(
-        IConfiguration configuration,
-        StripeClient stripeClient)
+    public StripeService(StripeClient stripeClient)
     {
         _sessionService = new SessionService(stripeClient);
     }
@@ -37,7 +34,14 @@ internal class StripeService : IStripeService
                 .ToList(),
             SuccessUrl = "https://www.youtube.com",//for tests
             CancelUrl = "https://www.google.com", //for tests
-            Mode = "payment"
+            Mode = "payment",
+            PaymentIntentData = new SessionPaymentIntentDataOptions
+            {
+                Metadata = new Dictionary<string, string>
+                {
+                    { IStripeService.OrderIdMetadataKey, request.OrderId.ToString() }
+                }
+            }
         };
 
         try

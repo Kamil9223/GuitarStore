@@ -19,9 +19,9 @@ public class CartItem : Entity
     //For EF Core
     private CartItem() { }
 
-    public CartItem(ProductId productId, string name, Money price, int quantity)
+    public CartItem(CartItemId id, ProductId productId, string name, Money price, int quantity)
     {
-        Id = CartItemId.New();
+        Id = id;
         ProductId = productId;
         Name = name;
         Price = price;
@@ -32,7 +32,7 @@ public class CartItem : Entity
     {
         //Check rules
 
-        return new CartItem(productId, name, price, quantity);
+        return new CartItem(CartItemId.New(), productId, name, price, quantity);
     }
 
     internal void IncreaseQuantity(int quantity) => Quantity += quantity;

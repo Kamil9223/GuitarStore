@@ -1,9 +1,11 @@
-﻿using Domain.ValueObjects;
+﻿using Domain.StronglyTypedIds;
+using Domain.ValueObjects;
 
 namespace Payments.Shared.Contracts;
 public sealed record CheckoutSessionRequest
 {
-    public IReadOnlyCollection<ProductItem> Products { get; init; } = new List<ProductItem>();
+    public required OrderId OrderId { get; init; }
+    public required IReadOnlyCollection<ProductItem> Products { get; init; }
 
     public sealed record ProductItem
     {

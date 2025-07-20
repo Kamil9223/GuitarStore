@@ -9,15 +9,17 @@ internal static class CheckoutCartDtoMapper
         => new()
         {
             CustomerId = customer.Id,
-            DeliveryAddress = new CheckoutCartDto.Address
-            {
-                Country = customer.Address.Country,
-                HouseNumber = customer.Address.HouseNumber,
-                LocalityName = customer.Address.LocalityName,
-                LocalNumber = customer.Address.LocalNumber,
-                PostalCode = customer.Address.PostalCode,
-                Street = customer.Address.Street
-            },
+            DeliveryAddress = customer.Address is not null 
+                ? new CheckoutCartDto.Address
+                {
+                    Country = customer.Address.Country,
+                    HouseNumber = customer.Address.HouseNumber,
+                    LocalityName = customer.Address.LocalityName,
+                    LocalNumber = customer.Address.LocalNumber,
+                    PostalCode = customer.Address.PostalCode,
+                    Street = customer.Address.Street
+                }
+                : null,
             Deliverer = checkout.Delivery.Deliverer,
             DelivererId = checkout.Delivery.DelivererId,
             Items = checkout.CartItems.Select(item => new CheckoutCartDto.CheckoutCartItem

@@ -2,6 +2,7 @@
 using Domain.StronglyTypedIds;
 using Microsoft.AspNetCore.Mvc;
 using Payments.Core.Events.Outgoing;
+using Payments.Shared.Services;
 using Stripe;
 
 namespace GuitarStore.ApiGateway.Modules.Payments;
@@ -27,12 +28,18 @@ public class WebhookStripeController : ControllerBase
         if (stripeEvent.Type == Events.PaymentIntentSucceeded)
         {
             var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
-            paymentIntent.Metadata.TryGetValue("OrderID", out string orderId);
-            await _integrationEventPublisher.Publish(new OrderPaidEvent((OrderId)orderId));
+            var orderId = paymentIntent!.Metadata.GetValueOrDefault(IStripeService.OrderIdMetadataKey);
+            if (string.IsNullOrEmpty(orderId))
+            {
+                //log error, critical or smthg. It should not happen
+            }
+            var typedOrderId = (OrderId)orderId!;
+            await _integrationEventPublisher.Publish(new OrderPaidEvent(typedOrderId)); //orderId jest otrzymywany, ale event nie dochodzi do handlera, zbadać
         }
-        else if (stripeEvent.Type == Events.PaymentMethodAttached)
+        else if (stripeEvent.Type == Events.PaymentIntentCanceled)
         {
             var paymentMethod = stripeEvent.Data.Object as PaymentMethod;
+            //handle cancellation
         }
         else
         {

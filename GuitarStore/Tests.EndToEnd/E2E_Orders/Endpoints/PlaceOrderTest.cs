@@ -26,6 +26,7 @@ public sealed class PlaceOrderTest(Setup.Application app) : EndToEndTestBase(app
             items: [
                 new CartItem
                 (
+                    id: CartItemId.New(),
                     productId: product.Id,
                     name: product.Name,
                     price: product.Price,
@@ -42,7 +43,8 @@ public sealed class PlaceOrderTest(Setup.Application app) : EndToEndTestBase(app
 
         var placeOrderCommand = new PlaceOrderCommand
         {
-            CustomerId = customer.Id.Value
+            CustomerId = customer.Id.Value,
+            ProvideDeliveryAddress = false
         };
 
         //Act
@@ -68,6 +70,7 @@ public sealed class PlaceOrderTest(Setup.Application app) : EndToEndTestBase(app
             items: [
                 new CartItem
                 (
+                    id: CartItemId.New(),
                     productId: product.Id,
                     name: product.Name,
                     price: product.Price,
@@ -84,7 +87,8 @@ public sealed class PlaceOrderTest(Setup.Application app) : EndToEndTestBase(app
 
         var placeOrderCommand = new PlaceOrderCommand
         {
-            CustomerId = customer.Id.Value
+            CustomerId = customer.Id.Value,
+            ProvideDeliveryAddress = false
         };
 
         //Act
@@ -111,6 +115,7 @@ public sealed class PlaceOrderTest(Setup.Application app) : EndToEndTestBase(app
             items: [
                 new CartItem
                 (
+                    id: CartItemId.New(),
                     productId: product.Id,
                     name: product.Name,
                     price: product.Price,
@@ -127,7 +132,8 @@ public sealed class PlaceOrderTest(Setup.Application app) : EndToEndTestBase(app
 
         var placeOrderCommand = new PlaceOrderCommand
         {
-            CustomerId = customer.Id.Value
+            CustomerId = customer.Id.Value,
+            ProvideDeliveryAddress = false
         };
 
         var testStripeService = Scope.ServiceProvider.GetRequiredService<TestStripeService>();

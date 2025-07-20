@@ -1,6 +1,5 @@
 ﻿using Application.RabbitMq.Abstractions;
 using Application.RabbitMq.Abstractions.Events;
-using Common.EfCore.Transactions;
 using Domain.StronglyTypedIds;
 using Orders.Application.Abstractions;
 using Orders.Domain.Orders;
@@ -23,6 +22,7 @@ internal sealed class OrderPaidEventHandler : IIntegrationEventHandler<OrderPaid
     {
         var order = await _orderRepository.Get(@event.OrderId);
         order.PayOrder();
+        await _orderRepository.Update(order);
         await _unitOfWork.SaveChangesAsync();
     }
 }

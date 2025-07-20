@@ -1,6 +1,7 @@
 ﻿using Domain;
 using Domain.Exceptions;
 using Domain.StronglyTypedIds;
+using Newtonsoft.Json;
 
 namespace Orders.Domain.Orders;
 
@@ -19,9 +20,16 @@ public class Order : Entity
 
     public decimal TotalPrice { get => _orderItems.Sum(x => x.Price * x.Quantity); }
 
-    private Order(ICollection<OrderItem> orderItems, CustomerId customerId, DeliveryAddress deliveryAddress, Delivery delivery)
+    //For deserialization
+    [JsonConstructor]
+    private Order(
+        OrderId id,
+        ICollection<OrderItem> orderItems,
+        CustomerId customerId,
+        DeliveryAddress deliveryAddress,
+        Delivery delivery)
     {
-        Id = OrderId.New();
+        Id = id;
         CreatedAt = DateTime.Now;
         Status = OrderStatus.New;
         _orderItems = orderItems.ToList();
@@ -32,7 +40,7 @@ public class Order : Entity
 
     public static Order Create(ICollection<OrderItem> orderItems, CustomerId customerId, DeliveryAddress deliveryAddress, Delivery delivery)
     {
-        return new Order(orderItems, customerId, deliveryAddress, delivery);
+        return new Order(OrderId.New(), orderItems, customerId, deliveryAddress, delivery);
     }
 
     public void AcceptOrder()

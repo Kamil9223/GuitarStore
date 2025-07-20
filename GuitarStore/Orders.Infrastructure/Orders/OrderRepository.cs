@@ -21,7 +21,12 @@ internal class OrderRepository : IOrderRepository
         if (dbOrder is null)
             throw new NotFoundException(orderId);
 
-        var order = JsonConvert.DeserializeObject<Order>(dbOrder.Object)!;
+        var settings = new JsonSerializerSettings
+        {
+            ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
+        };
+
+        var order = JsonConvert.DeserializeObject<Order>(dbOrder.Object, settings)!;
         return order;
     }
 
@@ -35,5 +40,15 @@ internal class OrderRepository : IOrderRepository
         };
 
         await _dbContext.Orders.AddAsync(orderDbModel);
+    }
+
+    public async Task Update(Order order)
+    {
+        var dbOrder = await _dbContext.Orders.SingleAsync(x => x.Id == order.Id);
+        var settings = new JsonSerializerSettings
+        {
+            ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
+        };
+        dbOrder.Object = JsonConvert.SerializeObject(order, settings);
     }
 }

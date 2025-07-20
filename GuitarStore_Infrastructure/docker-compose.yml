@@ -16,3 +16,13 @@ services:
       - "15671:15671"
       - "5672:5672"
       - "5671:5671"
+
+  stripe-cli:
+    image: stripe/stripe-cli
+    container_name: stripe-cli
+    command: >
+      listen --forward-to https://host.docker.internal:7028/webhook --skip-verify
+    environment:
+      - STRIPE_API_KEY
+      - STRIPE_DEVICE_NAME=docker-stripe
+    tty: true

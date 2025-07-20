@@ -17,7 +17,6 @@ internal static class RabbitMqExtension
 
         services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
         services.AddSingleton<IIntegrationEventSubscriber, IntegrationEventSubscriber>();
-        services.AddSingleton<IntegrationEventsSubscriptionManager>();
 
         return services;
     }
