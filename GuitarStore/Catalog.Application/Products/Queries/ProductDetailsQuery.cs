@@ -1,7 +1,7 @@
 ﻿using Application.CQRS;
 using Catalog.Application.Products.Dtos;
 using Catalog.Application.Products.Services;
-using Domain.Exceptions;
+using Common.Errors.Exceptions;
 using Domain.StronglyTypedIds;
 
 namespace Catalog.Application.Products.Queries;

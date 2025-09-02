@@ -1,4 +1,4 @@
-﻿namespace Domain.Exceptions;
+﻿namespace Common.Errors.Exceptions;
 
 /// <summary>
 /// Throws when schema validation is broken.
@@ -6,5 +6,8 @@
 public class ValidationException : GuitarStoreApplicationException
 {
     public ValidationException(string message)
-        : base(message, string.Empty) { }
+        : base(
+            title: "Bad_Request",
+            applicationErrorCode: ApplicationErrorCode.SchemaValidationError(message))
+    { }
 }

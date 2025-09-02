@@ -1,6 +1,6 @@
-﻿using Customers.Domain.Carts;
+﻿using Common.Errors.Exceptions;
+using Customers.Domain.Carts;
 using Customers.Infrastructure.Database;
-using Domain.Exceptions;
 using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;

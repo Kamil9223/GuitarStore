@@ -1,4 +1,4 @@
-﻿using Domain.Exceptions;
+﻿using Common.Errors.Exceptions;
 using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;

@@ -1,6 +1,6 @@
-﻿using Customers.Domain.Customers;
+﻿using Common.Errors.Exceptions;
+using Customers.Domain.Customers;
 using Customers.Infrastructure.Database;
-using Domain.Exceptions;
 using Domain.StronglyTypedIds;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;

@@ -1,8 +1,7 @@
-﻿using Domain;
-using Domain.Exceptions;
+﻿using Common.Errors.Exceptions;
+using Domain;
 using Domain.StronglyTypedIds;
 using Domain.ValueObjects;
-using Newtonsoft.Json;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Customers.Tests")]

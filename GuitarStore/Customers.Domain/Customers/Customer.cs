@@ -1,5 +1,5 @@
-﻿using Domain;
-using Domain.Exceptions;
+﻿using Common.Errors.Exceptions;
+using Domain;
 using Domain.StronglyTypedIds;
 using Domain.ValueObjects;
 

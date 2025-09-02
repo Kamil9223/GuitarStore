@@ -1,4 +1,4 @@
-﻿using Domain.Exceptions;
+﻿using Common.Errors.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
@@ -25,23 +25,23 @@ public class ExceptionsMiddleware : IMiddleware
         {
             ValidationException => new ProblemDetails
             {
-                Title = "Bad_Request",
+                Title = ((ValidationException)ex).Title,
                 Status = (int)HttpStatusCode.BadRequest,
                 Detail = ex.Message,
                 Instance = context.Request.Path
             },
             NotFoundException => new ProblemDetails
             {
-                Title = "Not_Found",
+                Title = ((NotFoundException)ex).Title,
                 Status = (int)HttpStatusCode.NotFound,
                 Detail = ex.Message,
                 Instance = context.Request.Path
             },
             DomainException => new ProblemDetails
             {
-                Title = "Business_Logic_Rule_Error",
+                Title = ((DomainException)ex).Title,
                 Status = (int)HttpStatusCode.Conflict,
-                Detail = ex.Message,
+                Detail = ((DomainException)ex).ErrorCode,
                 Instance = context.Request.Path
             },
             _ => new ProblemDetails

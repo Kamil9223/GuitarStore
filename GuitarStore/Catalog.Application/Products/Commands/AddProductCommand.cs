@@ -4,7 +4,7 @@ using Catalog.Application.Abstractions;
 using Catalog.Application.Products.Events.Outgoing;
 using Catalog.Domain;
 using Catalog.Domain.IRepositories;
-using Domain.Exceptions;
+using Common.Errors.Exceptions;
 using Domain.StronglyTypedIds;
 
 namespace Catalog.Application.Products.Commands;

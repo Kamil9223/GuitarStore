@@ -1,5 +1,5 @@
-﻿using Domain;
-using Domain.Exceptions;
+﻿using Common.Errors.Exceptions;
+using Domain;
 using Domain.StronglyTypedIds;
 
 namespace Catalog.Domain;
@@ -41,7 +41,7 @@ public class Product : Entity
     public void UpdateDescription(string description)
     {
         if (string.IsNullOrWhiteSpace(description))
-            throw new DomainException("Product description cannot be null or white space.");
+            throw DomainException.InvalidProperty(nameof(description), description);
 
         Description = description;
     }
@@ -49,7 +49,7 @@ public class Product : Entity
     public void DecreaseQuantity(int quantity)
     {
         if (Quantity < quantity)
-            throw new DomainException($"Cannot decrease quantity: {quantity} of productId: {Id}");
+            throw DomainException.CannotDescreaseQuantity(quantity, Id);
 
         Quantity -= quantity;
     }

@@ -1,4 +1,5 @@
-﻿using Domain.Exceptions;
+﻿using Common.Errors;
+using Common.Errors.Exceptions;
 using System.Text.RegularExpressions;
 
 namespace Domain.ValueObjects;
@@ -21,7 +22,7 @@ public class EmailAddress : ValueObject
     {
         if (string.IsNullOrWhiteSpace(email) || !EmailRegex.IsMatch(email))
         {
-            throw new DomainException($"Invalid email address: [{email}]");
+            throw DomainException.InvalidEmailAddress(email);
         }
 
         return new EmailAddress(email);

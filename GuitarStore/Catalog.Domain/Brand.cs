@@ -1,6 +1,9 @@
-﻿using Domain;
-using Domain.Exceptions;
+﻿using Common.Errors;
+using Common.Errors.Exceptions;
+using Domain;
 using Domain.StronglyTypedIds;
+using Domain.ValueObjects;
+using Newtonsoft.Json.Linq;
 
 namespace Catalog.Domain;
 
@@ -15,7 +18,7 @@ public class Brand : Entity
     public Brand(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new DomainException("Brand Name cannot be null or white space.");
+            throw DomainException.InvalidProperty(nameof(name), name.ToString());
 
         Id = BrandId.New();
         Name = name;

@@ -1,6 +1,6 @@
 ﻿using Application.CQRS;
+using Common.Errors.Exceptions;
 using Customers.Shared;
-using Domain.Exceptions;
 using Domain.StronglyTypedIds;
 using Domain.ValueObjects;
 using Orders.Application.Abstractions;

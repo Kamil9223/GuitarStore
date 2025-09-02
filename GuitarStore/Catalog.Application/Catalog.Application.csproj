@@ -11,6 +11,7 @@
     <ProjectReference Include="..\Catalog.Domain\Catalog.Domain.csproj" />
     <ProjectReference Include="..\Catalog.Shared\Catalog.Shared.csproj" />
     <ProjectReference Include="..\Common.EfCore\Common.EfCore.csproj" />
+    <ProjectReference Include="..\Common.Errors\Common.Errors.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>

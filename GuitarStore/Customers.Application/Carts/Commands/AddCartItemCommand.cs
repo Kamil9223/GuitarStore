@@ -1,8 +1,8 @@
 ﻿using Application.CQRS;
+using Common.Errors.Exceptions;
 using Customers.Application.Abstractions;
 using Customers.Domain.Carts;
 using Customers.Domain.Products;
-using Domain.Exceptions;
 using Domain.StronglyTypedIds;
 
 namespace Customers.Application.Carts.Commands;

@@ -2,7 +2,7 @@
 using Catalog.Application.Abstractions;
 using FluentValidation;
 using System.Text;
-using ValidationException = Domain.Exceptions.ValidationException;
+using ValidationException = Common.Errors.Exceptions.ValidationException;
 
 namespace Catalog.Application.CrossCuttingServices;
 

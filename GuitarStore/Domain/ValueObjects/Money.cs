@@ -1,4 +1,4 @@
-﻿using Domain.Exceptions;
+﻿using Common.Errors.Exceptions;
 
 namespace Domain.ValueObjects;
 
@@ -18,7 +18,7 @@ public class Money : ValueObject
     {
         if (value < 0)
         {
-            throw new DomainException($"Price less than zero. Provided price = [{value}]");
+            throw DomainException.InvalidProperty(nameof(Money), value.ToString());
         }
 
         return new Money(value);

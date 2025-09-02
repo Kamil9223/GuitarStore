@@ -1,4 +1,4 @@
-﻿using Domain.Exceptions;
+﻿using Common.Errors.Exceptions;
 
 namespace Domain.ValueObjects;
 public sealed class Currency : ValueObject
@@ -22,7 +22,7 @@ public sealed class Currency : ValueObject
         if (SupportedCurrencies.Contains(value))
             return new Currency(value);
 
-        throw new DomainException($"Unsupported currency code: {value}");
+        throw DomainException.UnsupportedCurrency(value);
     }
 
     public static Currency PLN => new("PLN");

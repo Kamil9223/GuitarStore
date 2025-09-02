@@ -1,9 +1,9 @@
 ﻿using Application.RabbitMq.Abstractions;
 using Application.RabbitMq.Abstractions.Events;
+using Common.Errors.Exceptions;
 using Customers.Application.Abstractions;
 using Customers.Domain.Carts;
 using Customers.Domain.Customers;
-using Domain.Exceptions;
 using Domain.ValueObjects;
 
 namespace Customers.Application.Customers.Events.Incoming;

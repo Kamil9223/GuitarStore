@@ -1,4 +1,4 @@
-﻿using Domain.Exceptions;
+﻿using Common.Errors.Exceptions;
 using Warehouse.Core.Database;
 using Warehouse.Core.Entities;
 using Warehouse.Shared;
