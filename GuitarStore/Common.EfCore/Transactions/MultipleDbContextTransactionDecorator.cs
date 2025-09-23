@@ -1,4 +1,4 @@
-﻿using Application.CQRS;
+﻿using Application.CQRS.Command;
 using System.Transactions;
 
 namespace Common.EfCore.Transactions;

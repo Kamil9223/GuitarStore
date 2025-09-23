@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Application.CQRS;
+namespace Application.CQRS.Command;
 
 internal class CommandHandlerExecutor : ICommandHandlerExecutor
 {

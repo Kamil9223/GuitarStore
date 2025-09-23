@@ -1,4 +1,5 @@
-﻿using Application.CQRS;
+﻿using Application.CQRS.Command;
+using Application.CQRS.Query;
 using Application.RabbitMq;
 using Application.RabbitMq.Abstractions;
 using Customers.Application.Carts.ModuleApi;

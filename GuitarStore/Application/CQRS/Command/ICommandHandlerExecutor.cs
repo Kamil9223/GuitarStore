@@ -1,4 +1,4 @@
-﻿namespace Application.CQRS;
+﻿namespace Application.CQRS.Command;
 
 public interface ICommandHandlerExecutor
 {

@@ -10,6 +10,8 @@ public class DeliveryAddress : ValueObject
     public string Street { get; }
     public string? LocalNumber { get; }
 
+    private DeliveryAddress() { }
+
     public DeliveryAddress(string country, string localityName, string postalCode, string houseNumber, string street, string? localNumber)
     {
         Country = country;

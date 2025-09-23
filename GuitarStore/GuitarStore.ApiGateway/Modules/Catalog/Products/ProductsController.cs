@@ -1,4 +1,6 @@
-﻿using Application.CQRS;
+﻿using Application.Contracts;
+using Application.CQRS.Command;
+using Application.CQRS.Query;
 using Catalog.Application.Products.Commands;
 using Catalog.Application.Products.Dtos;
 using Catalog.Application.Products.Queries;
@@ -28,10 +30,11 @@ public class ProductsController : ControllerBase
         return Ok();
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
+    [HttpPost("list")]
+    public async Task<IActionResult> GetList(ListProductsQuery request)
     {
-        var products = await _queryHandlerExecutor.Execute<ListProductsQuery, IEnumerable<ProductDto>>(new ListProductsQuery());
+        var products = await _queryHandlerExecutor
+            .Execute<ListProductsQuery, PagedResponse<ProductBasedInfoDto>>(request);
 
         return Ok(products);
     }
@@ -39,7 +42,8 @@ public class ProductsController : ControllerBase
     [HttpGet("{productId}")]
     public async Task<IActionResult> GetDetails([FromRoute] ProductId productId)
     {
-        var productDetails = await _queryHandlerExecutor.Execute<ProductDetailsQuery, ProductDetailsDto>(new ProductDetailsQuery(productId));
+        var productDetails = await _queryHandlerExecutor
+            .Execute<ProductDetailsQuery, ProductDetailsDto>(new ProductDetailsQuery(productId));
 
         return Ok(productDetails);
     }

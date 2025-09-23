@@ -1,4 +1,4 @@
-﻿using Application.CQRS;
+﻿using Application.CQRS.Query;
 using Catalog.Application.Products.Dtos;
 using Catalog.Application.Products.Services;
 using Common.Errors.Exceptions;
@@ -19,7 +19,7 @@ internal sealed class ProductDetailsQueryHandler : IQueryHandler<ProductDetailsQ
 
     public async Task<ProductDetailsDto> Handle(ProductDetailsQuery query)
     {
-        var product = await _productQueryService.Get(query.ProductId);
+        var product = await _productQueryService.Get(query.ProductId, CancellationToken.None);
         if (product is null)
         {
             throw new NotFoundException(query.ProductId);

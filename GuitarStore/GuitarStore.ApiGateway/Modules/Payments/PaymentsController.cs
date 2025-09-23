@@ -1,4 +1,5 @@
-﻿using Application.CQRS;
+﻿using Application.CQRS.Command;
+using Application.CQRS.Query;
 using Microsoft.AspNetCore.Mvc;
 using Payments.Shared.Contracts;
 using Payments.Shared.Services;

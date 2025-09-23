@@ -1,4 +1,4 @@
-﻿using Application.CQRS;
+﻿using Application.CQRS.Command;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Common.EfCore.Transactions;

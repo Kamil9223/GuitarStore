@@ -1,4 +1,4 @@
-﻿using Application.CQRS;
+﻿using Application.CQRS.Command;
 using Customers.Application.Abstractions;
 using Customers.Domain.Customers;
 using Domain.ValueObjects;

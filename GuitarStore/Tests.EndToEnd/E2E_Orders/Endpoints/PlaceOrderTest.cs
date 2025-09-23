@@ -48,7 +48,7 @@ public sealed class PlaceOrderTest(Setup.Application app) : EndToEndTestBase(app
         };
 
         //Act
-        await TestContext.GuitarStoreClient.OrdersAsync(placeOrderCommand);
+        await TestContext.GuitarStoreClient.PlaceOrderAsync(placeOrderCommand);
 
         //Assert
         var order = Databases.OrdersDbContext.Orders.FirstOrDefault(x => x.CustomerId == customer.Id);
@@ -92,7 +92,7 @@ public sealed class PlaceOrderTest(Setup.Application app) : EndToEndTestBase(app
         };
 
         //Act
-        var action = () => TestContext.GuitarStoreClient.OrdersAsync(placeOrderCommand);
+        var action = () => TestContext.GuitarStoreClient.PlaceOrderAsync(placeOrderCommand);
 
         //Assert
         var exception = await action.ShouldThrowAsync<ApiException>();
@@ -142,7 +142,7 @@ public sealed class PlaceOrderTest(Setup.Application app) : EndToEndTestBase(app
         testStripeService.CheckoutSessionBehaviorKey = behaviorKey;
 
         //Act
-        var action = () => TestContext.GuitarStoreClient.OrdersAsync(placeOrderCommand);
+        var action = () => TestContext.GuitarStoreClient.PlaceOrderAsync(placeOrderCommand);
 
         //Assert
         var exception = await action.ShouldThrowAsync<ApiException>();

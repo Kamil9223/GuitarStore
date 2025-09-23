@@ -29,7 +29,7 @@ public sealed class AddItemToCartTest(Setup.Application app) : EndToEndTestBase(
         };
 
         //Act
-        await TestContext.GuitarStoreClient.CartsAsync(request);
+        await TestContext.GuitarStoreClient.AddItemToCartAsync(request);
 
         //Assert
         Databases.CustomersDbContext.ChangeTracker.Clear();

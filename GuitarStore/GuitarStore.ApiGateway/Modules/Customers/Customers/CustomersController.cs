@@ -1,4 +1,4 @@
-﻿using Application.CQRS;
+﻿using Application.CQRS.Command;
 using Customers.Application.Customers.Commands;
 using Microsoft.AspNetCore.Mvc;
 

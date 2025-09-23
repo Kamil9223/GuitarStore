@@ -18,6 +18,10 @@ internal class OrdersDbContext : DbContext, IOrdersDbContext
 
     public DbSet<OrderDbModel> Orders { get; set; } = null!;
 
+    public DbSet<OrderReadModel> OrderReadModels { get; set; } = null!;
+
+    public DbSet<OrderItemReadModel> OrderItemReadModels { get; set; } = null!;
+
     public OrdersDbContext(DbContextOptions<OrdersDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

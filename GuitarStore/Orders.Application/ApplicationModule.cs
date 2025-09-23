@@ -1,8 +1,10 @@
-﻿using Application.CQRS;
+﻿using Application.CQRS.Command;
+using Application.CQRS.Query;
 using Application.RabbitMq;
 using Application.RabbitMq.Abstractions;
 using Common.EfCore.Transactions;
 using Microsoft.Extensions.DependencyInjection;
+using Orders.Application.Orders;
 using Orders.Application.Orders.Commands;
 using Orders.Application.Orders.Events.Incoming;
 using System.Reflection;

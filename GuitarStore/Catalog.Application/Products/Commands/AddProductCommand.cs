@@ -1,4 +1,4 @@
-﻿using Application.CQRS;
+﻿using Application.CQRS.Command;
 using Application.RabbitMq.Abstractions;
 using Catalog.Application.Abstractions;
 using Catalog.Application.Products.Events.Outgoing;

@@ -10,6 +10,7 @@
         "tags": [
           "Carts"
         ],
+        "operationId": "AddItemToCart",
         "requestBody": {
           "content": {
             "application/json": {
@@ -34,6 +35,17 @@
             "description": "Success"
           }
         }
+      },
+      "get": {
+        "tags": [
+          "Carts"
+        ],
+        "operationId": "GetCart",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
       }
     },
     "/carts/checkout": {
@@ -41,6 +53,7 @@
         "tags": [
           "Carts"
         ],
+        "operationId": "CheckoutCart",
         "requestBody": {
           "content": {
             "application/json": {
@@ -60,6 +73,18 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/carts/RemoveItemFromCart": {
+      "delete": {
+        "tags": [
+          "Carts"
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -115,6 +140,7 @@
         "tags": [
           "Orders"
         ],
+        "operationId": "PlaceOrder",
         "requestBody": {
           "content": {
             "application/json": {
@@ -134,6 +160,64 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/orders/{orderId}/status": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "CheckOrderStatus",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/OrderId"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/orders/OrderHistory": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/orders/{orderId}": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "OrderDetails",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/OrderId"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -170,11 +254,32 @@
             "description": "Success"
           }
         }
-      },
-      "get": {
+      }
+    },
+    "/products/list": {
+      "post": {
         "tags": [
           "Products"
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListProductsQuery"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListProductsQuery"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListProductsQuery"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Success"
@@ -196,6 +301,18 @@
               "$ref": "#/components/schemas/ProductId"
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/warehouse": {
+      "patch": {
+        "tags": [
+          "Warehouse"
         ],
         "responses": {
           "200": {
@@ -367,6 +484,61 @@
         },
         "additionalProperties": false
       },
+      "ListProductsFilter": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "minimumQuantity": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ListProductsQuery": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "filter": {
+            "$ref": "#/components/schemas/ListProductsFilter"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/ListProductsSort"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ListProductsSort": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/SortType"
+          },
+          "price": {
+            "$ref": "#/components/schemas/SortType"
+          },
+          "quantity": {
+            "$ref": "#/components/schemas/SortType"
+          }
+        },
+        "additionalProperties": false
+      },
+      "OrderId": {
+        "type": "string",
+        "additionalProperties": false,
+        "format": "uuid"
+      },
       "PlaceOrderCommand": {
         "type": "object",
         "properties": {
@@ -386,6 +558,14 @@
         "type": "string",
         "additionalProperties": false,
         "format": "uuid"
+      },
+      "SortType": {
+        "enum": [
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
       },
       "VariationOptionId": {
         "type": "string",

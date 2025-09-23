@@ -1,4 +1,4 @@
-﻿using Application.CQRS;
+﻿using Application.CQRS.Command;
 using Catalog.Application.Abstractions;
 using FluentValidation;
 using System.Text;

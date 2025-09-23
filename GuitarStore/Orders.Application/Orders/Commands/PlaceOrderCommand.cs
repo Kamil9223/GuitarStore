@@ -1,4 +1,4 @@
-﻿using Application.CQRS;
+﻿using Application.CQRS.Command;
 using Common.Errors.Exceptions;
 using Customers.Shared;
 using Domain.StronglyTypedIds;

@@ -1,6 +1,9 @@
-﻿using Application.CQRS;
+﻿using Application.CQRS.Command;
+using Application.CQRS.Query;
+using Domain.StronglyTypedIds;
 using Microsoft.AspNetCore.Mvc;
 using Orders.Application.Orders.Commands;
+using Orders.Application.Orders.Queries;
 
 namespace GuitarStore.ApiGateway.Modules.Orders.Orders;
 
@@ -17,10 +20,34 @@ public class OrdersController : ControllerBase
         _queryHandlerExecutor = queryHandlerExecutor;
     }
 
-    [HttpPost]
+    [HttpPost(Name = "PlaceOrder")]
     public async Task<IActionResult> PlaceOrder(PlaceOrderCommand request)
     {
         var response = await _commandHandlerExecutor.Execute<PlaceOrderResponse, PlaceOrderCommand>(request);
+
+        return Ok(response);
+    }
+
+    [HttpGet("{orderId}/status", Name = "CheckOrderStatus")]
+    public async Task<IActionResult> CheckOrderStatus([FromRoute] OrderId orderId)
+    {
+        var response = await _queryHandlerExecutor.Execute<GetOrderStatusQuery, OrderStatusResponse>(new GetOrderStatusQuery(orderId));
+
+        return Ok(response);
+    }
+
+    [HttpGet("OrderHistory")]
+    public async Task<IActionResult> GetOrdersHistory([FromRoute] CustomerId customerId)
+    {
+        var response = await _queryHandlerExecutor.Execute<GetOrdersHistoryQuery, OrdersHistoryResponse>(new GetOrdersHistoryQuery(customerId));
+
+        return Ok(response);
+    }
+
+    [HttpGet("{orderId}", Name = "OrderDetails")]
+    public async Task<IActionResult> GetOrderDetails([FromRoute] OrderId orderId)
+    {
+        var response = await _queryHandlerExecutor.Execute<GetOrderDetailsQuery, OrderDetailsResponse>(new GetOrderDetailsQuery(orderId));
 
         return Ok(response);
     }

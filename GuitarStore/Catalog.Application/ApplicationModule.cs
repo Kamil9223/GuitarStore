@@ -1,9 +1,8 @@
-﻿using Application.CQRS;
+﻿using Application.CQRS.Command;
+using Application.CQRS.Query;
 using Catalog.Application.Abstractions;
 using Catalog.Application.CrossCuttingServices;
 using Catalog.Application.Products.Commands;
-using Catalog.Application.Products.ModuleApi;
-using Catalog.Shared;
 using Common.EfCore.Transactions;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +28,6 @@ internal static class ApplicationModule
         );
 
         services.AddScoped(typeof(IValidationService<>), typeof(ValidationService<>));
-        services.AddScoped<IProductService, ProductService>();
 
         services.AddScoped<ICommandHandler<AddProductCommand>, AddProductCommandHandler>();
         services.Decorate<ICommandHandler<AddProductCommand>, CommandValidationDecorator<AddProductCommand>>();

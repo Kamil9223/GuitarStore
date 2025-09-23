@@ -1,4 +1,4 @@
-﻿namespace Application.CQRS;
+﻿namespace Application.CQRS.Query;
 
 public interface IQueryHandlerExecutor
 

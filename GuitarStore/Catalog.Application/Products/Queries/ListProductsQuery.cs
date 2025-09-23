@@ -1,12 +1,26 @@
-﻿using Application.CQRS;
+﻿using Application.Contracts;
+using Application.CQRS.Query;
 using Catalog.Application.Products.Dtos;
 using Catalog.Application.Products.Services;
 
 namespace Catalog.Application.Products.Queries;
 
-public sealed record ListProductsQuery : IQuery;
+public sealed record ListProductsQuery(
+    int Limit,
+    int Offset,
+    ListProductsFilter Filter,
+    ListProductsSort Sort) : IQuery;
 
-internal sealed class ListProductsQueryHandler : IQueryHandler<ListProductsQuery, IEnumerable<ProductDto>>
+public sealed record ListProductsFilter(
+    string? Name,
+    int? MinimumQuantity);
+
+public sealed record ListProductsSort(
+    SortType? Name,
+    SortType? Price,
+    SortType? Quantity);
+
+internal sealed class ListProductsQueryHandler : IQueryHandler<ListProductsQuery, PagedResponse<ProductBasedInfoDto>>
 {
     private readonly IProductQueryService _productQueryService;
 
@@ -15,12 +29,26 @@ internal sealed class ListProductsQueryHandler : IQueryHandler<ListProductsQuery
         _productQueryService = productQueryService;
     }
 
-    public async Task<IEnumerable<ProductDto>> Handle(ListProductsQuery query)
+    public async Task<PagedResponse<ProductBasedInfoDto>> Handle(ListProductsQuery query)
     {
-        var products = _productQueryService.Get();
+        var limitPlusOne = query.Limit + 1;
+        var products = await _productQueryService.GetPaged(
+            limitPlusOne,
+            query.Offset,
+            query.Filter,
+            query.Sort,
+            CancellationToken.None);
 
-        await Task.CompletedTask;
+        var items = products.Count == limitPlusOne
+            ? products.GetRange(0, query.Limit)
+            : products;
 
-        return products!;
+        return new PagedResponse<ProductBasedInfoDto>
+        {
+            Items = items,
+            Offset = query.Offset,
+            Limit = query.Limit,
+            HasMoreItems = products.Count == limitPlusOne
+        };
     }
 }

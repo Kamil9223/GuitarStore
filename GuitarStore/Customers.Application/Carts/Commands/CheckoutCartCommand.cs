@@ -1,4 +1,4 @@
-﻿using Application.CQRS;
+﻿using Application.CQRS.Command;
 using Common.EfCore.Transactions;
 using Customers.Application.Abstractions;
 using Customers.Domain.Carts;

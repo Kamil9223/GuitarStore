@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Orders.Application.Abstractions;
+using Orders.Application.Orders;
 using Orders.Infrastructure.Database;
+using Orders.Infrastructure.Orders;
 using System.Reflection;
 
 namespace Orders.Infrastructure.Configuration;
@@ -33,5 +35,6 @@ internal static class InfrastructureModule
         );
 
         services.AddScoped<IOrdersUnitOfWork, OrdersUnitOfWork>();
+        services.AddScoped<IOrderQueryService, OrderQueryService>();
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Application.CQRS;
+namespace Application.CQRS.Query;
 
 internal class QueryHandlerExecutor : IQueryHandlerExecutor
 {

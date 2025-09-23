@@ -1,4 +1,4 @@
-﻿using Application.CQRS;
+﻿using Application.CQRS.Query;
 using Payments.Core.Dtos;
 using Payments.Shared.Services;
 
