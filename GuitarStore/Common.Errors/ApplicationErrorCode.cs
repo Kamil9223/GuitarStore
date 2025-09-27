@@ -1,4 +1,6 @@
-﻿namespace Common.Errors;
+﻿using System.Globalization;
+
+namespace Common.Errors;
 
 public class ApplicationErrorCode
 {
@@ -15,12 +17,12 @@ public class ApplicationErrorCode
     /// <summary>
     /// Returns formatted error message using passed arguments.
     /// </summary>
-    public ApplicationErrorCode Format(params object[] args) => new(string.Format(_message, args));
+    public ApplicationErrorCode Format(params object[] args) => new(string.Format(CultureInfo.InvariantCulture, _message, args));
 
     public static ApplicationErrorCode SchemaValidationError(string message) => new(message);
-    public static ApplicationErrorCode ResourceNotFound => new("Resource with Id: [{resourceId}] does not exist.");
-    public static ApplicationErrorCode UnsupportedCurrency => new("Unsupported currency code: [{value}]");
-    public static ApplicationErrorCode InvalidEmailAddress => new("Invalid email address: [{email}]");
-    public static ApplicationErrorCode InvalidPropertyValue => new("[{propertyName}] invalid. Invalid value: [{value}]");
-    public static ApplicationErrorCode CannotDescreaseQuantity => new("Cannot decrease quantity: [{quantity}] of productId: [{Id}]");
+    public static ApplicationErrorCode ResourceNotFound => new("Resource with Id: [{0}] does not exist.");
+    public static ApplicationErrorCode UnsupportedCurrency => new("Unsupported currency code: [{0}]");
+    public static ApplicationErrorCode InvalidEmailAddress => new("Invalid email address: [{0}]");
+    public static ApplicationErrorCode InvalidPropertyValue => new("[{0}] invalid. Invalid value: [{1}]");
+    public static ApplicationErrorCode CannotDescreaseQuantity => new("Cannot decrease quantity: [{0}] of productId: [{1}]");
 }

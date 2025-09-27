@@ -21,7 +21,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPost(Name = "PlaceOrder")]
-    public async Task<IActionResult> PlaceOrder(PlaceOrderCommand request)
+    public async Task<ActionResult<PlaceOrderResponse>> PlaceOrder(PlaceOrderCommand request)
     {
         var response = await _commandHandlerExecutor.Execute<PlaceOrderResponse, PlaceOrderCommand>(request);
 
@@ -29,15 +29,15 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet("{orderId}/status", Name = "CheckOrderStatus")]
-    public async Task<IActionResult> CheckOrderStatus([FromRoute] OrderId orderId)
+    public async Task<ActionResult<OrderStatusResponse>> CheckOrderStatus([FromRoute] OrderId orderId)
     {
         var response = await _queryHandlerExecutor.Execute<GetOrderStatusQuery, OrderStatusResponse>(new GetOrderStatusQuery(orderId));
 
         return Ok(response);
     }
 
-    [HttpGet("OrderHistory")]
-    public async Task<IActionResult> GetOrdersHistory([FromRoute] CustomerId customerId)
+    [HttpGet("OrderHistory/{customerId}")]//TODO: pobierać z headera
+    public async Task<ActionResult<OrdersHistoryResponse>> GetOrdersHistory([FromRoute] CustomerId customerId)
     {
         var response = await _queryHandlerExecutor.Execute<GetOrdersHistoryQuery, OrdersHistoryResponse>(new GetOrdersHistoryQuery(customerId));
 
@@ -45,7 +45,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet("{orderId}", Name = "OrderDetails")]
-    public async Task<IActionResult> GetOrderDetails([FromRoute] OrderId orderId)
+    public async Task<ActionResult<OrderDetailsResponse>> GetOrderDetails([FromRoute] OrderId orderId)
     {
         var response = await _queryHandlerExecutor.Execute<GetOrderDetailsQuery, OrderDetailsResponse>(new GetOrderDetailsQuery(orderId));
 

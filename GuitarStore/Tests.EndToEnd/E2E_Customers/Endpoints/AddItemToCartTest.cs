@@ -24,7 +24,7 @@ public sealed class AddItemToCartTest(Setup.Application app) : EndToEndTestBase(
         {
             CustomerId = customer.Id.Value,
             Name = product.Name,
-            Price = (double)product.Price.Value,//TODO: Fix API generation (now decimal is treat as double)
+            Price = product.Price.Value,
             ProductId = product.Id.Value,
         };
 

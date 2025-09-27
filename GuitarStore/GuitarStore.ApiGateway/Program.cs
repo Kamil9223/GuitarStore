@@ -19,6 +19,8 @@ public class Program
         {
             options.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
             options.SchemaFilter<StronglyTypedIdSchemaFilter>();
+            options.MapType<decimal>(() => new OpenApiSchema { Type = "number", Format = "decimal" });
+            options.MapType<decimal?>(() => new OpenApiSchema { Type = "number", Format = "decimal", Nullable = true });
         });
 
         var app = builder.Build();
