@@ -36,6 +36,17 @@
           }
         }
       },
+      "delete": {
+        "tags": [
+          "Carts"
+        ],
+        "operationId": "RemoveItemFromCart",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
       "get": {
         "tags": [
           "Carts"
@@ -73,18 +84,6 @@
             }
           }
         },
-        "responses": {
-          "200": {
-            "description": "Success"
-          }
-        }
-      }
-    },
-    "/carts/RemoveItemFromCart": {
-      "delete": {
-        "tags": [
-          "Carts"
-        ],
         "responses": {
           "200": {
             "description": "Success"
@@ -387,11 +386,31 @@
         }
       }
     },
-    "/warehouse": {
-      "patch": {
+    "/warehouse/increase-quantity": {
+      "put": {
         "tags": [
           "Warehouse"
         ],
+        "operationId": "IncreaseProductQuantity",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IncreaseStockQuantityCommand"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IncreaseStockQuantityCommand"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/IncreaseStockQuantityCommand"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Success"
@@ -588,6 +607,19 @@
           "deliverer": {
             "type": "string",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "IncreaseStockQuantityCommand": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/ProductId"
+          },
+          "increaseBy": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false

@@ -1,6 +1,7 @@
 ﻿using Application.CQRS.Command;
 using Application.CQRS.Query;
 using Microsoft.AspNetCore.Mvc;
+using Warehouse.Core.Commands;
 
 namespace GuitarStore.ApiGateway.Modules.Warehouse;
 
@@ -17,9 +18,10 @@ public class WarehouseController : ControllerBase
         _queryHandlerExecutor = queryHandlerExecutor;
     }
 
-    [HttpPatch]
-    public async Task<IActionResult> IncreaseQuantity()
+    [HttpPut("increase-quantity", Name = "IncreaseProductQuantity")]
+    public async Task<IActionResult> IncreaseQuantity(IncreaseStockQuantityCommand command)
     {
-        throw new NotImplementedException();
+        await _commandHandlerExecutor.Execute(command);
+        return Ok();
     }
 }

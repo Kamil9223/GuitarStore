@@ -34,7 +34,7 @@ public class CartsController : ControllerBase
         return Ok();
     }
 
-    [HttpDelete("RemoveItemFromCart")]
+    [HttpDelete(Name = "RemoveItemFromCart")]
     public async Task<IActionResult> RemoveFromCart()
     {
         throw new NotImplementedException();

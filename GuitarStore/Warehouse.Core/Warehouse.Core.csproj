@@ -23,5 +23,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Events\Incoming\" />
+    <Folder Include="Queries\" />
   </ItemGroup>
 </Project>
