@@ -1,5 +1,5 @@
-﻿using Application.RabbitMq.Abstractions;
-using Application.RabbitMq.Abstractions.Events;
+﻿using Common.RabbitMq.Abstractions.EventHandlers;
+using Common.RabbitMq.Abstractions.Events;
 using Customers.Application.Abstractions;
 using Customers.Domain.Products;
 using Domain.StronglyTypedIds;

@@ -1,7 +1,8 @@
-﻿using Catalog.Infrastructure.Configuration;
+﻿using Application.Configuration;
+using Catalog.Infrastructure.Configuration;
+using Common.RabbitMq.Configuration;
 using Customers.Infrastructure.Configuration;
 using Delivery.Core;
-using Infrastructure.Configuration;
 using Orders.Application.Abstractions;
 using Orders.Infrastructure.Configuration;
 using Payments.Core;
@@ -15,7 +16,8 @@ internal static class ModulesInitializator
     public static IServiceCollection InitializeModules(this IServiceCollection services, IConfiguration configuration)
     {
         services
-            .AddCommonModule()
+            .AddApplicationModule()
+            .AddRabbitMqModule()
             .AddCatalogModule(configuration)
             .AddCustomersModule(configuration)
             .AddOrdersModule(

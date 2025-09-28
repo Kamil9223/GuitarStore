@@ -1,6 +1,6 @@
 ﻿using Application.CQRS.Command;
 using Application.CQRS.Query;
-using Application.RabbitMq.Abstractions;
+using Common.RabbitMq.Abstractions.EventHandlers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;

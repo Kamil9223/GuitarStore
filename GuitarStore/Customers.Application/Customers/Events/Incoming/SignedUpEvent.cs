@@ -1,6 +1,6 @@
-﻿using Application.RabbitMq.Abstractions;
-using Application.RabbitMq.Abstractions.Events;
-using Common.Errors.Exceptions;
+﻿using Common.Errors.Exceptions;
+using Common.RabbitMq.Abstractions.EventHandlers;
+using Common.RabbitMq.Abstractions.Events;
 using Customers.Application.Abstractions;
 using Customers.Domain.Carts;
 using Customers.Domain.Customers;

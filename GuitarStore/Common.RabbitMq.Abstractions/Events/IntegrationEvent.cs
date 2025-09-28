@@ -1,4 +1,4 @@
-﻿namespace Application.RabbitMq.Abstractions.Events;
+﻿namespace Common.RabbitMq.Abstractions.Events;
 
 /// <summary>
 /// Represents application event sending between modules in asynchronous way (e.g RabbitMq)

@@ -12,7 +12,7 @@
     <PackageReference Include="RabbitMQ.Client" Version="6.5.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Common.EfCore\Common.EfCore.csproj" />
+    <ProjectReference Include="..\Common.RabbitMq.Abstractions\Common.RabbitMq.Abstractions.csproj" />
   </ItemGroup>
 </Project>

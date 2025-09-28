@@ -1,6 +1,5 @@
-﻿using Application.RabbitMq;
-using Application.RabbitMq.Abstractions;
-using Infrastructure.RabbitMq;
+﻿using Common.RabbitMq.Abstractions;
+using Common.RabbitMq.Abstractions.EventHandlers;
 using Orders.Application.Orders.Events.Incoming;
 
 namespace Orders.Application;

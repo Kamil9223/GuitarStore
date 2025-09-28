@@ -1,4 +1,4 @@
-﻿namespace Application.RabbitMq;
+﻿namespace Common.RabbitMq.Abstractions;
 
 public interface IEventBusSubscriptionManager
 {

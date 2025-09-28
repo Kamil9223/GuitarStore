@@ -1,8 +1,8 @@
-﻿using Application.RabbitMq;
+﻿using Common.RabbitMq.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Infrastructure.RabbitMq;
+namespace Common.RabbitMq;
 
 internal class RabbitMqSubscriptionBackgroundService : IHostedService
 {

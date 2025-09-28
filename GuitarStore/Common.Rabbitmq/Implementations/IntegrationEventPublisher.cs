@@ -1,10 +1,10 @@
-﻿using Application.RabbitMq.Abstractions;
-using Application.RabbitMq.Abstractions.Events;
-using Infrastructure.RabbitMq.Abstractions;
+﻿using Common.RabbitMq.Abstractions;
+using Common.RabbitMq.Abstractions.EventHandlers;
+using Common.RabbitMq.Abstractions.Events;
 using Newtonsoft.Json;
 using System.Text;
 
-namespace Infrastructure.RabbitMq.Implementations;
+namespace Common.RabbitMq.Implementations;
 
 internal class IntegrationEventPublisher : IIntegrationEventPublisher
 {

@@ -1,10 +1,10 @@
-﻿using Application.RabbitMq.Abstractions.Events;
-using Infrastructure.RabbitMq.Abstractions;
+﻿using Common.RabbitMq.Abstractions;
+using Common.RabbitMq.Abstractions.Events;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 using System.Reflection;
 
-namespace Infrastructure.RabbitMq;
+namespace Common.RabbitMq;
 
 internal class RabbitMqSetupBackgroundService : IHostedService
 {

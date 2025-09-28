@@ -1,6 +1,6 @@
 ﻿using RabbitMQ.Client;
 
-namespace Infrastructure.RabbitMq.Abstractions;
+namespace Common.RabbitMq.Abstractions;
 
 public interface IRabbitMqChannel
 {

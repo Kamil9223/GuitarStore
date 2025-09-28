@@ -11,6 +11,7 @@
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Catalog.Shared\Catalog.Shared.csproj" />
     <ProjectReference Include="..\Common.EfCore\Common.EfCore.csproj" />
+    <ProjectReference Include="..\Common.RabbitMq.Abstractions\Common.RabbitMq.Abstractions.csproj" />
     <ProjectReference Include="..\Customers.Shared\Customers.Shared.csproj" />
     <ProjectReference Include="..\Orders.Domain\Orders.Domain.csproj" />
     <ProjectReference Include="..\Orders.Shared\Orders.Shared.csproj" />

@@ -1,8 +1,8 @@
-﻿using Infrastructure.RabbitMq.Abstractions;
+﻿using Common.RabbitMq.Abstractions;
 using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 
-namespace Infrastructure.RabbitMq;
+namespace Common.RabbitMq;
 
 internal class RabbitMqConnector : IRabbitMqConnector, IRabbitMqChannel
 {

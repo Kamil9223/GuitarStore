@@ -1,4 +1,4 @@
-﻿using Application.RabbitMq.Abstractions;
+﻿using Common.RabbitMq.Abstractions.EventHandlers;
 using Domain.StronglyTypedIds;
 using Microsoft.AspNetCore.Mvc;
 using Payments.Core.Events.Outgoing;

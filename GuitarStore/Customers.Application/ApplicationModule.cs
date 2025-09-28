@@ -1,7 +1,7 @@
 ﻿using Application.CQRS.Command;
 using Application.CQRS.Query;
-using Application.RabbitMq;
-using Application.RabbitMq.Abstractions;
+using Common.RabbitMq.Abstractions;
+using Common.RabbitMq.Abstractions.EventHandlers;
 using Customers.Application.Carts.ModuleApi;
 using Customers.Shared;
 using Microsoft.Extensions.DependencyInjection;

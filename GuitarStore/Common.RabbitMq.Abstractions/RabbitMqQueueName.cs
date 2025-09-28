@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.RabbitMq;
+﻿namespace Common.RabbitMq.Abstractions;
 
 public class RabbitMqQueueName
 {

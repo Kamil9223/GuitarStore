@@ -15,6 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
+    <ProjectReference Include="..\Common.RabbitMq.Abstractions\Common.RabbitMq.Abstractions.csproj" />
     <ProjectReference Include="..\Payments.Shared\Payments.Shared.csproj" />
   </ItemGroup>
 </Project>

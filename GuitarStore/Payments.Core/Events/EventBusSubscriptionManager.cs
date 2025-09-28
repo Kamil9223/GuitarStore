@@ -1,6 +1,5 @@
-﻿using Application.RabbitMq;
-using Application.RabbitMq.Abstractions;
-using Infrastructure.RabbitMq;
+﻿using Common.RabbitMq.Abstractions;
+using Common.RabbitMq.Abstractions.EventHandlers;
 using Payments.Core.Events.Incoming;
 
 namespace Payments.Core.Events;

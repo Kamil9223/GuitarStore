@@ -1,5 +1,5 @@
-﻿using Application.RabbitMq.Abstractions.Events;
-using Infrastructure.RabbitMq.Abstractions;
+﻿using Common.RabbitMq.Abstractions;
+using Common.RabbitMq.Abstractions.Events;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;

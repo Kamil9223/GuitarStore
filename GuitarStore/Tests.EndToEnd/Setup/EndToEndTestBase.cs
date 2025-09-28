@@ -1,5 +1,5 @@
-﻿using GuitarStore.Api.Client;
-using Infrastructure.RabbitMq.Abstractions;
+﻿using Common.RabbitMq.Abstractions;
+using GuitarStore.Api.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Tests.EndToEnd.Setup.Modules.Common;
 using Xunit;

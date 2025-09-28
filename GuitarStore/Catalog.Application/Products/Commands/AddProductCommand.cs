@@ -1,10 +1,10 @@
 ﻿using Application.CQRS.Command;
-using Application.RabbitMq.Abstractions;
 using Catalog.Application.Abstractions;
 using Catalog.Application.Products.Events.Outgoing;
 using Catalog.Domain;
 using Catalog.Domain.IRepositories;
 using Common.Errors.Exceptions;
+using Common.RabbitMq.Abstractions.EventHandlers;
 using Domain.StronglyTypedIds;
 
 namespace Catalog.Application.Products.Commands;

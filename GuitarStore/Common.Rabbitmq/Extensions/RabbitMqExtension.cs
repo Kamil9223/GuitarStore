@@ -1,9 +1,9 @@
-﻿using Application.RabbitMq.Abstractions;
-using Infrastructure.RabbitMq.Abstractions;
-using Infrastructure.RabbitMq.Implementations;
+﻿using Common.RabbitMq.Abstractions;
+using Common.RabbitMq.Abstractions.EventHandlers;
+using Common.RabbitMq.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Infrastructure.RabbitMq.Extensions;
+namespace Common.RabbitMq.Extensions;
 
 internal static class RabbitMqExtension
 {

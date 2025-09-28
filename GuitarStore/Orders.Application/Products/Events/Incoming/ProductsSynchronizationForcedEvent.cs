@@ -1,5 +1,5 @@
-﻿using Application.RabbitMq.Abstractions;
-using Application.RabbitMq.Abstractions.Events;
+﻿using Common.RabbitMq.Abstractions.EventHandlers;
+using Common.RabbitMq.Abstractions.Events;
 
 namespace Orders.Application.Products.Events.Incoming;
 internal sealed record ProductsSynchronizationForcedEvent(IReadOnlyCollection<ProductsSynchronizationForcedData> Products)

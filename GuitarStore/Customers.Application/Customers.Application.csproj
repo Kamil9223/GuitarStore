@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Common.EfCore\Common.EfCore.csproj" />
+    <ProjectReference Include="..\Common.RabbitMq.Abstractions\Common.RabbitMq.Abstractions.csproj" />
     <ProjectReference Include="..\Customers.Domain\Customers.Domain.csproj" />
     <ProjectReference Include="..\Customers.Shared\Customers.Shared.csproj" />
   </ItemGroup>

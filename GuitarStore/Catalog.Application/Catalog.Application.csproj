@@ -12,7 +12,7 @@
     <ProjectReference Include="..\Catalog.Shared\Catalog.Shared.csproj" />
     <ProjectReference Include="..\Common.EfCore\Common.EfCore.csproj" />
     <ProjectReference Include="..\Common.Errors\Common.Errors.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Common.RabbitMq.Abstractions\Common.RabbitMq.Abstractions.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Categories\" />

@@ -1,13 +1,11 @@
 ﻿using Application.CQRS.Command;
 using Application.CQRS.Query;
-using Application.RabbitMq.Abstractions;
+using Common.RabbitMq.Abstractions.EventHandlers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Http;
 using Payments.Core.Services;
 using Payments.Shared.Services;
 using Stripe;
-using System.Net.Http.Headers;
 using System.Reflection;
 
 namespace Payments.Core;
