@@ -16,9 +16,9 @@ public class CustomersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddCustomer(AddCustomerCommand command)
+    public async Task<IActionResult> AddCustomer(AddCustomerCommand command, CancellationToken ct)
     {
-        await _commandHandlerExecutor.Execute(command);
+        await _commandHandlerExecutor.Execute(command, ct);
 
         return Ok();
     }

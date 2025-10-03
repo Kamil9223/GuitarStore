@@ -15,10 +15,10 @@ internal class VariationOptionRepository : IVariationOptionRepository
         _catalogDbContext = catalogDbContext;
     }
 
-    public async Task<ICollection<VariationOption>> Get(IEnumerable<VariationOptionId> Ids)
+    public async Task<ICollection<VariationOption>> Get(IEnumerable<VariationOptionId> Ids, CancellationToken ct)
     {
         return await _catalogDbContext.VariationOptions
             .Where(x => Ids.Contains(x.Id))
-            .ToListAsync();
+            .ToListAsync(ct);
     }
 }

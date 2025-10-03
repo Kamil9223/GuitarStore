@@ -15,10 +15,10 @@ internal class CommandValidationDecorator<TCommand> : ICommandHandler<TCommand>
         _validationService = validationService;
     }
 
-    public async Task Handle(TCommand command)
+    public async Task Handle(TCommand command, CancellationToken ct)
     {
         _validationService.Validate(command);
 
-        await _handler.Handle(command);
+        await _handler.Handle(command, ct);
     }
 }

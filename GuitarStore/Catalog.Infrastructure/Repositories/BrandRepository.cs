@@ -15,8 +15,8 @@ internal class BrandRepository : IBrandRepository
         _catalogDbContext = catalogDbContext;
     }
 
-    public async Task<Brand?> Get(BrandId id)
+    public async Task<Brand?> Get(BrandId id, CancellationToken ct)
     {
-        return await _catalogDbContext.Brands.SingleOrDefaultAsync(b => b.Id == id);
+        return await _catalogDbContext.Brands.SingleOrDefaultAsync(b => b.Id == id, ct);
     }
 }

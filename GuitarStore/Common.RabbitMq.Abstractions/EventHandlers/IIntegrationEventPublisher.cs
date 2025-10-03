@@ -11,5 +11,5 @@ public interface IIntegrationEventPublisher
     /// Publish Event
     /// </summary>
     /// <param name="event"></param>
-    Task Publish<TEvent>(TEvent @event) where TEvent : IntegrationEvent, IIntegrationPublishEvent;
+    Task Publish<TEvent>(TEvent @event, CancellationToken ct) where TEvent : IntegrationEvent, IIntegrationPublishEvent;
 }

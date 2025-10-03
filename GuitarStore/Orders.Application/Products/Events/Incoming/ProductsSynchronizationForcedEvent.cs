@@ -9,7 +9,7 @@ internal sealed record ProductsSynchronizationForcedData(int Id, string Name, de
 
 internal sealed class ProductsSynchronizationForcedEventHandler : IIntegrationEventHandler<ProductsSynchronizationForcedEvent>
 {
-    public async Task Handle(ProductsSynchronizationForcedEvent @event)
+    public async Task Handle(ProductsSynchronizationForcedEvent @event, CancellationToken ct)
     {
         //sync products, new add, same ignore
     }

@@ -17,9 +17,9 @@ internal sealed class ProductDetailsQueryHandler : IQueryHandler<ProductDetailsQ
         _productQueryService = productQueryService;
     }
 
-    public async Task<ProductDetailsDto> Handle(ProductDetailsQuery query)
+    public async Task<ProductDetailsDto> Handle(ProductDetailsQuery query, CancellationToken ct)
     {
-        var product = await _productQueryService.Get(query.ProductId, CancellationToken.None);
+        var product = await _productQueryService.Get(query.ProductId, ct);
         if (product is null)
         {
             throw new NotFoundException(query.ProductId);

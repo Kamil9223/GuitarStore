@@ -24,8 +24,8 @@ public sealed record OrdersHistoryResponse
 public sealed class GetOrdersHistoryQueryHandler(IOrderQueryService orderQueryService)
     : IQueryHandler<GetOrdersHistoryQuery, OrdersHistoryResponse>
 {
-    public Task<OrdersHistoryResponse> Handle(GetOrdersHistoryQuery query)
+    public Task<OrdersHistoryResponse> Handle(GetOrdersHistoryQuery query, CancellationToken ct)
     {
-        return orderQueryService.GetOrdersHistory(query.CustomerId, CancellationToken.None);
+        return orderQueryService.GetOrdersHistory(query.CustomerId, ct);
     }
 }

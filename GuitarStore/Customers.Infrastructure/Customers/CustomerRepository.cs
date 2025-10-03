@@ -21,12 +21,12 @@ internal class CustomerRepository : ICustomerRepository
         _customersDbContext.Customers.Add(customer);
     }
 
-    public async Task<bool> Exists(Expression<Func<Customer, bool>> predicate)
+    public async Task<bool> Exists(Expression<Func<Customer, bool>> predicate, CancellationToken ct)
     {
-        return await _customersDbContext.Customers.AnyAsync(predicate);
+        return await _customersDbContext.Customers.AnyAsync(predicate, ct);
     }
 
-    public async Task<Customer> Get(CustomerId id) =>
-        await _customersDbContext.Customers.SingleOrDefaultAsync(x => x.Id == id)
+    public async Task<Customer> Get(CustomerId id, CancellationToken ct) =>
+        await _customersDbContext.Customers.SingleOrDefaultAsync(x => x.Id == id, ct)
         ?? throw new NotFoundException(id);
 }

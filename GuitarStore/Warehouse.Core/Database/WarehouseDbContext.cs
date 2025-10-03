@@ -45,7 +45,7 @@ internal class WarehouseDbContext : DbContext, IWarehouseDbContext
         });
     }
 
-    public Task<IDbContextTransaction> BeginTransactionAsync() => Database.BeginTransactionAsync();
+    public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken ct) => Database.BeginTransactionAsync(ct);
 
-    public async Task SaveChangesAsync() => await base.SaveChangesAsync();
+    public async Task SaveChangesAsync(CancellationToken ct) => await base.SaveChangesAsync(ct);
 }

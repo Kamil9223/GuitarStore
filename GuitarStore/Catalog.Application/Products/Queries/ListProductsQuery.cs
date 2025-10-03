@@ -29,7 +29,7 @@ internal sealed class ListProductsQueryHandler : IQueryHandler<ListProductsQuery
         _productQueryService = productQueryService;
     }
 
-    public async Task<PagedResponse<ProductBasedInfoDto>> Handle(ListProductsQuery query)
+    public async Task<PagedResponse<ProductBasedInfoDto>> Handle(ListProductsQuery query, CancellationToken ct)
     {
         var limitPlusOne = query.Limit + 1;
         var products = await _productQueryService.GetPaged(
@@ -37,7 +37,7 @@ internal sealed class ListProductsQueryHandler : IQueryHandler<ListProductsQuery
             query.Offset,
             query.Filter,
             query.Sort,
-            CancellationToken.None);
+            ct);
 
         var items = products.Count == limitPlusOne
             ? products.GetRange(0, query.Limit)

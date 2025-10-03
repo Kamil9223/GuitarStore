@@ -13,7 +13,7 @@ internal class StripeService : IStripeService
         _sessionService = new SessionService(stripeClient);
     }
 
-    public async Task<CheckoutSessionResponse> CreateCheckoutSession(CheckoutSessionRequest request)
+    public async Task<CheckoutSessionResponse> CreateCheckoutSession(CheckoutSessionRequest request, CancellationToken ct)
     {
         var options = new SessionCreateOptions
         {
@@ -46,7 +46,7 @@ internal class StripeService : IStripeService
 
         try
         {
-            var session = await _sessionService.CreateAsync(options);
+            var session = await _sessionService.CreateAsync(options, cancellationToken: ct);
             return new CheckoutSessionResponse
             {
                 Url = session.Url,

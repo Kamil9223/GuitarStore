@@ -43,22 +43,22 @@ internal sealed class AddProductCommandHandler : ICommandHandler<AddProductComma
         _integrationEventPublisher = integrationEventPublisher;
     }
 
-    public async Task Handle(AddProductCommand command)
+    public async Task Handle(AddProductCommand command, CancellationToken ct)
     {
-        var productAlreadyExists = await _productRepository.Exists(x => x.Name == command.Name);
+        var productAlreadyExists = await _productRepository.Exists(x => x.Name == command.Name, ct);
         if (productAlreadyExists)
             throw new DomainException($"Product with Name: [{command.Name}] already exists.");
 
-        var variationOptions = await _variationOptionRepository.Get(command.VariationOptionIds);
+        var variationOptions = await _variationOptionRepository.Get(command.VariationOptionIds, ct);
 
         if (variationOptions.Count != command.VariationOptionIds.Count)
             throw new DomainException("Not all of provided variation options exist.");
 
-        var brand = await _brandRepository.Get(command.BrandId);
+        var brand = await _brandRepository.Get(command.BrandId, ct);
         if (brand is null)
             throw new DomainException($"Brand with Id = [{command.BrandId}] not exists.");
 
-        var category = await _categoryRepository.GetCategoryThatHasNotChildren(command.CategoryId);
+        var category = await _categoryRepository.GetCategoryThatHasNotChildren(command.CategoryId, ct);
         if (category is null)
             throw new DomainException($"Category that has not children with Id = [{command.CategoryId}] not exists.");
 
@@ -66,8 +66,8 @@ internal sealed class AddProductCommandHandler : ICommandHandler<AddProductComma
 
         _productRepository.Add(product);
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(ct);
 
-        await _integrationEventPublisher.Publish(new ProductAddedEvent(product.Id, command.Name, command.Price, command.Quantity));
+        await _integrationEventPublisher.Publish(new ProductAddedEvent(product.Id, command.Name, command.Price, command.Quantity), ct);
     }
 }

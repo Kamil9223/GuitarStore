@@ -30,9 +30,9 @@
     <ProjectReference Include="..\Payments.Core\Payments.Core.csproj" />
     <ProjectReference Include="..\Warehouse.Core\Warehouse.Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Remove="OpenApis\GuitarStore.Api.json" />
-  </ItemGroup>
+  <!--<ItemGroup>
+    <Content Remove="OpenApis\GuitarStore.ApiGateway.json" />
+  </ItemGroup>-->
   <ItemGroup>
     <Folder Include="OpenApis\" />
   </ItemGroup>

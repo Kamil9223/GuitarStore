@@ -22,28 +22,28 @@ public class ProductsController : ControllerBase
         _queryHandlerExecutor = queryHandlerExecutor;
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Create(AddProductCommand request)
+    [HttpPost(Name = "AddProduct")]
+    public async Task<IActionResult> Create(AddProductCommand request, CancellationToken ct)
     {
-        await _commandHandlerExecutor.Execute(request);
+        await _commandHandlerExecutor.Execute(request, ct);
 
         return Ok();
     }
 
-    [HttpPost("list")]
-    public async Task<IActionResult> GetList(ListProductsQuery request)
+    [HttpPost("list", Name = "GetProductsList")]
+    public async Task<IActionResult> GetList(ListProductsQuery request, CancellationToken ct)
     {
         var products = await _queryHandlerExecutor
-            .Execute<ListProductsQuery, PagedResponse<ProductBasedInfoDto>>(request);
+            .Execute<ListProductsQuery, PagedResponse<ProductBasedInfoDto>>(request, ct);
 
         return Ok(products);
     }
 
-    [HttpGet("{productId}")]
-    public async Task<IActionResult> GetDetails([FromRoute] ProductId productId)
+    [HttpGet("{productId}", Name = "GetProductDetails")]
+    public async Task<IActionResult> GetDetails([FromRoute] ProductId productId, CancellationToken ct)
     {
         var productDetails = await _queryHandlerExecutor
-            .Execute<ProductDetailsQuery, ProductDetailsDto>(new ProductDetailsQuery(productId));
+            .Execute<ProductDetailsQuery, ProductDetailsDto>(new ProductDetailsQuery(productId), ct);
 
         return Ok(productDetails);
     }

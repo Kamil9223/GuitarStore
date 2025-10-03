@@ -19,9 +19,11 @@ public class WarehouseController : ControllerBase
     }
 
     [HttpPut("increase-quantity", Name = "IncreaseProductQuantity")]
-    public async Task<IActionResult> IncreaseQuantity(IncreaseStockQuantityCommand command)
+    public async Task<IActionResult> IncreaseQuantity(
+        IncreaseStockQuantityCommand command,
+        CancellationToken ct)
     {
-        await _commandHandlerExecutor.Execute(command);
+        await _commandHandlerExecutor.Execute(command, ct);
         return Ok();
     }
 }

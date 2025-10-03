@@ -15,7 +15,7 @@ internal class CartRepository : ICartRepository
         _dbContext = dbContext;
     }
 
-    public async Task Add(Cart cart)
+    public async Task Add(Cart cart, CancellationToken ct)
     {
         var cartDbModel = new CartDbModel
         {
@@ -24,29 +24,29 @@ internal class CartRepository : ICartRepository
             Object = JsonConvert.SerializeObject(cart)
         };
 
-        await _dbContext.Carts.AddAsync(cartDbModel);
+        await _dbContext.Carts.AddAsync(cartDbModel, ct);
     }
 
-    public async Task Update(Cart cart)
+    public async Task Update(Cart cart, CancellationToken ct)
     {
-        var dbCart = await _dbContext.Carts.SingleOrDefaultAsync(x => x.CustomerId == cart.CustomerId);
+        var dbCart = await _dbContext.Carts.SingleOrDefaultAsync(x => x.CustomerId == cart.CustomerId, ct);
         dbCart.Object = JsonConvert.SerializeObject(cart);
         dbCart.CartState = CartState.ContainingProducts;
     }
 
-    public async Task Update(CheckoutCart cart)
+    public async Task Update(CheckoutCart cart, CancellationToken ct)
     {
-        var dbCart = await _dbContext.Carts.SingleOrDefaultAsync(x => x.CustomerId == cart.CustomerId);
+        var dbCart = await _dbContext.Carts.SingleOrDefaultAsync(x => x.CustomerId == cart.CustomerId, ct);
         dbCart.Object = JsonConvert.SerializeObject(cart);
         dbCart.CartState = CartState.Checkouted;
     }
 
-    public async Task<Cart> GetCart(CustomerId customerId)
+    public async Task<Cart> GetCart(CustomerId customerId, CancellationToken ct)
     {
         var dbCart =  await _dbContext.Carts
             .Where(x => x.CustomerId == customerId)
             .Where(x => x.CartState == CartState.Empty || x.CartState == CartState.ContainingProducts)
-            .SingleOrDefaultAsync();
+            .SingleOrDefaultAsync(ct);
 
         if (dbCart is null)
             throw new NotFoundException(customerId);
@@ -55,12 +55,12 @@ internal class CartRepository : ICartRepository
         return cart;
     }
 
-    public async Task<CheckoutCart> GetCheckoutCart(CustomerId customerId)
+    public async Task<CheckoutCart> GetCheckoutCart(CustomerId customerId, CancellationToken ct)
     {
         var dbCheckout = await _dbContext.Carts
             .Where(x => x.CustomerId == customerId)
             .Where(x => x.CartState == CartState.Checkouted)
-            .SingleOrDefaultAsync();
+            .SingleOrDefaultAsync(ct);
 
         if (dbCheckout is null)
             throw new NotFoundException(customerId);

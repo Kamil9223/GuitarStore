@@ -12,7 +12,7 @@ internal sealed record CreatedOrderEvent(
 internal sealed class CreatedOrderEventHandler : IIntegrationEventHandler<CreatedOrderEvent>
 {
 
-    public async Task Handle(CreatedOrderEvent @event)
+    public async Task Handle(CreatedOrderEvent @event, CancellationToken ct)
     {
 
     }

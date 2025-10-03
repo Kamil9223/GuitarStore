@@ -1,13 +1,8 @@
 ﻿using Domain.StronglyTypedIds;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Catalog.Domain.IRepositories;
 
 public interface IVariationOptionRepository
 {
-    Task<ICollection<VariationOption>> Get(IEnumerable<VariationOptionId> Ids);
+    Task<ICollection<VariationOption>> Get(IEnumerable<VariationOptionId> Ids, CancellationToken ct);
 }

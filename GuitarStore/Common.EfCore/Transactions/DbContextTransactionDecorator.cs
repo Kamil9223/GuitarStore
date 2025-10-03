@@ -5,9 +5,9 @@ namespace Common.EfCore.Transactions;
 
 public interface IDbContext //TODO extract to separate lib .Abstractions
 {
-    Task<IDbContextTransaction> BeginTransactionAsync();
+    Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken ct);
 
-    Task SaveChangesAsync();
+    Task SaveChangesAsync(CancellationToken ct);
 }
 
 public class DbContextTransactionDecorator<TContext, TCommand> : ICommandHandler<TCommand>
@@ -23,23 +23,23 @@ public class DbContextTransactionDecorator<TContext, TCommand> : ICommandHandler
         _dbContext = dbContext;
     }
 
-    public async Task Handle(TCommand command)
+    public async Task Handle(TCommand command, CancellationToken ct)
     {
-        await using var transaction = await _dbContext.BeginTransactionAsync();
+        await using var transaction = await _dbContext.BeginTransactionAsync(ct);
 
         try
         {
             transaction.GetDbTransaction();
 
-            await _inner.Handle(command);
+            await _inner.Handle(command, ct);
 
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(ct);
 
-            await transaction.CommitAsync();
+            await transaction.CommitAsync(ct);
         }
         catch
         {
-            await transaction.RollbackAsync();
+            await transaction.RollbackAsync(ct);
             throw;
         }
     }

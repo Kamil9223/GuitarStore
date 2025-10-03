@@ -17,12 +17,12 @@ internal sealed class AddCustomerCommandHandler : ICommandHandler<AddCustomerCom
         _unitOfWork = unitOfWork;
     }
 
-    public async Task Handle(AddCustomerCommand command)
+    public async Task Handle(AddCustomerCommand command, CancellationToken ct)
     {
         var customer = Customer.Create(command.Name, command.LastName, EmailAddress.Create(command.Email));
 
         _customerRepository.Add(customer);
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(ct);
     }
 }

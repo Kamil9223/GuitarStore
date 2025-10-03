@@ -19,17 +19,17 @@ public class CartsController : ControllerBase
     }
 
     [HttpPost(Name = "AddItemToCart")]
-    public async Task<IActionResult> Create(AddCartItemCommand request)
+    public async Task<IActionResult> Create(AddCartItemCommand request, CancellationToken ct)
     {
-        await _commandHandlerExecutor.Execute(request);
+        await _commandHandlerExecutor.Execute(request, ct);
 
         return Ok();
     }
 
     [HttpPost("checkout", Name = "CheckoutCart")]
-    public async Task<IActionResult> Checkout(CheckoutCartCommand request)
+    public async Task<IActionResult> Checkout(CheckoutCartCommand request, CancellationToken ct)
     {
-        await _commandHandlerExecutor.Execute(request);
+        await _commandHandlerExecutor.Execute(request, ct);
 
         return Ok();
     }

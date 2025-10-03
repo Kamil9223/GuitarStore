@@ -21,33 +21,44 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPost(Name = "PlaceOrder")]
-    public async Task<ActionResult<PlaceOrderResponse>> PlaceOrder(PlaceOrderCommand request)
+    public async Task<ActionResult<PlaceOrderResponse>> PlaceOrder(
+        PlaceOrderCommand request,
+        CancellationToken ct)
     {
-        var response = await _commandHandlerExecutor.Execute<PlaceOrderResponse, PlaceOrderCommand>(request);
+        var response = await _commandHandlerExecutor.Execute<PlaceOrderResponse, PlaceOrderCommand>(request, ct);
 
         return Ok(response);
     }
 
     [HttpGet("{orderId}/status", Name = "CheckOrderStatus")]
-    public async Task<ActionResult<OrderStatusResponse>> CheckOrderStatus([FromRoute] OrderId orderId)
+    public async Task<ActionResult<OrderStatusResponse>> CheckOrderStatus(
+        [FromRoute] OrderId orderId,
+        CancellationToken ct)
     {
-        var response = await _queryHandlerExecutor.Execute<GetOrderStatusQuery, OrderStatusResponse>(new GetOrderStatusQuery(orderId));
+        var response = await _queryHandlerExecutor
+            .Execute<GetOrderStatusQuery, OrderStatusResponse>(new GetOrderStatusQuery(orderId), ct);
 
         return Ok(response);
     }
 
     [HttpGet("OrderHistory/{customerId}")]//TODO: pobierać z headera
-    public async Task<ActionResult<OrdersHistoryResponse>> GetOrdersHistory([FromRoute] CustomerId customerId)
+    public async Task<ActionResult<OrdersHistoryResponse>> GetOrdersHistory(
+        [FromRoute] CustomerId customerId,
+        CancellationToken ct)
     {
-        var response = await _queryHandlerExecutor.Execute<GetOrdersHistoryQuery, OrdersHistoryResponse>(new GetOrdersHistoryQuery(customerId));
+        var response = await _queryHandlerExecutor
+            .Execute<GetOrdersHistoryQuery, OrdersHistoryResponse>(new GetOrdersHistoryQuery(customerId), ct);
 
         return Ok(response);
     }
 
     [HttpGet("{orderId}", Name = "OrderDetails")]
-    public async Task<ActionResult<OrderDetailsResponse>> GetOrderDetails([FromRoute] OrderId orderId)
+    public async Task<ActionResult<OrderDetailsResponse>> GetOrderDetails(
+        [FromRoute] OrderId orderId,
+        CancellationToken ct)
     {
-        var response = await _queryHandlerExecutor.Execute<GetOrderDetailsQuery, OrderDetailsResponse>(new GetOrderDetailsQuery(orderId));
+        var response = await _queryHandlerExecutor
+            .Execute<GetOrderDetailsQuery, OrderDetailsResponse>(new GetOrderDetailsQuery(orderId), ct);
 
         return Ok(response);
     }

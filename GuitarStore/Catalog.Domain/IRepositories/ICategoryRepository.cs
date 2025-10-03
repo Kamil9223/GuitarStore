@@ -4,5 +4,5 @@ namespace Catalog.Domain.IRepositories;
 
 public interface ICategoryRepository
 {
-    Task<Category?> GetCategoryThatHasNotChildren(CategoryId id);
+    Task<Category?> GetCategoryThatHasNotChildren(CategoryId id, CancellationToken ct);
 }

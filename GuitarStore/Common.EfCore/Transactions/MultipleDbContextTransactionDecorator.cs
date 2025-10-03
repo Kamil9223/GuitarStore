@@ -19,19 +19,19 @@ public class MultipleDbContextTransactionDecorator<TCommand> : ICommandHandler<T
         _resolveDbContexts = resolveDbContexts;
     }
 
-    public async Task Handle(TCommand command)
+    public async Task Handle(TCommand command, CancellationToken ct)
     {
         var dbContexts = _resolveDbContexts().ToList();
 
         if (dbContexts.Count == 0)
         {
-            await _inner.Handle(command);
+            await _inner.Handle(command, ct);
             return;
         }
 
         using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-        await _inner.Handle(command);
+        await _inner.Handle(command, ct);
 
         //foreach (var ctx in dbContexts)
         //{
@@ -56,18 +56,18 @@ public class MultipleDbContextTransactionDecorator<TResponse, TCommand> : IComma
         _resolveDbContexts = resolveDbContexts;
     }
 
-    public async Task<TResponse> Handle(TCommand command)
+    public async Task<TResponse> Handle(TCommand command, CancellationToken ct)
     {
         var dbContexts = _resolveDbContexts().ToList();
 
         if (dbContexts.Count == 0)
         {
-            return await _inner.Handle(command);
+            return await _inner.Handle(command, ct);
         }
 
         using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-        var response = await _inner.Handle(command);
+        var response = await _inner.Handle(command, ct);
 
         //foreach (var ctx in dbContexts)
         //{

@@ -13,7 +13,7 @@ internal class TestStripeService : IStripeService
 
     public Guid CheckoutSessionBehaviorKey { get; set; }
 
-    public Task<CheckoutSessionResponse> CreateCheckoutSession(CheckoutSessionRequest request)
+    public Task<CheckoutSessionResponse> CreateCheckoutSession(CheckoutSessionRequest request, CancellationToken ct)
     {
         var behavior = _overrideCheckoutSessionBehaviours.GetValueOrDefault(CheckoutSessionBehaviorKey);
         return behavior?.Invoke() ?? Task.FromResult(new CheckoutSessionResponse

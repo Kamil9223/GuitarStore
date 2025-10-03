@@ -11,10 +11,10 @@ internal sealed class IncreaseStockQuantityCommandHandler(
     WarehouseDbContext dbContext)
     : ICommandHandler<IncreaseStockQuantityCommand>
 {
-    public async Task Handle(IncreaseStockQuantityCommand command)
+    public async Task Handle(IncreaseStockQuantityCommand command, CancellationToken ct)
     {
         var productOnStock = await dbContext.Stock
-            .FirstOrDefaultAsync(x => x.ProductId == command.Id)
+            .FirstOrDefaultAsync(x => x.ProductId == command.Id, ct)
             ?? throw new NotFoundException(command.Id);
 
         productOnStock.Quantity += command.IncreaseBy;

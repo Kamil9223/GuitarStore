@@ -13,7 +13,7 @@ internal class ProductReservationService : IProductReservationService
         _dbContext = dbContext;
     }
 
-    public async Task ReserveProduct(ReserveProductsDto dto)
+    public async Task ReserveProduct(ReserveProductsDto dto, CancellationToken ct)
     {
         var productIds = dto.Products.Select(x => x.ProductId).ToList();
         var productsOnStock = _dbContext.Stock.Where(x => productIds.Contains(x.ProductId)).ToList();
@@ -37,6 +37,6 @@ internal class ProductReservationService : IProductReservationService
             });
         }
 
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(ct);
     }
 }

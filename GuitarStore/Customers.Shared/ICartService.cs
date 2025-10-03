@@ -3,5 +3,5 @@
 namespace Customers.Shared;
 public interface ICartService
 {
-    Task<CheckoutCartDto> GetCheckoutCart(CustomerId customerId);
+    Task<CheckoutCartDto> GetCheckoutCart(CustomerId customerId, CancellationToken ct);
 }

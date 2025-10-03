@@ -19,18 +19,18 @@ internal sealed class ProductAddedEventHandler : IIntegrationEventHandler<Produc
         _unitOfWork = unitOfWork;
     }
 
-    public async Task Handle(ProductAddedEvent @event)//TODO: do podnoszenia quantity raczej osobny event. Tutaj zastanowić się nad upsertem
+    public async Task Handle(ProductAddedEvent @event, CancellationToken ct)//TODO: do podnoszenia quantity raczej osobny event. Tutaj zastanowić się nad upsertem
     {
-        var existedProduct = await _productRepository.Get(@event.Id);
+        var existedProduct = await _productRepository.Get(@event.Id, ct);
         if (existedProduct is not null)
         {
             existedProduct.IncreaseQuantity(@event.Quantity);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(ct);
             return;
         }
 
         var product = Product.Create(@event.Id, @event.Name, @event.Price, @event.Quantity);
         _productRepository.Add(product);
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(ct);
     }
 }

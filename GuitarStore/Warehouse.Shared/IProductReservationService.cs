@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Warehouse.Shared;
+﻿namespace Warehouse.Shared;
 public interface IProductReservationService
 {
-    Task ReserveProduct(ReserveProductsDto dto);
+    Task ReserveProduct(ReserveProductsDto dto, CancellationToken ct);
 }

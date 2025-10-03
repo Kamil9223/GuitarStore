@@ -12,8 +12,8 @@ public sealed record OrderStatusResponse
 internal sealed class GetOrderStatusQueryHandler(IOrderQueryService orderQueryService)
     : IQueryHandler<GetOrderStatusQuery, OrderStatusResponse>
 {
-    public Task<OrderStatusResponse> Handle(GetOrderStatusQuery query)
+    public Task<OrderStatusResponse> Handle(GetOrderStatusQuery query, CancellationToken ct)
     {
-        return orderQueryService.GetOrderStatus(query.OrderId, CancellationToken.None);
+        return orderQueryService.GetOrderStatus(query.OrderId, ct);
     }
 }

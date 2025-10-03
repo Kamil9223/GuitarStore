@@ -29,7 +29,7 @@ internal class OrdersDbContext : DbContext, IOrdersDbContext
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrdersDbContext).Assembly);
     }
 
-    public Task<IDbContextTransaction> BeginTransactionAsync() => Database.BeginTransactionAsync();
+    public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken ct) => Database.BeginTransactionAsync(ct);
 
-    public async Task SaveChangesAsync() => await base.SaveChangesAsync();
+    public async Task SaveChangesAsync(CancellationToken ct) => await base.SaveChangesAsync(ct);
 }

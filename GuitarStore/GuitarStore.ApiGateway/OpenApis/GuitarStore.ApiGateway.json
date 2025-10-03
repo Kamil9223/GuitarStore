@@ -307,6 +307,7 @@
         "tags": [
           "Products"
         ],
+        "operationId": "AddProduct",
         "requestBody": {
           "content": {
             "application/json": {
@@ -338,6 +339,7 @@
         "tags": [
           "Products"
         ],
+        "operationId": "GetProductsList",
         "requestBody": {
           "content": {
             "application/json": {
@@ -369,6 +371,7 @@
         "tags": [
           "Products"
         ],
+        "operationId": "GetProductDetails",
         "parameters": [
           {
             "name": "productId",

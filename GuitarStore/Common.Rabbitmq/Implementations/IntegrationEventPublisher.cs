@@ -15,7 +15,7 @@ internal class IntegrationEventPublisher : IIntegrationEventPublisher
         _rabbitMqChannel = rabbitMqChannel;
     }
 
-    public Task Publish<TEvent>(TEvent @event) where TEvent : IntegrationEvent, IIntegrationPublishEvent
+    public Task Publish<TEvent>(TEvent @event, CancellationToken ct) where TEvent : IntegrationEvent, IIntegrationPublishEvent
     {
         var channel = _rabbitMqChannel.Channel;
 

@@ -38,9 +38,9 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
         _stripeService = stripeService;
     }
 
-    public async Task<PlaceOrderResponse> Handle(PlaceOrderCommand command)
+    public async Task<PlaceOrderResponse> Handle(PlaceOrderCommand command, CancellationToken ct)
     {
-        var checkoutCart = await _cartService.GetCheckoutCart(command.CustomerId);
+        var checkoutCart = await _cartService.GetCheckoutCart(command.CustomerId, ct);
 
         var deliveryAddressMissed = checkoutCart.DeliveryAddress is null && !command.ProvideDeliveryAddress;
         if (deliveryAddressMissed)
@@ -56,7 +56,7 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
             deliveryAddress: deliveryAddress,
             delivery: new Delivery(checkoutCart.DelivererId, checkoutCart.Deliverer));
 
-        await _productReservationService.ReserveProduct(OrdersMapper.MapToReserveProductsDto(newOrder));
+        await _productReservationService.ReserveProduct(OrdersMapper.MapToReserveProductsDto(newOrder), ct);
 
         var checkoutSession = new CheckoutSessionRequest
         {
@@ -69,10 +69,10 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
                 Quantity = x.Quantity,
             }).ToList()
         };
-        var session = await _stripeService.CreateCheckoutSession(checkoutSession);
+        var session = await _stripeService.CreateCheckoutSession(checkoutSession, ct);
 
-        await _orderRepository.Add(newOrder);
-        await _unitOfWork.SaveChangesAsync();
+        await _orderRepository.Add(newOrder, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
         return new PlaceOrderResponse(session.Url, session.SessionId);
     }
 }

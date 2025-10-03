@@ -21,16 +21,16 @@ internal sealed class AddCartItemCommandHandler : ICommandHandler<AddCartItemCom
         _unitOfWork = unitOfWork;
     }
 
-    public async Task Handle(AddCartItemCommand command)
+    public async Task Handle(AddCartItemCommand command, CancellationToken ct)
     {
-        var cart = await _cartRepository.GetCart(command.CustomerId);
-        var product = await _productRepository.Get(command.ProductId);
+        var cart = await _cartRepository.GetCart(command.CustomerId, ct);
+        var product = await _productRepository.Get(command.ProductId, ct);
         if (product is null)
             throw new NotFoundException(command.ProductId);
 
         cart.AddProduct(product, 1);
 
-        await _cartRepository.Update(cart);
-        await _unitOfWork.SaveChangesAsync();
+        await _cartRepository.Update(cart, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
     }
 }

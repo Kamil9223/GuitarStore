@@ -11,17 +11,19 @@ internal class CommandHandlerExecutor : ICommandHandlerExecutor
         _serviceScopeFactory = serviceScopeFactory;
     }
 
-    public async Task Execute<TCommand>(TCommand command) where TCommand : ICommand
+    public async Task Execute<TCommand>(TCommand command, CancellationToken ct)
+        where TCommand : ICommand
     {
         using var scope = _serviceScopeFactory.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<ICommandHandler<TCommand>>();
-        await handler.Handle(command);
+        await handler.Handle(command, ct);
     }
 
-    public async Task<TResponse> Execute<TResponse, TCommand>(TCommand command) where TCommand : ICommand
+    public async Task<TResponse> Execute<TResponse, TCommand>(TCommand command, CancellationToken ct)
+        where TCommand : ICommand
     {
         using var scope = _serviceScopeFactory.CreateScope();
         var handler = scope.ServiceProvider.GetRequiredService<ICommandHandler<TResponse, TCommand>>();
-        return await handler.Handle(command);
+        return await handler.Handle(command, ct);
     }
 }

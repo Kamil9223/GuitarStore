@@ -14,7 +14,7 @@ internal sealed class ListPaymentsQueryHandler : IQueryHandler<ListPaymentsQuery
         _stripeService = stripeService;
     }
 
-    public async Task<PaymentsListDto> Handle(ListPaymentsQuery query)
+    public async Task<PaymentsListDto> Handle(ListPaymentsQuery query, CancellationToken ct)
     {
         //await _stripeService.CreatePaymentIntent(query.Currency, query.Amount);
 

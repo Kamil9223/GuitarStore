@@ -2,7 +2,7 @@
 
 public interface ICommandHandlerExecutor
 {
-    Task Execute<TCommand>(TCommand command) where TCommand : ICommand;
+    Task Execute<TCommand>(TCommand command, CancellationToken ct) where TCommand : ICommand;
 
-    Task<TResponse> Execute<TResponse, TCommand>(TCommand command) where TCommand : ICommand;
+    Task<TResponse> Execute<TResponse, TCommand>(TCommand command, CancellationToken ct) where TCommand : ICommand;
 }

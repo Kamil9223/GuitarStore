@@ -40,8 +40,8 @@ public sealed record OrderDetailsResponse
 public sealed class GetOrderDetailsQueryHandler(IOrderQueryService orderQueryService)
     : IQueryHandler<GetOrderDetailsQuery, OrderDetailsResponse>
 {
-    public Task<OrderDetailsResponse> Handle(GetOrderDetailsQuery query)
+    public Task<OrderDetailsResponse> Handle(GetOrderDetailsQuery query, CancellationToken ct)
     {
-        return orderQueryService.GetOrderDetails(query.OrderId, CancellationToken.None);
+        return orderQueryService.GetOrderDetails(query.OrderId, ct);
     }
 }

@@ -15,12 +15,12 @@ internal class CategoryRepository : ICategoryRepository
         _catalogDbContext = catalogDbContext;
     }
 
-    public async Task<Category?> GetCategoryThatHasNotChildren(CategoryId id)
+    public async Task<Category?> GetCategoryThatHasNotChildren(CategoryId id, CancellationToken ct)
     {
         return await _catalogDbContext.Categories
             .Include(x => x.SubCategories)
             .Where(x => x.Id == id)
             .Where(x => x.SubCategories.Any() == false)
-            .SingleOrDefaultAsync();
+            .SingleOrDefaultAsync(ct);
     }
 }

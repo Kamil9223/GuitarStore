@@ -19,7 +19,7 @@ public class WebhookStripeController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> PaymentEvent()
+    public async Task<IActionResult> PaymentEvent(CancellationToken ct)
     {
         var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
 
@@ -34,7 +34,7 @@ public class WebhookStripeController : ControllerBase
                 //log error, critical or smthg. It should not happen
             }
             var typedOrderId = (OrderId)orderId!;
-            await _integrationEventPublisher.Publish(new OrderPaidEvent(typedOrderId)); //orderId jest otrzymywany, ale event nie dochodzi do handlera, zbadać
+            await _integrationEventPublisher.Publish(new OrderPaidEvent(typedOrderId), ct); //orderId jest otrzymywany, ale event nie dochodzi do handlera, zbadać
         }
         else if (stripeEvent.Type == Events.PaymentIntentCanceled)
         {

@@ -18,11 +18,11 @@ internal sealed class OrderPaidEventHandler : IIntegrationEventHandler<OrderPaid
         _unitOfWork = unitOfWork;
     }
 
-    public async Task Handle(OrderPaidEvent @event)
+    public async Task Handle(OrderPaidEvent @event, CancellationToken ct)
     {
-        var order = await _orderRepository.Get(@event.OrderId);
+        var order = await _orderRepository.Get(@event.OrderId, ct);
         order.PayOrder();
-        await _orderRepository.Update(order);
-        await _unitOfWork.SaveChangesAsync();
+        await _orderRepository.Update(order, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
     }
 }

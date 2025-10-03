@@ -23,9 +23,9 @@ internal sealed class SignedUpEventHandler : IIntegrationEventHandler<SignedUpEv
         _cartRepository = cartRepository;
     }
 
-    public async Task Handle(SignedUpEvent @event)
+    public async Task Handle(SignedUpEvent @event, CancellationToken ct)
     {
-        var customerExists = await _customerRepository.Exists(x => x.Email == @event.Email);
+        var customerExists = await _customerRepository.Exists(x => x.Email == @event.Email, ct);
         if (customerExists)
             throw new DomainException($"Customer with Email: [{@event.Email}] already exists.");
 
@@ -34,8 +34,8 @@ internal sealed class SignedUpEventHandler : IIntegrationEventHandler<SignedUpEv
         var customer = Customer.Create(@event.Name, @event.LastName, validEmail);
         _customerRepository.Add(customer);
         var cart = Cart.Create(customer.Id);
-        await _cartRepository.Add(cart);
+        await _cartRepository.Add(cart, ct);
 
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(ct);
     }
 }

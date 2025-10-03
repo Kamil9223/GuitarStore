@@ -15,10 +15,10 @@ internal class CartService : ICartService
         _customerRepository = customerRepository;
     }
 
-    public async Task<CheckoutCartDto> GetCheckoutCart(CustomerId customerId)
+    public async Task<CheckoutCartDto> GetCheckoutCart(CustomerId customerId, CancellationToken ct)
     {
-        var customer = await _customerRepository.Get(customerId);
-        var checkoutCart = await _cartRepository.GetCheckoutCart(customerId);
+        var customer = await _customerRepository.Get(customerId, ct);
+        var checkoutCart = await _cartRepository.GetCheckoutCart(customerId, ct);
 
         return CheckoutCartDtoMapper.ToCheckoutCartDto(customer, checkoutCart);
     }

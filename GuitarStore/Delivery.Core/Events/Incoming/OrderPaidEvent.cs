@@ -7,7 +7,7 @@ internal sealed record OrderPaidEvent(OrderId OrderId) : IntegrationEvent, IInte
 
 internal sealed class OrderPaidEventHandler : IIntegrationEventHandler<OrderPaidEvent>
 {
-    public async Task Handle(OrderPaidEvent @event)
+    public async Task Handle(OrderPaidEvent @event, CancellationToken ct)
     {
         throw new NotImplementedException();//TODO
     }

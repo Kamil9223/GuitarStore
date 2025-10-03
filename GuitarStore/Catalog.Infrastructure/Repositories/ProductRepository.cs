@@ -20,8 +20,8 @@ internal class ProductRepository : IProductRepository
         _catalogDbContext.Products.Add(product);
     }
 
-    public async Task<bool> Exists(Expression<Func<Product, bool>> predicate)
+    public async Task<bool> Exists(Expression<Func<Product, bool>> predicate, CancellationToken ct)
     {
-        return await _catalogDbContext.Products.AnyAsync(predicate);
+        return await _catalogDbContext.Products.AnyAsync(predicate, ct);
     }
 }

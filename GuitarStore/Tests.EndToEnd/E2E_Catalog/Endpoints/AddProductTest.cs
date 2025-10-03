@@ -36,7 +36,7 @@ public sealed class AddProductTest(Setup.Application app) : EndToEndTestBase(app
         var tcs = RabbitMqChannel.CreateTestConsumerForPublishing<ProductAddedEvent>();
 
         //Act
-        await TestContext.GuitarStoreClient.ProductsPOSTAsync(request);
+        await TestContext.GuitarStoreClient.AddProductAsync(request);
 
         //Assert
         var product = await Databases.CatalogDbContext.Products.SingleOrDefaultAsync(x => x.Name == name);
@@ -70,7 +70,7 @@ public sealed class AddProductTest(Setup.Application app) : EndToEndTestBase(app
         };
 
         //Act
-        var action = () => TestContext.GuitarStoreClient.ProductsPOSTAsync(request);
+        var action = () => TestContext.GuitarStoreClient.AddProductAsync(request);
 
         //Assert
         var exception = await action.ShouldThrowAsync<ApiException>();

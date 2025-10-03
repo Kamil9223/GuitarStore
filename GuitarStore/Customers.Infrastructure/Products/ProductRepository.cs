@@ -20,18 +20,18 @@ internal class ProductRepository : IProductRepository
         _customersDbContext.Products.Add(product);
     }
 
-    public async Task<bool> Exists(Expression<Func<Product, bool>> predicate)
+    public async Task<bool> Exists(Expression<Func<Product, bool>> predicate, CancellationToken ct)
     {
-        return await _customersDbContext.Products.AnyAsync(predicate);
+        return await _customersDbContext.Products.AnyAsync(predicate, ct);
     }
 
-    public async Task<Product> Get(ProductId productId)
+    public async Task<Product> Get(ProductId productId, CancellationToken ct)
     {
-        return await _customersDbContext.Products.SingleOrDefaultAsync(x => x.Id == productId);
+        return await _customersDbContext.Products.SingleOrDefaultAsync(x => x.Id == productId, ct);
     }
 
-    public async Task<Product> Get(string name)
+    public async Task<Product> Get(string name, CancellationToken ct)
     {
-        return await _customersDbContext.Products.SingleOrDefaultAsync(x => x.Name == name);
+        return await _customersDbContext.Products.SingleOrDefaultAsync(x => x.Name == name, ct);
     }
 }

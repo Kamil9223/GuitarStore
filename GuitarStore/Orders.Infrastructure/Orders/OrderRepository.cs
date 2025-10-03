@@ -15,9 +15,9 @@ internal class OrderRepository : IOrderRepository
         _dbContext = dbContext;
     }
 
-    public async Task<Order> Get(OrderId orderId)
+    public async Task<Order> Get(OrderId orderId, CancellationToken ct)
     {
-        var dbOrder = await _dbContext.Orders.FirstOrDefaultAsync(x => x.Id == orderId);
+        var dbOrder = await _dbContext.Orders.FirstOrDefaultAsync(x => x.Id == orderId, ct);
         if (dbOrder is null)
             throw new NotFoundException(orderId);
 
@@ -30,7 +30,7 @@ internal class OrderRepository : IOrderRepository
         return order;
     }
 
-    public async Task Add(Order order)
+    public async Task Add(Order order, CancellationToken ct)
     {
         var orderDbModel = new OrderDbModel
         {
@@ -39,12 +39,12 @@ internal class OrderRepository : IOrderRepository
             Object = JsonConvert.SerializeObject(order)
         };
 
-        await _dbContext.Orders.AddAsync(orderDbModel);
+        await _dbContext.Orders.AddAsync(orderDbModel, ct);
     }
 
-    public async Task Update(Order order)
+    public async Task Update(Order order, CancellationToken ct)
     {
-        var dbOrder = await _dbContext.Orders.SingleAsync(x => x.Id == order.Id);
+        var dbOrder = await _dbContext.Orders.SingleAsync(x => x.Id == order.Id, ct);
         var settings = new JsonSerializerSettings
         {
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor

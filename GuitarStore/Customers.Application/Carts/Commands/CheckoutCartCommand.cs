@@ -1,5 +1,4 @@
 ﻿using Application.CQRS.Command;
-using Common.EfCore.Transactions;
 using Customers.Application.Abstractions;
 using Customers.Domain.Carts;
 using Domain.StronglyTypedIds;
@@ -23,9 +22,9 @@ internal sealed class CheckoutCartCommandHandler : ICommandHandler<CheckoutCartC
         _unitOfWork = unitOfWork;
     }
 
-    public async Task Handle(CheckoutCartCommand command)
+    public async Task Handle(CheckoutCartCommand command, CancellationToken ct)
     {
-        var cart = await _cartRepository.GetCart(command.CustomerId);
+        var cart = await _cartRepository.GetCart(command.CustomerId, ct);
 
         var checkout = cart.Checkout();
 
@@ -33,7 +32,7 @@ internal sealed class CheckoutCartCommandHandler : ICommandHandler<CheckoutCartC
             delivererId: command.Delivery.DelivererId,
             deliverer: command.Delivery.Deliverer));
 
-        await _cartRepository.Update(checkout);
-        await _unitOfWork.SaveChangesAsync();
+        await _cartRepository.Update(checkout, ct);
+        await _unitOfWork.SaveChangesAsync(ct);
     }
 }
