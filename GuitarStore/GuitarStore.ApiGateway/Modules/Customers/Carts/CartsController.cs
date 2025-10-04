@@ -1,6 +1,8 @@
 ﻿using Application.CQRS.Command;
 using Application.CQRS.Query;
 using Customers.Application.Carts.Commands;
+using Customers.Application.Carts.Queries;
+using Domain.StronglyTypedIds;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GuitarStore.ApiGateway.Modules.Customers.Carts;
@@ -34,15 +36,20 @@ public class CartsController : ControllerBase
         return Ok();
     }
 
-    [HttpDelete(Name = "RemoveItemFromCart")]
-    public async Task<IActionResult> RemoveFromCart()
+    [HttpDelete("{productId}", Name = "RemoveItemFromCart")]
+    public async Task<IActionResult> RemoveFromCart(ProductId productId, CancellationToken ct)
     {
-        throw new NotImplementedException();
+        await _commandHandlerExecutor.Execute(new RemoveCartItemCommand(CustomerId.New(), productId), ct);
+
+        return Ok();
     }
 
     [HttpGet(Name = "GetCart")]
-    public async Task<IActionResult> GetCart()
+    public async Task<ActionResult<CartDetailsResponse>> GetCart(CancellationToken ct)
     {
-        throw new NotImplementedException();
+        var response = await _queryHandlerExecutor
+            .Execute<GetCartQuery, CartDetailsResponse>(new GetCartQuery(CustomerId.New()), ct);
+
+        return Ok(response);
     }
 }

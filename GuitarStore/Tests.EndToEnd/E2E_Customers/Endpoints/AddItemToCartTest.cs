@@ -35,7 +35,7 @@ public sealed class AddItemToCartTest(Setup.Application app) : EndToEndTestBase(
         Databases.CustomersDbContext.ChangeTracker.Clear();
         var cart = await Databases.CustomersDbContext.Carts.SingleOrDefaultAsync(x => x.CustomerId == customer.Id);
         cart.ShouldNotBeNull();
-        cart.CartState.ShouldBe(CartState.ContainingProducts);
+        cart.CartState.ShouldBe(Customers.Domain.Carts.CartState.ContainingProducts);
         var entityCart = JsonConvert.DeserializeObject<Cart>(cart.Object);
         entityCart.ShouldNotBeNull();
         entityCart.CartItems.Count.ShouldBe(1);

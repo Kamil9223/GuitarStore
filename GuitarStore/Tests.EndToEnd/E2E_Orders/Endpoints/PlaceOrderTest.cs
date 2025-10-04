@@ -10,6 +10,7 @@ using Tests.EndToEnd.Setup.Modules.Orders;
 using Tests.EndToEnd.Setup.Modules.Payments;
 using Tests.EndToEnd.Setup.Modules.Warehouse;
 using Xunit;
+using CartItem = Customers.Domain.Carts.CartItem;
 
 namespace Tests.EndToEnd.E2E_Orders.Endpoints;
 public sealed class PlaceOrderTest(Setup.Application app) : EndToEndTestBase(app)

@@ -14,6 +14,8 @@ internal class CustomersDbContext : DbContext
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<CartDbModel> Carts { get; set; }
+    public DbSet<CartReadModel> CartReadModels { get; set; }
+    public DbSet<CartItemReadModel> CartItemReadModels { get; set; }
 
     public CustomersDbContext(DbContextOptions<CustomersDbContext> options) : base(options) { }
 

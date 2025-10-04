@@ -1,4 +1,6 @@
 ﻿using Customers.Application.Abstractions;
+using Customers.Application.Carts;
+using Customers.Infrastructure.Carts;
 using Customers.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -31,5 +33,6 @@ internal static class InfrastructureModule
         );
 
         services.AddScoped<ICustomersUnitOfWork, CustomersUnitOfWork>();
+        services.AddScoped<ICartQueryService, CartQueryService>();
     }
 }

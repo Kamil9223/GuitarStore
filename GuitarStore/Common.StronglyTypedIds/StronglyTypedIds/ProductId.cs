@@ -12,4 +12,7 @@ public readonly record struct ProductId(Guid Value) : IStronglyTypedId
     public static ProductId New() => new(SequentialGuidGenerator.Instance.NewGuid());
 
     public override string ToString() => Value.ToString();
+
+    public static implicit operator ProductId(Guid value) => new(value);
+    public static implicit operator Guid(ProductId id) => id.Value;
 }
