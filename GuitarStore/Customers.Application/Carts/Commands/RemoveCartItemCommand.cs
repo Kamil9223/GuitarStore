@@ -8,12 +8,14 @@ public sealed record RemoveCartItemCommand(CustomerId CustomerId, ProductId Prod
 
 internal sealed class RemoveCartItemCommandHandler(
     ICartRepository cartRepository,
-    ICustomersUnitOfWork unitOfWork) : ICommandHandler<RemoveCartItemCommand>
+    ICustomersUnitOfWork unitOfWork,
+    ICartReadProjector cartReadProjector) : ICommandHandler<RemoveCartItemCommand>
 {
     public async Task Handle(RemoveCartItemCommand command, CancellationToken ct)
     {
         var cart = await cartRepository.GetCart(command.CustomerId, ct);
         cart.RemoveProduct(command.ProductId, quantity: 1);
+        await cartReadProjector.Upsert(cart, ct);
         await unitOfWork.SaveChangesAsync(ct);
     }
 }

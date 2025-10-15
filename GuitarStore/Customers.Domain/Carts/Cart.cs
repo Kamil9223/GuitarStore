@@ -5,7 +5,7 @@ using Domain.StronglyTypedIds;
 
 namespace Customers.Domain.Carts;
 
-public class Cart : Entity
+public class Cart : AggregateRoot
 {
     private List<CartItem> _cartItems;
 

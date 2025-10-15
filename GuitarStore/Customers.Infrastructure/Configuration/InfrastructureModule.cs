@@ -1,4 +1,5 @@
-﻿using Customers.Application.Abstractions;
+﻿using Customers.Application;
+using Customers.Application.Abstractions;
 using Customers.Application.Carts;
 using Customers.Infrastructure.Carts;
 using Customers.Infrastructure.Database;
@@ -34,5 +35,6 @@ internal static class InfrastructureModule
 
         services.AddScoped<ICustomersUnitOfWork, CustomersUnitOfWork>();
         services.AddScoped<ICartQueryService, CartQueryService>();
+        services.AddScoped<ICartReadProjector, CartReadProjector>();
     }
 }

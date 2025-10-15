@@ -79,6 +79,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.StronglyTypedIds", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.RabbitMq.Abstractions", "Common.RabbitMq.Abstractions\Common.RabbitMq.Abstractions.csproj", "{6F7B106C-F42A-40ED-921B-23395D37D502}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Outbox", "Common.Outbox\Common.Outbox.csproj", "{1006C307-701D-49D6-89F0-A341C351D2EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -201,6 +203,10 @@ Global
 		{6F7B106C-F42A-40ED-921B-23395D37D502}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F7B106C-F42A-40ED-921B-23395D37D502}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F7B106C-F42A-40ED-921B-23395D37D502}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1006C307-701D-49D6-89F0-A341C351D2EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1006C307-701D-49D6-89F0-A341C351D2EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1006C307-701D-49D6-89F0-A341C351D2EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1006C307-701D-49D6-89F0-A341C351D2EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -234,6 +240,7 @@ Global
 		{874B6CC6-FA37-4228-AA70-095142009950} = {6FA3B72F-30A3-4CFF-9576-1F95BE7DBDD6}
 		{0890B5CA-BC50-4436-A3EF-E5300EC86B92} = {6FA3B72F-30A3-4CFF-9576-1F95BE7DBDD6}
 		{6F7B106C-F42A-40ED-921B-23395D37D502} = {6FA3B72F-30A3-4CFF-9576-1F95BE7DBDD6}
+		{1006C307-701D-49D6-89F0-A341C351D2EE} = {6FA3B72F-30A3-4CFF-9576-1F95BE7DBDD6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2BF2A121-5428-49C7-9A65-3F937B356484}

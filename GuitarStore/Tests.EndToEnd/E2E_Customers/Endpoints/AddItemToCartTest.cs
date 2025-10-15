@@ -12,7 +12,7 @@ public sealed class AddItemToCartTest(Setup.Application app) : EndToEndTestBase(
 {
     //TODO: just sample test for check wheter database works. Will be refactored (domain logic also)
     [Fact]
-    public async Task AddItemToCartTest_WhenProductExists_()
+    public async Task AddItemToCartTest_WhenProductExists_ShouldSucceed()
     {
         // Arrange
         var customer = Databases.CustomersDbContext.SeedCustomer();
@@ -40,5 +40,9 @@ public sealed class AddItemToCartTest(Setup.Application app) : EndToEndTestBase(
         entityCart.ShouldNotBeNull();
         entityCart.CartItems.Count.ShouldBe(1);
         entityCart.CartItems.ShouldContain(x => x.ProductId == product.Id);
+        var cartRead = await Databases.CustomersDbContext.CartReadModels.SingleOrDefaultAsync(x => x.CustomerId == customer.Id.Value);
+        cartRead.ShouldNotBeNull();
+        var cartItemRead = await Databases.CustomersDbContext.CartItemReadModels.SingleOrDefaultAsync(x => x.CustomerId == customer.Id.Value);
+        cartItemRead.ShouldNotBeNull();
     }
 }

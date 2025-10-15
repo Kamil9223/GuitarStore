@@ -15,11 +15,16 @@ internal sealed class CheckoutCartCommandHandler : ICommandHandler<CheckoutCartC
 {
     private readonly ICartRepository _cartRepository;
     private readonly ICustomersUnitOfWork _unitOfWork;
+    private readonly ICartReadProjector _cartReadProjector;
 
-    public CheckoutCartCommandHandler(ICartRepository cartRepository, ICustomersUnitOfWork unitOfWork)
+    public CheckoutCartCommandHandler(
+        ICartRepository cartRepository,
+        ICustomersUnitOfWork unitOfWork,
+        ICartReadProjector cartReadProjector)
     {
         _cartRepository = cartRepository;
         _unitOfWork = unitOfWork;
+        _cartReadProjector = cartReadProjector;
     }
 
     public async Task Handle(CheckoutCartCommand command, CancellationToken ct)
@@ -33,6 +38,7 @@ internal sealed class CheckoutCartCommandHandler : ICommandHandler<CheckoutCartC
             deliverer: command.Delivery.Deliverer));
 
         await _cartRepository.Update(checkout, ct);
+        await _cartReadProjector.Upsert(checkout, ct);
         await _unitOfWork.SaveChangesAsync(ct);
     }
 }
