@@ -30,7 +30,7 @@ public class Order : Entity
         Delivery delivery)
     {
         Id = id;
-        CreatedAt = DateTime.Now;
+        CreatedAt = DateTime.UtcNow;
         Status = OrderStatus.New;
         _orderItems = orderItems.ToList();
         CustomerId = customerId;
@@ -43,36 +43,106 @@ public class Order : Entity
         return new Order(OrderId.New(), orderItems, customerId, deliveryAddress, delivery);
     }
 
-    public void AcceptOrder()
+    public void MarkPendingPayment()
     {
+        if (Status != OrderStatus.New)
+            throw new DomainException($"Cannot mark pending payment from status {Status}.");
+
+        Status = OrderStatus.PendingPayment;
+    }
+
+    public void MarkPaid()
+    {
+        if (Status != OrderStatus.PendingPayment)
+            throw new DomainException($"Cannot mark paid from status {Status}.");
+
         Status = OrderStatus.Paid;
     }
 
-    public void CancelOrder()
+    public void MarkSent()
     {
-        if (Status == OrderStatus.Realized)
-        {
-            throw new DomainException("Cannot cancel already relized order.");
-        }
+        if (Status != OrderStatus.Paid)
+            throw new DomainException($"Cannot mark sent from status {Status}.");
+
+        Status = OrderStatus.Sent;
+    }
+
+    public void MarkRealized()
+    {
+        if (Status != OrderStatus.Sent)
+            throw new DomainException($"Cannot mark realized from status {Status}.");
+
+        Status = OrderStatus.Realized;
+    }
+
+    public void Cancel()
+    {
+        if (Status is OrderStatus.Paid or OrderStatus.Sent or OrderStatus.Realized)
+            throw new DomainException($"Cannot cancel order in status {Status}.");
+
+        if (Status is OrderStatus.Canceled or OrderStatus.Expired)
+            return;
 
         Status = OrderStatus.Canceled;
     }
 
-    public void PayOrder()
+    public void Expire()
     {
-        Status = OrderStatus.Paid;
+        if (Status == OrderStatus.Expired)
+            return; // idempotent
+
+        if (Status != OrderStatus.PendingPayment)
+            throw new DomainException($"Cannot expire order in status {Status}.");
+
+        Status = OrderStatus.Expired;
     }
 }
 
 public enum OrderStatus : byte
 {
+    /// <summary>
+    /// The order has been created in the system, but checkout/payment has not started yet.
+    /// No confirmed payment exists at this stage.
+    /// </summary>
     New = 1,
 
-    Paid = 2,
+    /// <summary>
+    /// Products have been successfully reserved (soft reservation with TTL),
+    /// and the system is waiting for payment confirmation (e.g., Stripe webhook).
+    /// The order may transition to Paid, Canceled, or Expired.
+    /// </summary>
+    PendingPayment = 2,
 
-    Sent = 3,
+    /// <summary>
+    /// Payment has been successfully confirmed.
+    /// The reservation should be confirmed in the Warehouse module.
+    /// The order is ready for fulfillment.
+    /// </summary>
+    Paid = 3,
 
-    Realized = 4,
+    /// <summary>
+    /// The order has been dispatched for delivery.
+    /// Fulfillment has started or shipment has been sent to the customer.
+    /// </summary>
+    Sent = 4,
 
-    Canceled = 5,
+    /// <summary>
+    /// The order has been fully completed and delivered.
+    /// No further state transitions are expected in the standard flow.
+    /// </summary>
+    Realized = 5,
+
+    /// <summary>
+    /// The order has been canceled.
+    /// This may happen due to payment failure, manual cancellation,
+    /// or business rule violation (before fulfillment).
+    /// </summary>
+    Canceled = 6,
+
+    /// <summary>
+    /// The order has expired because the payment was not completed
+    /// within the allowed reservation time (TTL).
+    /// Reserved stock should be released.
+    /// </summary>
+    Expired = 7
 }

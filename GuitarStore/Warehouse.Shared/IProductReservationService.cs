@@ -1,5 +1,9 @@
-﻿namespace Warehouse.Shared;
+﻿using Domain.StronglyTypedIds;
+
+namespace Warehouse.Shared;
 public interface IProductReservationService
 {
-    Task ReserveProduct(ReserveProductsDto dto, CancellationToken ct);
+    Task ReserveProducts(ReserveProductsDto dto, CancellationToken ct);
+    Task ConfirmReservations(OrderId orderId, CancellationToken ct);
+    Task ReleaseReservations(OrderId orderId, CancellationToken ct);
 }

@@ -1,3 +1,4 @@
+using Auth.Core;
 using GuitarStore.ApiGateway.Configuration;
 using GuitarStore.ApiGateway.Helpers.StronglyTypedIdsConfig;
 using GuitarStore.ApiGateway.MiddleWares;
@@ -23,6 +24,13 @@ public class Program
             options.MapType<decimal?>(() => new OpenApiSchema { Type = "number", Format = "decimal", Nullable = true });
         });
 
+        builder.Services.AddIdentityServer()
+            .AddInMemoryIdentityResources(DuendeConfig.IdentityResources)
+            .AddInMemoryApiScopes(DuendeConfig.ApiScopes)
+            .AddInMemoryApiResources(DuendeConfig.ApiResources)
+            .AddInMemoryClients(DuendeConfig.Clients)
+            .AddDeveloperSigningCredential(); // DEV only
+
         var app = builder.Build();
 
         app.MapGet("/test", () => Results.Ok("Hello World!"));
@@ -36,6 +44,9 @@ public class Program
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "GuitarStore API V1");
             });
         }
+
+        app.UseRouting();
+        app.UseIdentityServer(); // publikuje /.well-known/openid-configuration i ca³¹ resztê
 
         //app.UseHttpsRedirection();
 

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Warehouse.Core.Commands;
 using Warehouse.Core.Database;
 using Warehouse.Core.InternalModuleApi;
+using Warehouse.Core.Services;
 using Warehouse.Shared;
 
 namespace Warehouse.Core;
@@ -29,6 +30,8 @@ public static class WarehouseModuleInitializator
 
         services.AddScoped<ICommandHandler<IncreaseStockQuantityCommand>, IncreaseStockQuantityCommandHandler>();
         services.Decorate<ICommandHandler<IncreaseStockQuantityCommand>, DbContextTransactionDecorator<IWarehouseDbContext, IncreaseStockQuantityCommand>>();
+        
+        services.AddHostedService<StockReservationExpirationJob>();
 
         return services;
     }
