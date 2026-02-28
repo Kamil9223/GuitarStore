@@ -3,7 +3,7 @@ using Payments.Shared.Services;
 using Stripe;
 using Stripe.Checkout;
 
-namespace Payments.Core.Services;
+namespace Payments.Core.SharedServices;
 internal class StripeService : IStripeService
 {
     private readonly SessionService _sessionService;

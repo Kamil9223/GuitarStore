@@ -21,7 +21,7 @@ internal sealed class OrderPaidEventHandler : IIntegrationEventHandler<OrderPaid
     public async Task Handle(OrderPaidEvent @event, CancellationToken ct)
     {
         var order = await _orderRepository.Get(@event.OrderId, ct);
-        order.PayOrder();
+        order.MarkPaid();
         await _orderRepository.Update(order, ct);
         await _unitOfWork.SaveChangesAsync(ct);
     }

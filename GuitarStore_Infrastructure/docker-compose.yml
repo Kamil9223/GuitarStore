@@ -21,7 +21,7 @@ services:
     image: stripe/stripe-cli
     container_name: stripe-cli
     command: >
-      listen --forward-to https://host.docker.internal:7028/webhook --skip-verify
+      listen --forward-to https://host.docker.internal:7028/webhook --skip-verify --log-level debug
     environment:
       - STRIPE_API_KEY
       - STRIPE_DEVICE_NAME=docker-stripe

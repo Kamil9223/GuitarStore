@@ -1,9 +1,6 @@
-﻿using Common.RabbitMq.Abstractions.EventHandlers;
-using Domain.StronglyTypedIds;
+﻿using Application.CQRS.Command;
 using Microsoft.AspNetCore.Mvc;
-using Payments.Core.Events.Outgoing;
-using Payments.Shared.Services;
-using Stripe;
+using Payments.Core.Commands;
 
 namespace GuitarStore.ApiGateway.Modules.Payments;
 
@@ -11,40 +8,23 @@ namespace GuitarStore.ApiGateway.Modules.Payments;
 [ApiController]
 public class WebhookStripeController : ControllerBase
 {
-    private readonly IIntegrationEventPublisher _integrationEventPublisher;
+    private readonly ICommandHandlerExecutor _commandHandlerExecutor;
 
-    public WebhookStripeController(IIntegrationEventPublisher integrationEventPublisher)
+    public WebhookStripeController(
+        ICommandHandlerExecutor commandHandlerExecutor)
     {
-        _integrationEventPublisher = integrationEventPublisher;
+        _commandHandlerExecutor = commandHandlerExecutor;
     }
 
     [HttpPost]
     public async Task<IActionResult> PaymentEvent(CancellationToken ct)
     {
-        var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+        var json = await new StreamReader(Request.Body).ReadToEndAsync(ct);
+        if (!Request.Headers.TryGetValue("Stripe-Signature", out var sigHeader))
+            return BadRequest("Missing Stripe-Signature header");
 
-        var stripeEvent = EventUtility.ParseEvent(json);
-
-        if (stripeEvent.Type == Events.PaymentIntentSucceeded)
-        {
-            var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
-            var orderId = paymentIntent!.Metadata.GetValueOrDefault(IStripeService.OrderIdMetadataKey);
-            if (string.IsNullOrEmpty(orderId))
-            {
-                //log error, critical or smthg. It should not happen
-            }
-            var typedOrderId = (OrderId)orderId!;
-            await _integrationEventPublisher.Publish(new OrderPaidEvent(typedOrderId), ct); //orderId jest otrzymywany, ale event nie dochodzi do handlera, zbadać
-        }
-        else if (stripeEvent.Type == Events.PaymentIntentCanceled)
-        {
-            var paymentMethod = stripeEvent.Data.Object as PaymentMethod;
-            //handle cancellation
-        }
-        else
-        {
-            Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);
-        }
+        var sig = sigHeader.ToString();
+        await _commandHandlerExecutor.Execute(new StripeWebhookCommand(json, sig), ct);
         return Ok();
     }
 }

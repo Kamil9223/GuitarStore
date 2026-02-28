@@ -56,7 +56,8 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
             deliveryAddress: deliveryAddress,
             delivery: new Delivery(checkoutCart.DelivererId, checkoutCart.Deliverer));
 
-        await _productReservationService.ReserveProduct(OrdersMapper.MapToReserveProductsDto(newOrder), ct);
+        //TODO: TTL from configuration
+        await _productReservationService.ReserveProducts(OrdersMapper.MapToReserveProductsDto(newOrder, TimeSpan.FromMinutes(10)), ct);
 
         var checkoutSession = new CheckoutSessionRequest
         {

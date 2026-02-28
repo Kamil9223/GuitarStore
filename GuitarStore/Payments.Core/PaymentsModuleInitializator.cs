@@ -3,10 +3,12 @@ using Application.CQRS.Query;
 using Common.RabbitMq.Abstractions.EventHandlers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Payments.Core.Services;
 using Payments.Shared.Services;
 using Stripe;
 using System.Reflection;
+using Payments.Core.Services;
+using Payments.Core.SharedServices;
+using StripeConfiguration = Payments.Core.Services.StripeConfiguration;
 
 namespace Payments.Core;
 public static class PaymentsModuleInitializator
@@ -45,9 +47,13 @@ public static class PaymentsModuleInitializator
             var stripeHttpClient = new SystemNetHttpClient(client);
             return new StripeClient(secretKey, apiBase: client.BaseAddress!.ToString(), httpClient: stripeHttpClient);
         });
-
+        
+        services.AddScoped<IWebhookIdempotencyStore, EfCoreWebhookIdempotencyStore>();
 
         services.AddScoped<IStripeService, StripeService>();
+
+        services.Configure<WebhookTimeToLiveConfiguration>(configuration.GetSection("WebhookTimeToLive"));
+        services.Configure<StripeConfiguration>(configuration.GetSection("Stripe"));
 
         return services;
     }

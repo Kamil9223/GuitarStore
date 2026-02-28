@@ -14,6 +14,7 @@ public class Program
         builder.Services.InitializeModules(builder.Configuration);
 
         builder.Services.AddControllers();
+        builder.Services.AddHttpContextAccessor();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
@@ -46,7 +47,7 @@ public class Program
         }
 
         app.UseRouting();
-        app.UseIdentityServer(); // publikuje /.well-known/openid-configuration i ca³¹ resztê
+        app.UseIdentityServer(); // publikuje /.well-known/openid-configuration i caï¿½ï¿½ resztï¿½
 
         //app.UseHttpsRedirection();
 

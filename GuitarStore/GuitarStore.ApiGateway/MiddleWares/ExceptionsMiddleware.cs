@@ -23,25 +23,32 @@ public class ExceptionsMiddleware : IMiddleware
     {
         var problemDetails = ex switch
         {
-            ValidationException => new ProblemDetails
+            ValidationException exception => new ProblemDetails
             {
-                Title = ((ValidationException)ex).Title,
+                Title = exception.Title,
                 Status = (int)HttpStatusCode.BadRequest,
-                Detail = ex.Message,
+                Detail = exception.Message,
                 Instance = context.Request.Path
             },
-            NotFoundException => new ProblemDetails
+            NotFoundException exception => new ProblemDetails
             {
-                Title = ((NotFoundException)ex).Title,
+                Title = exception.Title,
                 Status = (int)HttpStatusCode.NotFound,
-                Detail = ex.Message,
+                Detail = exception.Message,
                 Instance = context.Request.Path
             },
-            DomainException => new ProblemDetails
+            DomainException exception => new ProblemDetails
             {
-                Title = ((DomainException)ex).Title,
+                Title = exception.Title,
                 Status = (int)HttpStatusCode.Conflict,
-                Detail = ((DomainException)ex).ErrorCode,
+                Detail = exception.ErrorCode,
+                Instance = context.Request.Path
+            },
+            StripeSignatureException exception => new ProblemDetails
+            {
+                Title = exception.Title,
+                Status = (int)HttpStatusCode.BadRequest,
+                Detail = exception.Message,
                 Instance = context.Request.Path
             },
             _ => new ProblemDetails

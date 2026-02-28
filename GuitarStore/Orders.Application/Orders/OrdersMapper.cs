@@ -23,9 +23,10 @@ public static class OrdersMapper
                 productId: x.ProductId
             )).ToList();
 
-    public static ReserveProductsDto MapToReserveProductsDto(Order order)
+    public static ReserveProductsDto MapToReserveProductsDto(Order order, TimeSpan timeToLive)
         => new(
                 order.Id,
+                timeToLive,
                 order.OrderItems.Select(x => new ReserveProductDto(
                     x.ProductId,
                     x.Quantity))
