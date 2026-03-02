@@ -4,26 +4,32 @@ namespace Payments.Core.Services;
 
 public interface IPaymentIntentParser
 {
-    (string PaymentIntentId, OrderId OrderId) ParseOrThrow(Stripe.Event stripeEvent);
+    bool TryParse(Stripe.Event stripeEvent, out string paymentIntentId, out OrderId orderId);
 }
 
 internal sealed class PaymentIntentParser : IPaymentIntentParser
 {
     private const string OrderIdKey = "orderId";
 
-    public (string PaymentIntentId, OrderId OrderId) ParseOrThrow(Stripe.Event stripeEvent)
+    public bool TryParse(Stripe.Event stripeEvent, out string paymentIntentId, out OrderId orderId)
     {
+        paymentIntentId = default!;
+        orderId = default!;
+
         if (stripeEvent.Data?.Object is not Stripe.PaymentIntent pi)
-            throw new InvalidOperationException($"Expected PaymentIntent in event data, got: {stripeEvent.Data?.Object?.GetType().Name ?? "null"}");
+            return false;
 
-        var piId = pi.Id ?? throw new InvalidOperationException("PaymentIntent.Id missing");
+        if (pi.Id is null)
+            return false;
 
-        if (pi.Metadata is null || !pi.Metadata.TryGetValue(OrderIdKey, out var orderIdRaw))
-            throw new InvalidOperationException($"PaymentIntent.Metadata missing '{OrderIdKey}'");
+        if (pi.Metadata is null || !pi.Metadata.TryGetValue(OrderIdKey, out var raw))
+            return false;
 
-        if (!Guid.TryParse(orderIdRaw, out var orderId))
-            throw new InvalidOperationException($"Invalid '{OrderIdKey}' metadata value: {orderIdRaw}");
+        if (!Guid.TryParse(raw, out var guid))
+            return false;
 
-        return (piId, new OrderId(orderId));
+        paymentIntentId = pi.Id;
+        orderId = new OrderId(guid);
+        return true;
     }
 }

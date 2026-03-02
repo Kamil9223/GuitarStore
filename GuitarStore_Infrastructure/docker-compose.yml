@@ -23,6 +23,6 @@ services:
     command: >
       listen --forward-to https://host.docker.internal:7028/webhook --skip-verify --log-level debug
     environment:
-      - STRIPE_API_KEY
+      - STRIPE_API_KEY=${STRIPE_API_KEY}
       - STRIPE_DEVICE_NAME=docker-stripe
     tty: true

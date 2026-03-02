@@ -5,6 +5,8 @@ namespace Warehouse.Core.Entities;
 
 public class ProductReservation
 {
+    private ProductReservation() { } // EF
+    
     public ProductReservation(
         OrderId orderId,
         ProductId productId,

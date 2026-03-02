@@ -9,6 +9,11 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        
+        if (builder.Environment.IsDevelopment())
+        {
+            DotNetEnv.Env.Load(options: new DotNetEnv.LoadOptions());
+        }
 
         // Add services to the container.
         builder.Services.InitializeModules(builder.Configuration);

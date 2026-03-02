@@ -58,7 +58,11 @@ internal sealed class StripeWebhookCommandHandler(
 
         try
         {
-            var (paymentIntentId, orderId) = parser.ParseOrThrow(stripeEvent);
+            if (!parser.TryParse(stripeEvent, out var paymentIntentId, out var orderId))
+            {
+                logger.LogWarning("Stripe event {EventId} could not be parsed. Ignored.", eventId);
+                return;
+            }
 
             switch (stripeEvent.Type)
             {

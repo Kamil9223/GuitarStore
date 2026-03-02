@@ -31,7 +31,7 @@ public class Order : Entity
     {
         Id = id;
         CreatedAt = DateTime.UtcNow;
-        Status = OrderStatus.New;
+        Status = OrderStatus.PendingPayment;
         _orderItems = orderItems.ToList();
         CustomerId = customerId;
         DeliveryAddress = deliveryAddress;
@@ -43,16 +43,11 @@ public class Order : Entity
         return new Order(OrderId.New(), orderItems, customerId, deliveryAddress, delivery);
     }
 
-    public void MarkPendingPayment()
-    {
-        if (Status != OrderStatus.New)
-            throw new DomainException($"Cannot mark pending payment from status {Status}.");
-
-        Status = OrderStatus.PendingPayment;
-    }
-
     public void MarkPaid()
     {
+        if (Status == OrderStatus.Paid)
+            return;
+        
         if (Status != OrderStatus.PendingPayment)
             throw new DomainException($"Cannot mark paid from status {Status}.");
 
@@ -101,48 +96,43 @@ public class Order : Entity
 public enum OrderStatus : byte
 {
     /// <summary>
-    /// The order has been created in the system, but checkout/payment has not started yet.
-    /// No confirmed payment exists at this stage.
-    /// </summary>
-    New = 1,
-
-    /// <summary>
+    /// The order has been created in the system.
     /// Products have been successfully reserved (soft reservation with TTL),
     /// and the system is waiting for payment confirmation (e.g., Stripe webhook).
     /// The order may transition to Paid, Canceled, or Expired.
     /// </summary>
-    PendingPayment = 2,
+    PendingPayment = 1,
 
     /// <summary>
     /// Payment has been successfully confirmed.
     /// The reservation should be confirmed in the Warehouse module.
     /// The order is ready for fulfillment.
     /// </summary>
-    Paid = 3,
+    Paid = 2,
 
     /// <summary>
     /// The order has been dispatched for delivery.
     /// Fulfillment has started or shipment has been sent to the customer.
     /// </summary>
-    Sent = 4,
+    Sent = 3,
 
     /// <summary>
     /// The order has been fully completed and delivered.
     /// No further state transitions are expected in the standard flow.
     /// </summary>
-    Realized = 5,
+    Realized = 4,
 
     /// <summary>
     /// The order has been canceled.
     /// This may happen due to payment failure, manual cancellation,
     /// or business rule violation (before fulfillment).
     /// </summary>
-    Canceled = 6,
+    Canceled = 5,
 
     /// <summary>
     /// The order has expired because the payment was not completed
     /// within the allowed reservation time (TTL).
     /// Reserved stock should be released.
     /// </summary>
-    Expired = 7
+    Expired = 6
 }

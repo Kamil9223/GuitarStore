@@ -41,7 +41,7 @@ internal static class OrdersDbSeeder
         {
             Id = Guid.NewGuid(),
             CustomerId = customerId.Value,
-            Status = status.HasValue ? (byte)status : (byte)OrderStatus.New,
+            Status = status.HasValue ? (byte)status : (byte)OrderStatus.PendingPayment,
             CreatedAt = DateTime.UtcNow,
             TotalPrice = totalPrice ?? faker.Finance.Amount(1, 1000, 2),
             ItemsCount = itemsCount ?? faker.Random.Int(1, 1000),

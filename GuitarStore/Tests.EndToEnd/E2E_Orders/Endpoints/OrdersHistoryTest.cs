@@ -24,7 +24,7 @@ public sealed class OrdersHistoryTest(Setup.Application app) : EndToEndTestBase(
         //Arrange
         var customer = Databases.OrdersDbContext.SeedCustomer(CustomerId.New());
         Databases.OrdersDbContext.SeedOrderReadModel(customer.Id, status: OrderStatus.Realized);
-        Databases.OrdersDbContext.SeedOrderReadModel(customer.Id, status: OrderStatus.New);
+        Databases.OrdersDbContext.SeedOrderReadModel(customer.Id, status: OrderStatus.PendingPayment);
         Databases.OrdersDbContext.SeedOrderReadModel(customer.Id, status: OrderStatus.Canceled);
         await Databases.OrdersDbContext.SaveChangesAsync();
 

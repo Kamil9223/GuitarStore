@@ -49,6 +49,7 @@ public static class PaymentsModuleInitializator
         });
         
         services.AddScoped<IWebhookIdempotencyStore, EfCoreWebhookIdempotencyStore>();
+        services.AddScoped<IPaymentIntentParser, PaymentIntentParser>();
 
         services.AddScoped<IStripeService, StripeService>();
 
