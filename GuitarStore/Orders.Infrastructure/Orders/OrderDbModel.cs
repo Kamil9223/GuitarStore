@@ -8,4 +8,6 @@ internal class OrderDbModel
     public CustomerId? CustomerId { get; set; }
 
     public string Object { get; set; } = null!;
+
+    public byte[]? RowVersion { get; set; }
 }

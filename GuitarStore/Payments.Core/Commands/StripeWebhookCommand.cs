@@ -14,10 +14,11 @@ public sealed record StripeWebhookCommand(string Json, string Signature) : IComm
 
 internal sealed class StripeWebhookCommandHandler(
     IWebhookIdempotencyStore webhookStore,
-    IIntegrationEventPublisher integrationEventPublisher,
+    IOutboxEventPublisher outboxEventPublisher,
     IPaymentIntentParser parser,
     IOptions<StripeConfiguration> stripeConfiguration,
-    ILogger<StripeWebhookCommandHandler> logger)
+    ILogger<StripeWebhookCommandHandler> logger,
+    Database.PaymentsDbContext dbContext)
     : ICommandHandler<StripeWebhookCommand>
 {
     public async Task Handle(StripeWebhookCommand command, CancellationToken ct)
@@ -61,25 +62,28 @@ internal sealed class StripeWebhookCommandHandler(
             if (!parser.TryParse(stripeEvent, out var paymentIntentId, out var orderId))
             {
                 logger.LogWarning("Stripe event {EventId} could not be parsed. Ignored.", eventId);
+                await webhookStore.MarkCompletedAsync(eventId, ct);
                 return;
             }
 
             switch (stripeEvent.Type)
             {
                 case Stripe.Events.PaymentIntentSucceeded:
-                    await integrationEventPublisher.Publish(new OrderPaidEvent(orderId), ct);
+                    await outboxEventPublisher.PublishToOutbox(new OrderPaidEvent(orderId), ct);
                     break;
 
                 case Stripe.Events.PaymentIntentCanceled or Stripe.Events.PaymentIntentPaymentFailed:
-                    await integrationEventPublisher.Publish(new OrderCancelledEvent(orderId), ct);
+                    await outboxEventPublisher.PublishToOutbox(new OrderCancelledEvent(orderId), ct);
                     break;
 
                 default:
                     logger.LogInformation("Stripe webhook event {EventId} ignored: {Type}", eventId, stripeEvent.Type);
-                    break;
+                    await webhookStore.MarkCompletedAsync(eventId, ct);
+                    return;
             }
 
             await webhookStore.MarkCompletedAsync(eventId, ct);
+            await dbContext.SaveChangesAsync(ct); //TODO: Provide TransactionWrapper
         }
         catch (Exception ex)
         {

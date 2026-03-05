@@ -20,6 +20,9 @@ internal class OrderDbConfiguration : IEntityTypeConfiguration<OrderDbModel>
 
         builder.Property(x => x.Object).IsRequired();
 
+        builder.Property(x => x.RowVersion)
+               .IsRowVersion();
+
         builder.HasOne<Customer>()
             .WithMany()
             .HasForeignKey(x => x.CustomerId);

@@ -3,6 +3,7 @@ using Application.CQRS.Query;
 using Common.EfCore.Transactions;
 using Common.RabbitMq.Abstractions;
 using Common.RabbitMq.Abstractions.EventHandlers;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Orders.Application.Orders.Commands;
 using Orders.Application.Orders.Events.Incoming;
@@ -16,6 +17,7 @@ internal static class ApplicationModule
 {
     internal static void AddApplicationModule(
         this IServiceCollection services,
+        IConfiguration configuration,
         Func<IServiceProvider, IReadOnlyCollection<IDbContext>> placeOrderCommandTransactionDbContextsFunc
         )
     {
@@ -32,5 +34,7 @@ internal static class ApplicationModule
 
         services.AddSingleton<IEventBusSubscriptionManager, EventBusSubscriptionManager>();
         services.AddScoped<IIntegrationEventHandler<OrderPaidEvent>, OrderPaidEventHandler>();
+
+        services.Configure<Configuration.OrdersConfiguration>(configuration.GetSection("Orders"));
     }
 }

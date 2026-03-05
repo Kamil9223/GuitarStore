@@ -12,7 +12,7 @@ public static class OrdersModuleInitializator
         Func<IServiceProvider, IReadOnlyCollection<IDbContext>> placeOrderCommandTransactionDbContextsFunc)
     {
         services.AddInfrastructureModule(configuration);
-        services.AddApplicationModule(placeOrderCommandTransactionDbContextsFunc);
+        services.AddApplicationModule(configuration, placeOrderCommandTransactionDbContextsFunc);
         return services;
     }
 }

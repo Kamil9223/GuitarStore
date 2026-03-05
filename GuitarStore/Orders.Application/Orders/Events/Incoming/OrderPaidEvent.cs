@@ -1,4 +1,4 @@
-﻿using Common.RabbitMq.Abstractions.EventHandlers;
+using Common.RabbitMq.Abstractions.EventHandlers;
 using Common.RabbitMq.Abstractions.Events;
 using Domain.StronglyTypedIds;
 using Orders.Application.Abstractions;
@@ -21,7 +21,7 @@ internal sealed class OrderPaidEventHandler : IIntegrationEventHandler<OrderPaid
     public async Task Handle(OrderPaidEvent @event, CancellationToken ct)
     {
         var order = await _orderRepository.Get(@event.OrderId, ct);
-        order.MarkPaid();
+        order.MarkPaid(); // Idempotent - no-op if already Paid
         await _orderRepository.Update(order, ct);
         await _unitOfWork.SaveChangesAsync(ct);
     }

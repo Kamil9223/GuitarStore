@@ -3,7 +3,9 @@ using Common.Errors.Exceptions;
 using Customers.Shared;
 using Domain.StronglyTypedIds;
 using Domain.ValueObjects;
+using Microsoft.Extensions.Options;
 using Orders.Application.Abstractions;
+using Orders.Application.Configuration;
 using Orders.Domain.Orders;
 using Payments.Shared.Contracts;
 using Payments.Shared.Services;
@@ -23,19 +25,22 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
     private readonly IOrdersUnitOfWork _unitOfWork;
     private readonly IProductReservationService _productReservationService;
     private readonly IStripeService _stripeService;
+    private readonly OrdersConfiguration _configuration;
 
     public PlaceOrderCommandHandler(
         ICartService cartService,
         IOrderRepository orderRepository,
         IOrdersUnitOfWork unitOfWork,
         IProductReservationService productReservationService,
-        IStripeService stripeService)
+        IStripeService stripeService,
+        IOptions<OrdersConfiguration> configuration)
     {
         _cartService = cartService;
         _orderRepository = orderRepository;
         _unitOfWork = unitOfWork;
         _productReservationService = productReservationService;
         _stripeService = stripeService;
+        _configuration = configuration.Value;
     }
 
     public async Task<PlaceOrderResponse> Handle(PlaceOrderCommand command, CancellationToken ct)
@@ -56,8 +61,8 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
             deliveryAddress: deliveryAddress,
             delivery: new Delivery(checkoutCart.DelivererId, checkoutCart.Deliverer));
 
-        //TODO: TTL from configuration
-        await _productReservationService.ReserveProducts(OrdersMapper.MapToReserveProductsDto(newOrder, TimeSpan.FromMinutes(10)), ct);
+        var reservationTtl = TimeSpan.FromMinutes(_configuration.ReservationTtlMinutes);
+        await _productReservationService.ReserveProducts(OrdersMapper.MapToReserveProductsDto(newOrder, reservationTtl), ct);
 
         var checkoutSession = new CheckoutSessionRequest
         {
