@@ -15,5 +15,6 @@ internal class EventBusSubscriptionManager : IEventBusSubscriptionManager
     public void SubscribeToEvents()
     {
         _integrationEventSubscriber.Subscribe<OrderPaidEvent, OrderPaidEventHandler>(RabbitMqQueueName.OrdersQueue);
+        _integrationEventSubscriber.Subscribe<OrderPaymentFailedEvent, OrderPaymentFailedEventHandler>(RabbitMqQueueName.OrdersQueue);
     }
 }

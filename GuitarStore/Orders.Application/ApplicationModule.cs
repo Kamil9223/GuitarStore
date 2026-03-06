@@ -34,6 +34,7 @@ internal static class ApplicationModule
 
         services.AddSingleton<IEventBusSubscriptionManager, EventBusSubscriptionManager>();
         services.AddScoped<IIntegrationEventHandler<OrderPaidEvent>, OrderPaidEventHandler>();
+        services.AddScoped<IIntegrationEventHandler<OrderPaymentFailedEvent>, OrderPaymentFailedEventHandler>();
 
         services.Configure<Configuration.OrdersConfiguration>(configuration.GetSection("Orders"));
     }

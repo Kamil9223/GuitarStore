@@ -72,9 +72,19 @@ internal sealed class StripeWebhookCommandHandler(
                     await outboxEventPublisher.PublishToOutbox(new OrderPaidEvent(orderId), ct);
                     break;
 
-                case Stripe.Events.PaymentIntentCanceled or Stripe.Events.PaymentIntentPaymentFailed:
-                    await outboxEventPublisher.PublishToOutbox(new OrderCancelledEvent(orderId), ct);
+                case Stripe.Events.PaymentIntentPaymentFailed:
+                    await outboxEventPublisher.PublishToOutbox(
+                        new OrderPaymentFailedEvent(orderId, paymentIntentId, null, DateTime.UtcNow), ct);
                     break;
+
+                case Stripe.Events.PaymentIntentCanceled:
+                    // OrderCancelledEvent is now a business decision, not a payment outcome.
+                    // Payment cancellation is logged but doesn't directly cancel the order.
+                    logger.LogWarning(
+                        "PaymentIntent {PaymentIntentId} for Order {OrderId} was canceled. No action taken.",
+                        paymentIntentId, orderId);
+                    await webhookStore.MarkCompletedAsync(eventId, ct);
+                    return;
 
                 default:
                     logger.LogInformation("Stripe webhook event {EventId} ignored: {Type}", eventId, stripeEvent.Type);
