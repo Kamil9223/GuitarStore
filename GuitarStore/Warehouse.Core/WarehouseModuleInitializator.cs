@@ -1,10 +1,14 @@
 ﻿using Application.CQRS.Command;
 using Common.EfCore.Transactions;
+using Common.RabbitMq.Abstractions;
+using Common.RabbitMq.Abstractions.EventHandlers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Warehouse.Core.Commands;
 using Warehouse.Core.Database;
+using Warehouse.Core.Events;
+using Warehouse.Core.Events.Incoming;
 using Warehouse.Core.InternalModuleApi;
 using Warehouse.Core.Services;
 using Warehouse.Shared;
@@ -30,8 +34,13 @@ public static class WarehouseModuleInitializator
 
         services.AddScoped<ICommandHandler<IncreaseStockQuantityCommand>, IncreaseStockQuantityCommandHandler>();
         services.Decorate<ICommandHandler<IncreaseStockQuantityCommand>, DbContextTransactionDecorator<IWarehouseDbContext, IncreaseStockQuantityCommand>>();
-        
+
         services.AddHostedService<StockReservationExpirationJob>();
+
+        services.AddSingleton<IEventBusSubscriptionManager, EventBusSubscriptionManager>();
+        services.AddScoped<IIntegrationEventHandler<OrderPaidEvent>, OrderPaidEventHandler>();
+        services.AddScoped<IIntegrationEventHandler<OrderCancelledEvent>, OrderCancelledEventHandler>();
+        services.AddScoped<IIntegrationEventHandler<OrderExpiredEvent>, OrderExpiredEventHandler>();
 
         return services;
     }

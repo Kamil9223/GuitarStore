@@ -15,6 +15,7 @@
     <ProjectReference Include="..\Common.EfCore\Common.EfCore.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Warehouse.Shared\Warehouse.Shared.csproj" />
+    <ProjectReference Include="..\Common.RabbitMq.Abstractions\Common.RabbitMq.Abstractions.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Events\Incoming\" />
