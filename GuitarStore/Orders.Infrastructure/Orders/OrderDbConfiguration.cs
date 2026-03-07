@@ -20,6 +20,8 @@ internal class OrderDbConfiguration : IEntityTypeConfiguration<OrderDbModel>
 
         builder.Property(x => x.Object).IsRequired();
 
+        builder.Property(x => x.ExpiresAtUtc).IsRequired();
+
         builder.Property(x => x.RowVersion)
                .IsRowVersion();
 

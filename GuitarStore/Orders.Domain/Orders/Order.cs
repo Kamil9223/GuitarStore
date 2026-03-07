@@ -13,6 +13,7 @@ public class Order : Entity
     public CustomerId CustomerId { get; }
     public IReadOnlyCollection<OrderItem> OrderItems => _orderItems;
     public DateTime CreatedAt { get; }
+    public DateTime ExpiresAtUtc { get; }
     public OrderStatus Status { get; private set; }
     public DeliveryAddress DeliveryAddress { get; } = null!;
     public Delivery Delivery { get; } = null!;
@@ -27,10 +28,12 @@ public class Order : Entity
         ICollection<OrderItem> orderItems,
         CustomerId customerId,
         DeliveryAddress deliveryAddress,
-        Delivery delivery)
+        Delivery delivery,
+        DateTime expiresAtUtc)
     {
         Id = id;
         CreatedAt = DateTime.UtcNow;
+        ExpiresAtUtc = expiresAtUtc;
         Status = OrderStatus.PendingPayment;
         _orderItems = orderItems.ToList();
         CustomerId = customerId;
@@ -38,9 +41,10 @@ public class Order : Entity
         Delivery = delivery;
     }
 
-    public static Order Create(ICollection<OrderItem> orderItems, CustomerId customerId, DeliveryAddress deliveryAddress, Delivery delivery)
+    public static Order Create(ICollection<OrderItem> orderItems, CustomerId customerId, DeliveryAddress deliveryAddress, Delivery delivery, TimeSpan timeToLive)
     {
-        return new Order(OrderId.New(), orderItems, customerId, deliveryAddress, delivery);
+        var expiresAtUtc = DateTime.UtcNow.Add(timeToLive);
+        return new Order(OrderId.New(), orderItems, customerId, deliveryAddress, delivery, expiresAtUtc);
     }
 
     public void MarkPaid()

@@ -36,6 +36,7 @@ internal class OrderRepository : IOrderRepository
         {
             Id = order.Id,
             CustomerId = order.CustomerId,
+            ExpiresAtUtc = order.ExpiresAtUtc,
             Object = JsonConvert.SerializeObject(order)
         };
 
@@ -49,6 +50,28 @@ internal class OrderRepository : IOrderRepository
         {
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
         };
+        dbOrder.ExpiresAtUtc = order.ExpiresAtUtc;
         dbOrder.Object = JsonConvert.SerializeObject(order, settings);
+    }
+
+    public async Task<IReadOnlyCollection<Order>> GetExpiredPendingPaymentOrders(CancellationToken ct)
+    {
+        var now = DateTime.UtcNow;
+
+        var dbOrders = await _dbContext.Orders
+            .Where(x => x.ExpiresAtUtc < now)
+            .ToListAsync(ct);
+
+        var settings = new JsonSerializerSettings
+        {
+            ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
+        };
+
+        var orders = dbOrders
+            .Select(dbOrder => JsonConvert.DeserializeObject<Order>(dbOrder.Object, settings)!)
+            .Where(order => order.Status == OrderStatus.PendingPayment)
+            .ToList();
+
+        return orders;
     }
 }

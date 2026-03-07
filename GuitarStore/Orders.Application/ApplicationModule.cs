@@ -5,6 +5,7 @@ using Common.RabbitMq.Abstractions;
 using Common.RabbitMq.Abstractions.EventHandlers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Orders.Application.Orders.BackgroundJobs;
 using Orders.Application.Orders.Commands;
 using Orders.Application.Orders.Events.Incoming;
 using System.Reflection;
@@ -35,6 +36,8 @@ internal static class ApplicationModule
         services.AddSingleton<IEventBusSubscriptionManager, EventBusSubscriptionManager>();
         services.AddScoped<IIntegrationEventHandler<OrderPaidEvent>, OrderPaidEventHandler>();
         services.AddScoped<IIntegrationEventHandler<OrderPaymentFailedEvent>, OrderPaymentFailedEventHandler>();
+
+        services.AddHostedService<OrderExpirationJob>();
 
         services.Configure<Configuration.OrdersConfiguration>(configuration.GetSection("Orders"));
     }

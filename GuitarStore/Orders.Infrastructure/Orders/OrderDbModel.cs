@@ -9,5 +9,7 @@ internal class OrderDbModel
 
     public string Object { get; set; } = null!;
 
+    public DateTime ExpiresAtUtc { get; set; }
+
     public byte[]? RowVersion { get; set; }
 }

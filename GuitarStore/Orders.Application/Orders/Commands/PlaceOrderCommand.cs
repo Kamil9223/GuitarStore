@@ -55,13 +55,15 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
             ? command.DeliveryAddress
             : OrdersMapper.MapToDeliveryAddress(checkoutCart.DeliveryAddress!);
 
+        var reservationTtl = TimeSpan.FromMinutes(_configuration.ReservationTtlMinutes);
+
         var newOrder = Order.Create(
             orderItems: OrdersMapper.MapToOrderItems(checkoutCart.Items),
             customerId: checkoutCart.CustomerId,
             deliveryAddress: deliveryAddress,
-            delivery: new Delivery(checkoutCart.DelivererId, checkoutCart.Deliverer));
+            delivery: new Delivery(checkoutCart.DelivererId, checkoutCart.Deliverer),
+            timeToLive: reservationTtl);
 
-        var reservationTtl = TimeSpan.FromMinutes(_configuration.ReservationTtlMinutes);
         await _productReservationService.ReserveProducts(OrdersMapper.MapToReserveProductsDto(newOrder, reservationTtl), ct);
 
         var checkoutSession = new CheckoutSessionRequest
