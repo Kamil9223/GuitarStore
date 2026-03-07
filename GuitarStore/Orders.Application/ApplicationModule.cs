@@ -33,6 +33,8 @@ internal static class ApplicationModule
         services.AddScoped<ICommandHandler<PlaceOrderResponse, PlaceOrderCommand>, PlaceOrderCommandHandler>();
         services.AddTransactionalDecorator<PlaceOrderResponse, PlaceOrderCommand>(placeOrderCommandTransactionDbContextsFunc);
 
+        services.AddScoped<ICommandHandler<CancelOrderCommand>, CancelOrderCommandHandler>();
+
         services.AddSingleton<IEventBusSubscriptionManager, EventBusSubscriptionManager>();
         services.AddScoped<IIntegrationEventHandler<OrderPaidEvent>, OrderPaidEventHandler>();
         services.AddScoped<IIntegrationEventHandler<OrderPaymentFailedEvent>, OrderPaymentFailedEventHandler>();

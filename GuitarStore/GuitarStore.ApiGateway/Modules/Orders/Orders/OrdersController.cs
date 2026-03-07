@@ -62,4 +62,19 @@ public class OrdersController : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpPost("{orderId}/cancel", Name = "CancelOrder")]
+    public async Task<ActionResult> CancelOrder(
+        [FromRoute] OrderId orderId,
+        [FromBody] CancelOrderRequest request,
+        CancellationToken ct)
+    {
+        // TODO: Get CustomerId from JWT claims instead of request body
+        var command = new CancelOrderCommand(orderId, request.CustomerId, request.Reason);
+        await _commandHandlerExecutor.Execute(command, ct);
+
+        return Ok();
+    }
 }
+
+public sealed record CancelOrderRequest(CustomerId CustomerId, string? Reason);
