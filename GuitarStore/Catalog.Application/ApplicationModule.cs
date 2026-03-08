@@ -3,7 +3,6 @@ using Application.CQRS.Query;
 using Catalog.Application.Abstractions;
 using Catalog.Application.CrossCuttingServices;
 using Catalog.Application.Products.Commands;
-using Common.EfCore.Transactions;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
@@ -31,6 +30,5 @@ internal static class ApplicationModule
 
         services.AddScoped<ICommandHandler<AddProductCommand>, AddProductCommandHandler>();
         services.Decorate<ICommandHandler<AddProductCommand>, CommandValidationDecorator<AddProductCommand>>();
-        services.Decorate<ICommandHandler<AddProductCommand>, DbContextTransactionDecorator<ICatalogDbContext, AddProductCommand>>();
     }
 }

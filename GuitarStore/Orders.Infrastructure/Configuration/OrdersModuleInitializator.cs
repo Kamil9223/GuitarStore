@@ -8,11 +8,10 @@ public static class OrdersModuleInitializator
 {
     public static IServiceCollection AddOrdersModule(
         this IServiceCollection services,
-        IConfiguration configuration,
-        Func<IServiceProvider, IReadOnlyCollection<IDbContext>> placeOrderCommandTransactionDbContextsFunc)
+        IConfiguration configuration)
     {
         services.AddInfrastructureModule(configuration);
-        services.AddApplicationModule(configuration, placeOrderCommandTransactionDbContextsFunc);
+        services.AddApplicationModule(configuration);
         return services;
     }
 }

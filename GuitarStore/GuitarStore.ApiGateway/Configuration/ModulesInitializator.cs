@@ -20,13 +20,7 @@ internal static class ModulesInitializator
             .AddRabbitMqModule()
             .AddCatalogModule(configuration)
             .AddCustomersModule(configuration)
-            .AddOrdersModule(
-                configuration,
-                placeOrderCommandTransactionDbContextsFunc: (sp) =>
-                [
-                    sp.GetRequiredService<IOrdersDbContext>(),
-                    sp.GetRequiredService<IWarehouseDbContext>()
-                ])
+            .AddOrdersModule(configuration)
             .AddWarehouseModule(configuration)
             .AddPaymentsModule(configuration)
             .AddDeliveryModule(configuration)

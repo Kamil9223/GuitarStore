@@ -1,6 +1,5 @@
 ﻿using Application.CQRS.Command;
 using Application.CQRS.Query;
-using Common.EfCore.Transactions;
 using Common.RabbitMq.Abstractions;
 using Common.RabbitMq.Abstractions.EventHandlers;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +9,8 @@ using Orders.Application.Orders.Commands;
 using Orders.Application.Orders.Events.Incoming;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Common.EfCore.Transactions;
+using Orders.Application.Abstractions;
 
 [assembly: InternalsVisibleTo("Orders.Infrastructure")]
 namespace Orders.Application;
@@ -18,9 +19,7 @@ internal static class ApplicationModule
 {
     internal static void AddApplicationModule(
         this IServiceCollection services,
-        IConfiguration configuration,
-        Func<IServiceProvider, IReadOnlyCollection<IDbContext>> placeOrderCommandTransactionDbContextsFunc
-        )
+        IConfiguration configuration)
     {
         var assembly = Assembly.GetExecutingAssembly();
         services.Scan(scan => scan
@@ -29,10 +28,10 @@ internal static class ApplicationModule
                 .AsImplementedInterfaces()
                 .WithScopedLifetime()
         );
+        
+        services.AddScoped<ITransactionExecutor<IOrdersUnitOfWork>, TransactionExecutor<IOrdersUnitOfWork>>();
 
         services.AddScoped<ICommandHandler<PlaceOrderResponse, PlaceOrderCommand>, PlaceOrderCommandHandler>();
-        services.AddTransactionalDecorator<PlaceOrderResponse, PlaceOrderCommand>(placeOrderCommandTransactionDbContextsFunc);
-
         services.AddScoped<ICommandHandler<CancelOrderCommand>, CancelOrderCommandHandler>();
 
         services.AddSingleton<IEventBusSubscriptionManager, EventBusSubscriptionManager>();

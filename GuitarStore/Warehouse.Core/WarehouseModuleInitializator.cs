@@ -1,5 +1,4 @@
 ﻿using Application.CQRS.Command;
-using Common.EfCore.Transactions;
 using Common.RabbitMq.Abstractions;
 using Common.RabbitMq.Abstractions.EventHandlers;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +32,6 @@ public static class WarehouseModuleInitializator
         services.AddScoped<IProductReservationService, ProductReservationService>();
 
         services.AddScoped<ICommandHandler<IncreaseStockQuantityCommand>, IncreaseStockQuantityCommandHandler>();
-        services.Decorate<ICommandHandler<IncreaseStockQuantityCommand>, DbContextTransactionDecorator<IWarehouseDbContext, IncreaseStockQuantityCommand>>();
 
         services.AddHostedService<StockReservationExpirationJob>();
 

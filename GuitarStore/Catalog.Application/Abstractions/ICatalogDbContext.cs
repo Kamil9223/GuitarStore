@@ -1,4 +1,5 @@
-﻿using Common.EfCore.Transactions;
+﻿using Common.EfCore.DbContext;
+using Common.EfCore.Transactions;
 
 namespace Catalog.Application.Abstractions;
 public interface ICatalogDbContext : IDbContext

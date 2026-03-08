@@ -3,6 +3,7 @@ using Catalog.Application.Abstractions;
 using Catalog.Application.Products.Events.Outgoing;
 using Catalog.Domain;
 using Catalog.Domain.IRepositories;
+using Common.EfCore.Transactions;
 using Common.Errors.Exceptions;
 using Common.RabbitMq.Abstractions.EventHandlers;
 using Domain.StronglyTypedIds;
@@ -18,56 +19,43 @@ public sealed record AddProductCommand(
     decimal Price,
     int Quantity) : ICommand;
 
-internal sealed class AddProductCommandHandler : ICommandHandler<AddProductCommand>
+internal sealed class AddProductCommandHandler(
+    IProductRepository productRepository,
+    IVariationOptionRepository variationOptionRepository,
+    IBrandRepository brandRepository,
+    ICategoryRepository categoryRepository,
+    IIntegrationEventPublisher integrationEventPublisher,
+    ITransactionExecutor<ICatalogUnitOfWork> transactionExecutor)
+    : ICommandHandler<AddProductCommand>
 {
-    private readonly IProductRepository _productRepository;
-    private readonly IVariationOptionRepository _variationOptionRepository;
-    private readonly IBrandRepository _brandRepository;
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly ICatalogUnitOfWork _unitOfWork;
-    private readonly IIntegrationEventPublisher _integrationEventPublisher;
-
-    public AddProductCommandHandler(
-        IProductRepository productRepository,
-        IVariationOptionRepository variationOptionRepository,
-        IBrandRepository brandRepository,
-        ICategoryRepository categoryRepository,
-        ICatalogUnitOfWork unitOfWork,
-        IIntegrationEventPublisher integrationEventPublisher)
-    {
-        _productRepository = productRepository;
-        _variationOptionRepository = variationOptionRepository;
-        _brandRepository = brandRepository;
-        _categoryRepository = categoryRepository;
-        _unitOfWork = unitOfWork;
-        _integrationEventPublisher = integrationEventPublisher;
-    }
-
     public async Task Handle(AddProductCommand command, CancellationToken ct)
     {
-        var productAlreadyExists = await _productRepository.Exists(x => x.Name == command.Name, ct);
-        if (productAlreadyExists)
-            throw new DomainException($"Product with Name: [{command.Name}] already exists.");
+        await transactionExecutor.ExecuteAsync(async unitOfWork =>
+        {
+            var productAlreadyExists = await productRepository.Exists(x => x.Name == command.Name, ct);
+            if (productAlreadyExists)
+                throw new DomainException($"Product with Name: [{command.Name}] already exists.");
 
-        var variationOptions = await _variationOptionRepository.Get(command.VariationOptionIds, ct);
+            var variationOptions = await variationOptionRepository.Get(command.VariationOptionIds, ct);
 
-        if (variationOptions.Count != command.VariationOptionIds.Count)
-            throw new DomainException("Not all of provided variation options exist.");
+            if (variationOptions.Count != command.VariationOptionIds.Count)
+                throw new DomainException("Not all of provided variation options exist.");
 
-        var brand = await _brandRepository.Get(command.BrandId, ct);
-        if (brand is null)
-            throw new DomainException($"Brand with Id = [{command.BrandId}] not exists.");
+            var brand = await brandRepository.Get(command.BrandId, ct);
+            if (brand is null)
+                throw new DomainException($"Brand with Id = [{command.BrandId}] not exists.");
 
-        var category = await _categoryRepository.GetCategoryThatHasNotChildren(command.CategoryId, ct);
-        if (category is null)
-            throw new DomainException($"Category that has not children with Id = [{command.CategoryId}] not exists.");
+            var category = await categoryRepository.GetCategoryThatHasNotChildren(command.CategoryId, ct);
+            if (category is null)
+                throw new DomainException($"Category that has not children with Id = [{command.CategoryId}] not exists.");
 
-        var product = new Product(command.Name, command.Description, command.Price, command.Quantity, brand, category, variationOptions);
+            var product = new Product(command.Name, command.Description, command.Price, command.Quantity, brand, category, variationOptions);
 
-        _productRepository.Add(product);
+            productRepository.Add(product);
 
-        await _unitOfWork.SaveChangesAsync(ct);
+            await unitOfWork.SaveChangesAsync(ct);
 
-        await _integrationEventPublisher.Publish(new ProductAddedEvent(product.Id, command.Name, command.Price, command.Quantity), ct);
+            await integrationEventPublisher.Publish(new ProductAddedEvent(product.Id, command.Name, command.Price, command.Quantity), ct);
+        }, ct);
     }
 }

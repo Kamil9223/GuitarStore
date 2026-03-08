@@ -1,5 +1,6 @@
 ﻿using Catalog.Application.Abstractions;
 using Catalog.Infrastructure.Database;
+using Common.EfCore.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,6 +40,12 @@ internal static class InfrastructureModule
         );
 
         services.AddScoped<ICatalogUnitOfWork, CatalogUnitOfWork>();
+
+        // Transaction Executor
+        services.AddScoped<ITransactionExecutor<ICatalogUnitOfWork>>(sp =>
+            new TransactionExecutor<ICatalogUnitOfWork>(
+                sp.GetRequiredService<ICatalogUnitOfWork>(),
+                sp.GetRequiredService<ICatalogDbContext>()));
 
         services.AddScoped<ISqlConnectionFactory, SqlConnectionFactory>(provider =>
         {

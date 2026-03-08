@@ -1,4 +1,5 @@
 using Application.CQRS.Command;
+using Common.EfCore.Transactions;
 using Common.Errors.Exceptions;
 using Common.RabbitMq.Abstractions.EventHandlers;
 using Domain.StronglyTypedIds;
@@ -16,31 +17,32 @@ public sealed record CancelOrderCommand(
 
 internal sealed class CancelOrderCommandHandler(
     IOrderRepository orderRepository,
-    IOrdersUnitOfWork unitOfWork,
+    ITransactionExecutor<IOrdersUnitOfWork> transactionExecutor,
     IIntegrationEventPublisher eventPublisher)
     : ICommandHandler<CancelOrderCommand>
 {
     public async Task Handle(CancelOrderCommand command, CancellationToken ct)
     {
-        var order = await orderRepository.Get(command.OrderId, ct);
-        
-        if (order.CustomerId != command.CustomerId)
-            throw new DomainException("You can only cancel your own orders.");
-        
-        order.Cancel();
+        await transactionExecutor.ExecuteAsync(async unitOfWork =>
+        {
+            var order = await orderRepository.Get(command.OrderId, ct);
 
-        await orderRepository.Update(order, ct);
-        await unitOfWork.SaveChangesAsync(ct);
+            if (order.CustomerId != command.CustomerId)
+                throw new DomainException("You can only cancel your own orders.");
 
-        // Publish business event
-        await eventPublisher.Publish(
-            new OrderCancelledEvent(
-                command.OrderId,
-                command.Reason ?? "User cancellation",
-                "User",
-                DateTime.UtcNow
-            ),
-            ct
-        );
+            order.Cancel();
+
+            await orderRepository.Update(order, ct);
+            await unitOfWork.SaveChangesAsync(ct);
+
+            // Publish business event
+            await eventPublisher.Publish(
+                new OrderCancelledEvent(
+                    command.OrderId,
+                    command.Reason ?? "User cancellation",
+                    "User",
+                    DateTime.UtcNow
+                ), ct);
+        }, ct);
     }
 }

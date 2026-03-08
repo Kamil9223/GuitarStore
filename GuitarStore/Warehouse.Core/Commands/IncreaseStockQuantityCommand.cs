@@ -7,8 +7,7 @@ using Warehouse.Core.Database;
 namespace Warehouse.Core.Commands;
 public sealed record IncreaseStockQuantityCommand(ProductId Id, int IncreaseBy) : ICommand;
 
-internal sealed class IncreaseStockQuantityCommandHandler(
-    WarehouseDbContext dbContext)
+internal sealed class IncreaseStockQuantityCommandHandler(WarehouseDbContext dbContext)
     : ICommandHandler<IncreaseStockQuantityCommand>
 {
     public async Task Handle(IncreaseStockQuantityCommand command, CancellationToken ct)
@@ -18,5 +17,7 @@ internal sealed class IncreaseStockQuantityCommandHandler(
             ?? throw new NotFoundException(command.Id);
 
         productOnStock.Quantity += command.IncreaseBy;
+        
+        await dbContext.SaveChangesAsync(ct);
     }
 }

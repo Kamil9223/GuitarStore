@@ -36,5 +36,13 @@ internal static class InfrastructureModule
 
         services.AddScoped<IOrdersUnitOfWork, OrdersUnitOfWork>();
         services.AddScoped<IOrderQueryService, OrderQueryService>();
+
+        // Transaction Executors
+        services.AddScoped<ITransactionExecutor<IOrdersUnitOfWork>>(sp =>
+            new TransactionExecutor<IOrdersUnitOfWork>(
+                sp.GetRequiredService<IOrdersUnitOfWork>(),
+                sp.GetRequiredService<IOrdersDbContext>()));
+
+        services.AddScoped<ICrossModuleTransactionExecutor, CrossModuleTransactionExecutor>();
     }
 }

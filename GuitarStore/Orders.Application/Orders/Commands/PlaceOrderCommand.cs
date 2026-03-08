@@ -1,4 +1,5 @@
 ﻿using Application.CQRS.Command;
+using Common.EfCore.Transactions;
 using Common.Errors.Exceptions;
 using Customers.Shared;
 using Domain.StronglyTypedIds;
@@ -26,6 +27,7 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
     private readonly IProductReservationService _productReservationService;
     private readonly IStripeService _stripeService;
     private readonly OrdersConfiguration _configuration;
+    private readonly ICrossModuleTransactionExecutor _transactionExecutor;
 
     public PlaceOrderCommandHandler(
         ICartService cartService,
@@ -33,7 +35,8 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
         IOrdersUnitOfWork unitOfWork,
         IProductReservationService productReservationService,
         IStripeService stripeService,
-        IOptions<OrdersConfiguration> configuration)
+        IOptions<OrdersConfiguration> configuration,
+        ICrossModuleTransactionExecutor transactionExecutor)
     {
         _cartService = cartService;
         _orderRepository = orderRepository;
@@ -41,6 +44,7 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
         _productReservationService = productReservationService;
         _stripeService = stripeService;
         _configuration = configuration.Value;
+        _transactionExecutor = transactionExecutor;
     }
 
     public async Task<PlaceOrderResponse> Handle(PlaceOrderCommand command, CancellationToken ct)
@@ -64,23 +68,27 @@ internal sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderRespo
             delivery: new Delivery(checkoutCart.DelivererId, checkoutCart.Deliverer),
             timeToLive: reservationTtl);
 
-        await _productReservationService.ReserveProducts(OrdersMapper.MapToReserveProductsDto(newOrder, reservationTtl), ct);
-
-        var checkoutSession = new CheckoutSessionRequest
+        return await _transactionExecutor.ExecuteAsync(async () =>
         {
-            OrderId = newOrder.Id,
-            Products = checkoutCart.Items.Select(x => new CheckoutSessionRequest.ProductItem
-            {
-                Currency = Currency.PLN,
-                Name = x.Name,
-                Amount = x.Amount * 100,
-                Quantity = x.Quantity,
-            }).ToList()
-        };
-        var session = await _stripeService.CreateCheckoutSession(checkoutSession, ct);
+            await _productReservationService.ReserveProducts(OrdersMapper.MapToReserveProductsDto(newOrder, reservationTtl), ct);
 
-        await _orderRepository.Add(newOrder, ct);
-        await _unitOfWork.SaveChangesAsync(ct);
-        return new PlaceOrderResponse(session.Url, session.SessionId);
+            var checkoutSession = new CheckoutSessionRequest
+            {
+                OrderId = newOrder.Id,
+                Products = checkoutCart.Items.Select(x => new CheckoutSessionRequest.ProductItem
+                {
+                    Currency = Currency.PLN,
+                    Name = x.Name,
+                    Amount = x.Amount * 100,
+                    Quantity = x.Quantity,
+                }).ToList()
+            };
+            var session = await _stripeService.CreateCheckoutSession(checkoutSession, ct);
+
+            await _orderRepository.Add(newOrder, ct);
+            await _unitOfWork.SaveChangesAsync(ct);
+
+            return new PlaceOrderResponse(session.Url, session.SessionId);
+        }, ct);
     }
 }

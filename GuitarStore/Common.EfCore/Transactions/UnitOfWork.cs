@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace Common.EfCore.Transactions;
+﻿namespace Common.EfCore.Transactions;
 
 public interface IUnitOfWork
 {
@@ -8,7 +6,7 @@ public interface IUnitOfWork
 }
 
 public class UnitOfWork<TContext>(TContext dbContext) : IUnitOfWork
-    where TContext : DbContext
+    where TContext : Microsoft.EntityFrameworkCore.DbContext
 {
     public async Task SaveChangesAsync(CancellationToken ct) => await dbContext.SaveChangesAsync(ct);
 }
