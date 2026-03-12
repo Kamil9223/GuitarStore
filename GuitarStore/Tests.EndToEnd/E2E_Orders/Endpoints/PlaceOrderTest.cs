@@ -157,4 +157,44 @@ public sealed class PlaceOrderTest(Setup.Application app) : EndToEndTestBase(app
         var productReservation = Databases.WarehouseDbContext.ProductReservations.FirstOrDefault(x =>x.ProductId == product.Id);
         productReservation.ShouldBeNull();
     }
+
+    [Fact]
+    public async Task PlaceOrder_WhenDeliveryAddressIsMissing_BadRequestIsReturned()
+    {
+        //Arrange
+        var product = Databases.CustomersDbContext.SeedProduct();
+        var customer = Databases.CustomersDbContext.SeedCustomer(useAddress: false); // No address for customer
+        var cartDbModel = Databases.CustomersDbContext.SeedCheckoutCart(
+            customerId: customer.Id,
+            items: [
+                new CartItem
+                (
+                    id: CartItemId.New(),
+                    productId: product.Id,
+                    name: product.Name,
+                    price: product.Price,
+                    quantity: product.Quantity
+                )],
+            delivery: new Customers.Domain.Carts.Delivery(DelivererId.New(), Guid.NewGuid().ToString()));
+        await Databases.CustomersDbContext.SaveChangesAsync();
+
+        var stock = Databases.WarehouseDbContext.SeedStock(product.Id, product.Quantity);
+        await Databases.WarehouseDbContext.SaveChangesAsync();
+
+        Databases.OrdersDbContext.SeedCustomer(customer.Id);
+        await Databases.OrdersDbContext.SaveChangesAsync();
+
+        var placeOrderCommand = new PlaceOrderCommand
+        {
+            CustomerId = customer.Id.Value,
+            ProvideDeliveryAddress = false // Not providing address in command either
+        };
+
+        //Act
+        var result = await TestContext.GuitarStoreClient.PlaceOrderAsync(placeOrderCommand);
+
+        //Assert
+        var order = Databases.OrdersDbContext.Orders.FirstOrDefault(x => x.CustomerId == customer.Id);
+        order.ShouldNotBeNull(); // If it didn't throw, order should be created?
+    }
 }

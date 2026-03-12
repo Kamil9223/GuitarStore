@@ -18,4 +18,20 @@ internal static class WarehouseDbSeeder
         context.Add(stock);
         return stock;
     }
+
+    public static ProductReservation SeedReservation(
+        this WarehouseDbContext context,
+        OrderId orderId,
+        ProductId productId,
+        int quantity = 1,
+        TimeSpan? ttl = null)
+    {
+        var reservation = new ProductReservation(
+            orderId,
+            productId,
+            quantity,
+            ttl ?? TimeSpan.FromMinutes(10));
+        context.Add(reservation);
+        return reservation;
+    }
 }

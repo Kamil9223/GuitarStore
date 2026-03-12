@@ -17,15 +17,17 @@ internal static class CustomersDbSeeder
         EmailAddress? emailAddress = null,
         string? name = null,
         string? lastName = null,
-        CustomerAddress? customerAddress = null
+        CustomerAddress? customerAddress = null,
+        bool useAddress = true
         )
     {
         var faker = new Faker();
+        var address = useAddress ? (customerAddress ?? SeedAddress(context)) : null;
         var customer = Customer.Create(
             name ?? faker.Random.String2(30),
             lastName ?? faker.Random.String2(30),
             emailAddress ?? EmailAddress.Create(faker.Internet.Email()),
-            customerAddress ?? customerAddress);
+            address);
         context.Add(customer);
         return customer;
     }

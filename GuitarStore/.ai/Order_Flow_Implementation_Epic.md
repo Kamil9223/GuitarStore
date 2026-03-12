@@ -752,12 +752,277 @@ T=10min: StockReservationExpirationJob (safety net, co 1 min)
 
 ---
 
+---
+
+## **PARTIA 4.5: Transaction Architecture Refactoring**
+
+**Priorytet:** ŚREDNI
+**Złożoność:** ŚREDNIA
+**Czas:** 1 dzień
+**Zależności:** Brak
+**Status:** ✅ COMPLETED (2026-03-10)
+
+### Cel:
+Zmiana z implicit transaction management (decorators) na explicit transaction executors dla lepszej jawności i kontroli.
+
+### Problem z poprzednią implementacją:
+
+**Brak jawności transakcji:**
+- Dekoratory transakcyjne (`DbContextTransactionDecorator`, `MultipleDbContextTransactionDecorator`) były rejestrowane w DI
+- Handler nie pokazywał jawnie, że działa w transakcji
+- Magiczne zachowanie - trudne do zrozumienia i testowania
+- Problemy z kompozycją wielu decoratorów (validation + transaction)
+
+**Przykład (stare podejście):**
+```csharp
+// Rejestracja w DI
+services.AddScoped<ICommandHandler<PlaceOrderCommand>, PlaceOrderCommandHandler>();
+services.Decorate<ICommandHandler<PlaceOrderCommand>,
+    MultipleDbContextTransactionDecorator<PlaceOrderCommand>>();
+
+// Handler - brak widoczności transakcji
+public async Task<PlaceOrderResponse> Handle(PlaceOrderCommand command, CancellationToken ct)
+{
+    // Logika - nie wiadomo że jest w transakcji
+    await _orderRepository.Add(newOrder);
+    await _unitOfWork.SaveChangesAsync(ct);
+}
+```
+
+### Rozwiązanie: Explicit Transaction Executors
+
+#### 4.5.1 Transaction Executors - interfejsy ✅
+
+**Utworzone interfejsy:**
+
+1. **ITransactionExecutor<TUnitOfWork>** - dla single-module transactions:
+   ```csharp
+   public interface ITransactionExecutor<TUnitOfWork> where TUnitOfWork : IUnitOfWork
+   {
+       Task ExecuteAsync(Func<TUnitOfWork, Task> operation, CancellationToken ct);
+       Task<TResult> ExecuteAsync<TResult>(Func<TUnitOfWork, Task<TResult>> operation, CancellationToken ct);
+   }
+   ```
+
+2. **ICrossModuleTransactionExecutor** - dla cross-module (distributed) transactions:
+   ```csharp
+   public interface ICrossModuleTransactionExecutor
+   {
+       Task ExecuteAsync(Func<Task> operation, CancellationToken ct);
+       Task<TResult> ExecuteAsync<TResult>(Func<Task<TResult>> operation, CancellationToken ct);
+   }
+   ```
+
+**Pliki utworzone:**
+- `Common.EfCore/Transactions/ITransactionExecutor.cs`
+- `Common.EfCore/Transactions/ICrossModuleTransactionExecutor.cs`
+
+---
+
+#### 4.5.2 Implementacje Executorów ✅
+
+**1. TransactionExecutor<TUnitOfWork>:**
+```csharp
+public class TransactionExecutor<TUnitOfWork> : ITransactionExecutor<TUnitOfWork>
+{
+    public async Task<TResult> ExecuteAsync<TResult>(
+        Func<TUnitOfWork, Task<TResult>> operation, CancellationToken ct)
+    {
+        await using var transaction = await _dbContext.BeginTransactionAsync(ct);
+        try
+        {
+            var result = await operation(_unitOfWork);
+            await transaction.CommitAsync(ct);
+            return result;
+        }
+        catch
+        {
+            await transaction.RollbackAsync(ct);
+            throw;
+        }
+    }
+}
+```
+
+**2. CrossModuleTransactionExecutor:**
+```csharp
+public class CrossModuleTransactionExecutor : ICrossModuleTransactionExecutor
+{
+    public async Task<TResult> ExecuteAsync<TResult>(
+        Func<Task<TResult>> operation, CancellationToken ct)
+    {
+        using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        try
+        {
+            var result = await operation();
+            scope.Complete();
+            return result;
+        }
+        catch
+        {
+            // Rollback automatyczny (brak Complete())
+            throw;
+        }
+    }
+}
+```
+
+**Pliki utworzone:**
+- `Common.EfCore/Transactions/TransactionExecutor.cs`
+- `Common.EfCore/Transactions/CrossModuleTransactionExecutor.cs`
+
+---
+
+#### 4.5.3 Rejestracja w DI ✅
+
+**Orders Module:**
+```csharp
+// Orders.Infrastructure/Configuration/InfrastructureModule.cs
+services.AddScoped<ITransactionExecutor<IOrdersUnitOfWork>>(sp =>
+    new TransactionExecutor<IOrdersUnitOfWork>(
+        sp.GetRequiredService<IOrdersUnitOfWork>(),
+        sp.GetRequiredService<IOrdersDbContext>()));
+
+services.AddScoped<ICrossModuleTransactionExecutor, CrossModuleTransactionExecutor>();
+```
+
+**Catalog Module:**
+```csharp
+// Catalog.Infrastructure/Configuration/InfrastructureModule.cs
+services.AddScoped<ITransactionExecutor<ICatalogUnitOfWork>>(sp =>
+    new TransactionExecutor<ICatalogUnitOfWork>(
+        sp.GetRequiredService<ICatalogUnitOfWork>(),
+        sp.GetRequiredService<ICatalogDbContext>()));
+```
+
+**Pliki zmodyfikowane:**
+- `Orders.Infrastructure/Configuration/InfrastructureModule.cs`
+- `Catalog.Infrastructure/Configuration/InfrastructureModule.cs`
+
+---
+
+#### 4.5.4 Migracja handlerów ✅
+
+**PlaceOrderCommandHandler (cross-module transaction):**
+```csharp
+public class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderResponse, PlaceOrderCommand>
+{
+    private readonly ICrossModuleTransactionExecutor _transactionExecutor;
+    private readonly IOrdersUnitOfWork _unitOfWork;
+
+    public async Task<PlaceOrderResponse> Handle(PlaceOrderCommand command, CancellationToken ct)
+    {
+        // ... przygotowanie danych
+
+        return await _transactionExecutor.ExecuteAsync(async () =>
+        {
+            // Cross-module operations (Orders + Warehouse)
+            await _productReservationService.ReserveProducts(..., ct);
+
+            var session = await _stripeService.CreateCheckoutSession(..., ct);
+
+            await _orderRepository.Add(newOrder, ct);
+            await _unitOfWork.SaveChangesAsync(ct); // Jawne SaveChanges!
+
+            return new PlaceOrderResponse(session.Url, session.SessionId);
+        }, ct);
+    }
+}
+```
+
+**CancelOrderCommandHandler (single-module transaction):**
+```csharp
+public class CancelOrderCommandHandler : ICommandHandler<CancelOrderCommand>
+{
+    private readonly ITransactionExecutor<IOrdersUnitOfWork> _transactionExecutor;
+
+    public async Task Handle(CancelOrderCommand command, CancellationToken ct)
+    {
+        await _transactionExecutor.ExecuteAsync(async unitOfWork =>
+        {
+            var order = await _orderRepository.Get(command.OrderId, ct);
+
+            if (order.CustomerId != command.CustomerId)
+                throw new DomainException("You can only cancel your own orders.");
+
+            order.Cancel();
+
+            await _orderRepository.Update(order, ct);
+            await unitOfWork.SaveChangesAsync(ct); // UnitOfWork w parametrze!
+
+            await _eventPublisher.Publish(new OrderCancelledEvent(...), ct);
+        }, ct);
+    }
+}
+```
+
+**Pliki zmodyfikowane:**
+- `Orders.Application/Orders/Commands/PlaceOrderCommand.cs`
+- `Orders.Application/Orders/Commands/CancelOrderCommand.cs`
+
+---
+
+#### 4.5.5 Usunięcie decorator registration ✅
+
+**Przed:**
+```csharp
+services.AddScoped<ICommandHandler<PlaceOrderCommand>, PlaceOrderCommandHandler>();
+services.Decorate<ICommandHandler<PlaceOrderCommand>,
+    MultipleDbContextTransactionDecorator<PlaceOrderCommand>>();
+```
+
+**Po:**
+```csharp
+services.AddScoped<ICommandHandler<PlaceOrderCommand>, PlaceOrderCommandHandler>();
+// Brak decoratora - transakcja jest explicit w handlerze
+```
+
+**Pliki zmodyfikowane:**
+- `Orders.Application/ApplicationModule.cs`
+
+---
+
+### Zalety nowego podejścia:
+
+✅ **Maksymalna jawność** - widać w kodzie handlera że używa transakcji
+✅ **UnitOfWork w parametrze** - czysty dostęp do SaveChanges
+✅ **Łatwe testowanie** - mockujesz executor
+✅ **Brak magii w DI** - prosta rejestracja
+✅ **Różne executory dla różnych scenariuszy** - jasny intent (single vs cross-module)
+✅ **Kontrola flow** - developer decyduje gdzie SaveChanges
+
+### Mechanizm działania:
+
+**Single-module (EF Core Transaction):**
+- Używa `IDbContextTransaction` (EF Core)
+- Jedna baza, jeden context
+- Rollback przez `RollbackAsync()`
+
+**Cross-module (TransactionScope):**
+- Używa `System.Transactions.TransactionScope`
+- Wiele contextów (Orders + Warehouse)
+- Automatic enlist wszystkich SaveChanges
+- Rollback automatyczny (brak `scope.Complete()`)
+
+### Definition of Done (Partia 4.5):
+- [x] Interfejsy `ITransactionExecutor<T>` i `ICrossModuleTransactionExecutor` utworzone
+- [x] Implementacje `TransactionExecutor` i `CrossModuleTransactionExecutor` utworzone
+- [x] Rejestracja w DI dla Orders i Catalog
+- [x] `PlaceOrderCommandHandler` zmigrowany na `ICrossModuleTransactionExecutor`
+- [x] `CancelOrderCommandHandler` zmigrowany na `ITransactionExecutor<IOrdersUnitOfWork>`
+- [x] Decorator registration usunięte z ApplicationModule
+- [x] Testy E2E przechodzą (`PlaceOrder_HappyPath_ShouldSucceed`)
+- [x] Build successful
+
+---
+
 ## **PARTIA 5: User Cancellation Flow**
 
 **Priorytet:** ŚREDNI
 **Złożoność:** NISKA
 **Czas:** 1 dzień
 **Zależności:** Partia 3
+**Status:** ✅ COMPLETED (2026-03-10)
 
 ### Cel:
 Umożliwienie użytkownikowi anulowania zamówienia przed wysyłką.
@@ -1112,10 +1377,11 @@ Dodanie retry logic, dead letter queue, correlation ID, metrics i structured log
 2. **Partia 2** - Events Refactoring ✅
 3. **Partia 3** - Warehouse Integration ✅
 4. **Partia 4** - Expiration Flow ✅
+5. **Partia 4.5** - Transaction Architecture Refactoring ✅
 
 ### Should Have (Ważne):
-5. **Partia 5** - User Cancellation ✅
-6. **Partia 6** - Resilience & Observability (częściowo)
+6. **Partia 5** - User Cancellation ✅
+7. **Partia 6** - Resilience & Observability (częściowo)
 
 ### Nice to Have (Backlog):
 - Admin panel
