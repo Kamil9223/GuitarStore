@@ -1,0 +1,8 @@
+using Common.StronglyTypedIds.StronglyTypedIds;
+using Microsoft.AspNetCore.Identity;
+
+namespace Auth.Core.Entities;
+
+public sealed class Role : IdentityRole<AuthId>
+{
+}

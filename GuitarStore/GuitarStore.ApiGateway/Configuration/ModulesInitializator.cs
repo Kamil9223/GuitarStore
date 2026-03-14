@@ -1,13 +1,12 @@
-﻿using Application.Configuration;
+using Application.Configuration;
+using Auth.Core;
 using Catalog.Infrastructure.Configuration;
 using Common.RabbitMq.Configuration;
 using Customers.Infrastructure.Configuration;
 using Delivery.Core;
-using Orders.Application.Abstractions;
 using Orders.Infrastructure.Configuration;
 using Payments.Core;
 using Warehouse.Core;
-using Warehouse.Core.Database;
 
 namespace GuitarStore.ApiGateway.Configuration;
 
@@ -17,6 +16,7 @@ internal static class ModulesInitializator
     {
         services
             .AddApplicationModule()
+            .AddAuthModule(configuration)
             .AddRabbitMqModule()
             .AddCatalogModule(configuration)
             .AddCustomersModule(configuration)

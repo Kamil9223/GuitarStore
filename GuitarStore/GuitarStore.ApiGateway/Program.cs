@@ -1,4 +1,3 @@
-using Auth.Core;
 using GuitarStore.ApiGateway.Configuration;
 using GuitarStore.ApiGateway.Helpers.StronglyTypedIdsConfig;
 using GuitarStore.ApiGateway.MiddleWares;
@@ -9,18 +8,25 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        
+
         if (builder.Environment.IsDevelopment())
         {
             DotNetEnv.Env.Load(options: new DotNetEnv.LoadOptions());
         }
 
-        // Add services to the container.
+        builder.Configuration
+            .AddJsonFile("appsettings.Auth.json", optional: true, reloadOnChange: true)
+            .AddJsonFile("appsettings.Catalog.json", optional: true, reloadOnChange: true)
+            .AddJsonFile("appsettings.Customers.json", optional: true, reloadOnChange: true)
+            .AddJsonFile("appsettings.Delivery.json", optional: true, reloadOnChange: true)
+            .AddJsonFile("appsettings.Orders.json", optional: true, reloadOnChange: true)
+            .AddJsonFile("appsettings.Payments.json", optional: true, reloadOnChange: true)
+            .AddJsonFile("appsettings.Warehouse.json", optional: true, reloadOnChange: true);
+
         builder.Services.InitializeModules(builder.Configuration);
 
         builder.Services.AddControllers();
         builder.Services.AddHttpContextAccessor();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
         {
@@ -30,18 +36,10 @@ public class Program
             options.MapType<decimal?>(() => new OpenApiSchema { Type = "number", Format = "decimal", Nullable = true });
         });
 
-        builder.Services.AddIdentityServer()
-            .AddInMemoryIdentityResources(DuendeConfig.IdentityResources)
-            .AddInMemoryApiScopes(DuendeConfig.ApiScopes)
-            .AddInMemoryApiResources(DuendeConfig.ApiResources)
-            .AddInMemoryClients(DuendeConfig.Clients)
-            .AddDeveloperSigningCredential(); // DEV only
-
         var app = builder.Build();
 
         app.MapGet("/test", () => Results.Ok("Hello World!"));
 
-        // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -52,10 +50,8 @@ public class Program
         }
 
         app.UseRouting();
-        app.UseIdentityServer(); // publikuje /.well-known/openid-configuration i ca�� reszt�
-
+        app.UseAuthentication();
         //app.UseHttpsRedirection();
-
         app.UseAuthorization();
 
         app.UseMiddleware<ExceptionsMiddleware>();
