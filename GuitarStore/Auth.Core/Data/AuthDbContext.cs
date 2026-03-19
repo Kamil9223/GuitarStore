@@ -25,6 +25,7 @@ public sealed class AuthDbContext : IdentityDbContext<User, Role, AuthId>
         modelBuilder.HasDefaultSchema(Schema);
 
         base.OnModelCreating(modelBuilder);
+        modelBuilder.UseOpenIddict();
 
         modelBuilder.Entity<User>(builder =>
         {

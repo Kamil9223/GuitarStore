@@ -28,8 +28,6 @@ internal static class ApplicationModule
                 .AsImplementedInterfaces()
                 .WithScopedLifetime()
         );
-        
-        services.AddScoped<ITransactionExecutor<IOrdersUnitOfWork>, TransactionExecutor<IOrdersUnitOfWork>>();
 
         services.AddScoped<ICommandHandler<PlaceOrderResponse, PlaceOrderCommand>, PlaceOrderCommandHandler>();
         services.AddScoped<ICommandHandler<CancelOrderCommand>, CancelOrderCommandHandler>();

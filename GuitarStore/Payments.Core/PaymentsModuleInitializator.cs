@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Payments.Shared.Services;
 using Stripe;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore;
+using Payments.Core.Database;
 using Payments.Core.Services;
 using Payments.Core.SharedServices;
 using StripeConfiguration = Payments.Core.Services.StripeConfiguration;
@@ -15,6 +17,18 @@ public static class PaymentsModuleInitializator
 {
     public static IServiceCollection AddPaymentsModule(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddScoped<PaymentsDbContext>(provider =>
+        {
+            var connectionString = configuration.GetRequiredSection("ConnectionStrings:GuitarStore").Value!;
+
+            var dbOptions = new DbContextOptionsBuilder<PaymentsDbContext>()
+                .UseSqlServer(connectionString)
+                .Options;
+
+            return new PaymentsDbContext(dbOptions);
+        });
+        services.AddScoped<IPaymentsDbContext>(sp => sp.GetRequiredService<PaymentsDbContext>());
+        
         var assembly = Assembly.GetExecutingAssembly();
         services.Scan(scan => scan
             .FromAssemblies(assembly)

@@ -144,21 +144,29 @@ Mapping role->permissions w kodzie (seed lub konfiguracja).
 
 ## 7. Endpointy
 
-OpenIddict (standard):
-- /.well-known/openid-configuration
-- /connect/authorize
-- /connect/token
-- /connect/logout
+### OpenIddict
 
-Account UI (ApiGateway):
-- GET/POST /auth/login
-- GET/POST /auth/register
-- POST /auth/logout
-- GET /auth/forbidden (opcjonalnie)
+Standardowe endpointy protokolu:
+- `GET /.well-known/openid-configuration`
+- `GET/POST /connect/authorize`
+- `POST /connect/token`
+- `GET/POST /connect/logout`
 
-API Gateway:
-- [Authorize] w kontrolerach.
-- Policies w wymaganych akcjach admin/support.
+### Account UI w ApiGateway
+
+Endpointy interaktywnego UI:
+- `GET /auth/login`
+- `POST /auth/login`
+- `GET /auth/register`
+- `POST /auth/register`
+- `POST /auth/logout`
+- `GET /auth/forbidden` (opcjonalnie)
+
+### API Gateway
+
+Zabezpieczenie endpointow API:
+- `[Authorize]` w kontrolerach
+- policies na akcjach wymagajacych uprawnien `admin` lub `support`
 
 ## 8. Integracja z Customers (event-driven)
 

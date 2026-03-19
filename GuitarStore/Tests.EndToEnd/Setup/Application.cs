@@ -59,4 +59,6 @@ public class Application : IAsyncLifetime
     }
 
     public HttpClient GetHttpClient() => _app!.CreateClient();
+
+    public HttpClient GetHttpsClient() => _app.CreateClient(new WebApplicationFactoryClientOptions{ BaseAddress = new Uri("https://localhost")});
 }
