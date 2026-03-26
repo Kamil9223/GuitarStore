@@ -1,6 +1,7 @@
 using GuitarStore.ApiGateway.Configuration;
 using GuitarStore.ApiGateway.Helpers.StronglyTypedIdsConfig;
 using GuitarStore.ApiGateway.MiddleWares;
+using GuitarStore.ApiGateway.Modules.Auth.Services;
 using Microsoft.OpenApi.Models;
 
 public class Program
@@ -24,8 +25,9 @@ public class Program
             .AddJsonFile("appsettings.Warehouse.json", optional: true, reloadOnChange: true);
 
         builder.Services.InitializeModules(builder.Configuration);
+        builder.Services.AddScoped<IOidcClaimsPrincipalFactory, OidcClaimsPrincipalFactory>();
 
-        builder.Services.AddControllers();
+        builder.Services.AddControllersWithViews();
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>

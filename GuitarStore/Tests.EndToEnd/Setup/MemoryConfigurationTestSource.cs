@@ -13,7 +13,7 @@ internal static class MemoryConfigurationTestSource
                 new("ConnectionStrings:RabbitMq", containers.RabbitMqContainerConnectionString),
                 new("Stripe:Url", containers.StripeBaseUrl),
                 new("Stripe:SecretKey", "sk_test_123"),
-                new("Auth:Issuer", "https://localhost"),
+                new("Auth:Issuer", "https://localhost:7028"),
                 new("Auth:AccessTokenMinutes", "15"),
                 new("Auth:RefreshTokenDays", "30"),
                 new("Auth:RequireEmailConfirmed", "false"),

@@ -10,7 +10,7 @@ public sealed class TokenEndpointValidationTest(Setup.Application app) : Setup.E
     [Fact]
     public async Task TokenEndpoint_WhenGrantTypeMissing_ShouldReturnOpenIddictError()
     {
-        using var client = _webApp.GetHttpClient();
+        using var client = _webApp.GetHttpsClient();
         using var request = new HttpRequestMessage(HttpMethod.Post, "/connect/token")
         {
             Content = new FormUrlEncodedContent([])
@@ -26,3 +26,4 @@ public sealed class TokenEndpointValidationTest(Setup.Application app) : Setup.E
         responseContent.ShouldContain("invalid_request");
     }
 }
+

@@ -133,7 +133,9 @@ public static class AuthModuleInitializator
 
                 ConfigureCertificates(options, authOptions);
 
-                options.UseAspNetCore();
+                options.UseAspNetCore()
+                    .EnableAuthorizationEndpointPassthrough()
+                    .EnableEndSessionEndpointPassthrough();
             })
             .AddValidation(options =>
             {

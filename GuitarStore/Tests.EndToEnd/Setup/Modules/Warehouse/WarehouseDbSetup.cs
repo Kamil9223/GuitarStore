@@ -26,7 +26,8 @@ internal class WarehouseDbSetup : IDbSetup
         }
 
         services.RemoveAll<WarehouseDbContext>();
-        services.AddDbContextFactory<WarehouseDbContext>(x =>
+        services.RemoveAll<DbContextOptions<WarehouseDbContext>>();
+        services.AddDbContext<WarehouseDbContext>(x =>
         {
             x.UseSqlServer(connectionString);
         });

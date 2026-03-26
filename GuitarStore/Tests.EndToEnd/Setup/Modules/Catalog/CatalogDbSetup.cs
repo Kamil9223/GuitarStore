@@ -26,7 +26,8 @@ internal class CatalogDbSetup : IDbSetup
         }
 
         services.RemoveAll<CatalogDbContext>();
-        services.AddDbContextFactory<CatalogDbContext>(x =>
+        services.RemoveAll<DbContextOptions<CatalogDbContext>>();
+        services.AddDbContext<CatalogDbContext>(x =>
         {
             x.UseSqlServer(connectionString);
         });

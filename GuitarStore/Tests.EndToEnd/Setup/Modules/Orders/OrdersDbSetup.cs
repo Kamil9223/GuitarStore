@@ -26,7 +26,8 @@ internal class OrdersDbSetup : IDbSetup
         }
 
         services.RemoveAll<OrdersDbContext>();
-        services.AddDbContextFactory<OrdersDbContext>(x =>
+        services.RemoveAll<DbContextOptions<OrdersDbContext>>();
+        services.AddDbContext<OrdersDbContext>(x =>
         {
             x.UseSqlServer(connectionString);
         });

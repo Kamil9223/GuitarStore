@@ -19,10 +19,10 @@ public sealed class AuthDiscoveryTest(Setup.Application app) : Setup.EndToEndTes
         var discovery = await response.Content.ReadFromJsonAsync<Dictionary<string, object>>();
         discovery.ShouldNotBeNull();
 
-        discovery["issuer"].ToString().ShouldBe("https://localhost:7028/");
-        discovery["authorization_endpoint"].ToString().ShouldBe("https://localhost/connect/authorize");
-        discovery["token_endpoint"].ToString().ShouldBe("https://localhost/connect/token");
-        discovery["end_session_endpoint"].ToString().ShouldBe("https://localhost/connect/logout");
+        discovery["issuer"].ToString()!.ShouldBe("https://localhost:7028/");
+        discovery["authorization_endpoint"].ToString().ShouldBe("https://localhost:7028/connect/authorize");
+        discovery["token_endpoint"].ToString().ShouldBe("https://localhost:7028/connect/token");
+        discovery["end_session_endpoint"].ToString().ShouldBe("https://localhost:7028/connect/logout");
         discovery["grant_types_supported"].ToString()!.ShouldContain("authorization_code");
         discovery["grant_types_supported"].ToString()!.ShouldContain("refresh_token");
         discovery["response_types_supported"].ToString()!.ShouldContain("code");
@@ -30,4 +30,5 @@ public sealed class AuthDiscoveryTest(Setup.Application app) : Setup.EndToEndTes
         discovery["scopes_supported"].ToString()!.ShouldContain("offline_access");
     }
 }
+
 

@@ -27,6 +27,7 @@ internal sealed class AuthDbSetup : IDbSetup
         }
 
         services.RemoveAll<AuthDbContext>();
+        services.RemoveAll<DbContextOptions<AuthDbContext>>();
         services.AddDbContext<AuthDbContext>(options =>
         {
             options.UseSqlServer(connectionString);

@@ -26,7 +26,8 @@ internal class CustomersDbSetup : IDbSetup
         }
 
         services.RemoveAll<CustomersDbContext>();
-        services.AddDbContextFactory<CustomersDbContext>(x =>
+        services.RemoveAll<DbContextOptions<CustomersDbContext>>();
+        services.AddDbContext<CustomersDbContext>(x =>
         {
             x.UseSqlServer(connectionString);
         });

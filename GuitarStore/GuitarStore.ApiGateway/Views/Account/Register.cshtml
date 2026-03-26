@@ -1,0 +1,35 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Create account";
+}
+
+<h2>Create account</h2>
+<p class="intro">Step 3 creates the Auth account only. Customer profile enrichment stays in a later step.</p>
+
+<form asp-action="Register" method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <input asp-for="ReturnUrl" type="hidden" />
+
+    <div class="field">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" />
+        <span asp-validation-for="Email"></span>
+    </div>
+
+    <div class="field">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" />
+        <span asp-validation-for="Password"></span>
+    </div>
+
+    <div class="field">
+        <label asp-for="ConfirmPassword"></label>
+        <input asp-for="ConfirmPassword" />
+        <span asp-validation-for="ConfirmPassword"></span>
+    </div>
+
+    <div class="actions">
+        <button type="submit">Create account</button>
+        <a class="button secondary" asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl">Back to sign in</a>
+    </div>
+</form>

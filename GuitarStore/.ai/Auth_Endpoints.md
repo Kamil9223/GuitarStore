@@ -1,37 +1,31 @@
 # Auth Endpoints
 
-Ten dokument opisuje stan po poprawnym, czystym kroku 2 z `.ai/Auth.md`.
+Ten dokument opisuje stan po wdrozeniu kroku 3.
 
-Najwazniejsza zasada:
-- krok 2 konczy sie na konfiguracji Identity + OpenIddict,
-- krok 3 dopiero dodaje UI `/auth/*` i pelny browser login flow.
+Aktualny podzial odpowiedzialnosci:
+- OpenIddict publikuje discovery i obsluguje token endpoint,
+- ApiGateway hostuje UI `/auth/*`,
+- ApiGateway ma cienka obsluge interaktywnego browser flow dla `/connect/authorize` i `/connect/logout`.
 
-To oznacza, ze w kroku 2 nie mamy juz wlasnych kontrolerow dla `/auth/*` ani dla `/connect/*`.
+Wazne doprecyzowanie architektoniczne:
+- fizycznie wszystko jest hostowane w jednym procesie `GuitarStore.ApiGateway`,
+- logicznie ten host pelni dwie role:
+  - authorization server dla `/auth/*` i `/connect/*`,
+  - resource API dla endpointow biznesowych.
 
-## 1. Jakie endpointy realnie istnieja po kroku 2
+Dlatego sformulowania typu "idzie do API" w tym dokumencie oznaczaja:
+- idzie do endpointow biznesowych resource API,
+- a nie do endpointow auth/protocol endpoints.
 
-Po konfiguracji OpenIddict serwer publikuje standardowe endpointy OIDC/OAuth2:
-- `/.well-known/openid-configuration`
-- `/connect/authorize`
-- `/connect/token`
-- `/connect/logout`
-
-Sa one zdefiniowane w konfiguracji OpenIddict, a nie w naszych kontrolerach MVC.
-
-## 2. Co robi kazdy endpoint
+## 1. Standardowe endpointy OpenIddict
 
 ### `GET /.well-known/openid-configuration`
 
 To jest discovery endpoint OpenID Connect.
 
 Co robi:
-- zwraca metadane serwera OIDC,
-- informuje klienta gdzie sa endpointy,
-- publikuje `issuer`, wspierane granty, scopes i response types.
-
-Po co:
-- klient SPA lub inny klient OIDC moze automatycznie pobrac konfiguracje authorization server,
-- test discovery sprawdza wlasnie ten kontrakt.
+- zwraca metadata serwera OIDC,
+- publikuje `issuer`, endpoint URIs, grant types, scopes i response types.
 
 Skad bierze dane:
 - `SetIssuer(...)`
@@ -42,155 +36,364 @@ Skad bierze dane:
 - `AllowRefreshTokenFlow()`
 - `RegisterScopes(...)`
 
-Czyli z konfiguracji OpenIddict w `AuthModuleInitializator`, nie z kontrolera.
-
-### `GET/POST /connect/authorize`
-
-To jest standardowy authorization endpoint OIDC.
-
-W kroku 2:
-- endpoint jest skonfigurowany i publikowany w metadata,
-- ale nie ma jeszcze naszej warstwy UI i interaktywnego logowania,
-- pelna obsluga browser flow jest celowo przesunieta do kroku 3.
-
-Dlaczego tak:
-- dokument `.ai/Auth.md` rozdziela te odpowiedzialnosci,
-- krok 2 ma zamknac konfiguracje protokolu,
-- krok 3 ma dopiero dostarczyc login/register/logout UI i spiecie z cookie.
-
-Praktyczny wniosek:
-- endpoint istnieje jako czesc serwera OIDC,
-- ale poprawny login interaktywny bedzie domkniety dopiero po implementacji kroku 3.
+Ten endpoint nie ma naszego kontrolera. Wystawia go sam OpenIddict.
 
 ### `POST /connect/token`
 
-To jest token endpoint OIDC/OAuth2.
+To jest token endpoint OAuth2/OIDC.
 
 Co robi:
-- przyjmuje request tokenowy,
-- waliduje parametry grantu,
-- zwraca odpowiedz zgodna z OIDC/OAuth2,
-- po pelnym wdrozeniu flow bedzie obslugiwal wymiane authorization code i refresh token.
+- waliduje request tokenowy,
+- zwraca bledy protokolowe dla niepoprawnych requestow,
+- po pelnym authorize flow obsluguje wymiane authorization code i refresh token.
 
-W kroku 2:
-- endpoint jest wystawiany przez OpenIddict,
-- dlatego test `TokenEndpointValidationTest` moze sprawdzic np. blad `invalid_request` dla pustego requestu,
-- nie potrzebujemy do tego wlasnego kontrolera.
+Na tym etapie:
+- endpoint nadal jest obslugiwany przez OpenIddict,
+- nie ma wlasnego kontrolera MVC,
+- test walidacyjny sprawdza kontrakt `invalid_request` dla pustego requestu.
+
+Skad to wiadomo w kodzie:
+- `SetTokenEndpointUris("/connect/token")` rejestruje token endpoint w OpenIddict,
+- w `UseAspNetCore()` nie ma `EnableTokenEndpointPassthrough()`,
+- to znaczy, ze request nie jest przepuszczany do naszego MVC controllera i zostaje obsluzony przez sam OpenIddict.
+
+Istotny fragment konfiguracji:
+
+```csharp
+options.SetAuthorizationEndpointUris("/connect/authorize");
+options.SetTokenEndpointUris("/connect/token");
+options.SetEndSessionEndpointUris("/connect/logout");
+
+options.UseAspNetCore()
+    .EnableAuthorizationEndpointPassthrough()
+    .EnableEndSessionEndpointPassthrough();
+```
+
+Konsekwencja:
+- `/connect/token` jest wystawiony i dziala,
+- ale nie wymaga naszej akcji kontrolera,
+- OpenIddict sam waliduje `grant_type`, `code`, `refresh_token`, `redirect_uri`, `client_id`, `code_verifier` i sam zwraca odpowiedz tokenowa.
+
+## 2. Endpointy interaktywne dodane w kroku 3
+
+### `GET /auth/login`
+
+Co robi:
+- zwraca widok Razor z formularzem logowania,
+- zachowuje `returnUrl`, zeby po zalogowaniu wrocic do authorize flow albo lokalnej strony.
+
+Po co:
+- to glowny ekran wejscia dla browser login flow,
+- cookie challenge z `/connect/authorize` przekierowuje wlasnie tutaj.
+
+### `POST /auth/login`
+
+Co robi:
+- waliduje formularz,
+- szuka usera po emailu albo user name,
+- wywoluje `SignInManager.PasswordSignInAsync(...)`,
+- przy sukcesie zapisuje cookie Identity,
+- robi redirect do bezpiecznego `returnUrl` albo na `/`.
+
+Uwagi:
+- uzywa lockout policy skonfigurowanej w Identity,
+- login UI jest server-side i dziala na cookie auth.
+
+### `GET /auth/register`
+
+Co robi:
+- zwraca widok Razor z formularzem rejestracji.
+
+Zakres kroku 3:
+- rejestracja tworzy konto Auth,
+- nie dotyka jeszcze Customers integration.
+
+### `POST /auth/register`
+
+Co robi:
+- waliduje formularz,
+- tworzy usera w ASP.NET Core Identity,
+- ustawia `UserName = Email`,
+- loguje usera przez cookie,
+- redirectuje do bezpiecznego `returnUrl` albo na `/`.
+
+Czego jeszcze nie robi:
+- nie emituje eventu do Customers,
+- nie zbiera jeszcze `Name/LastName`,
+- nie przypisuje jeszcze roli `user` z osobnego seeda kroku 5.
+
+### `POST /auth/logout`
+
+Co robi:
+- usuwa cookie Identity przez `SignInManager.SignOutAsync()`,
+- redirectuje do lokalnego `returnUrl` albo na `/`.
+
+To jest lokalny logout browser session, niezalezny od protokolu OIDC end-session.
+
+### `GET /auth/forbidden`
+
+Co robi:
+- zwraca widok odmowy dostepu.
+
+Po co:
+- sluzy jako ekran UI dla browser flow, gdy account nie moze przejsc dalej.
+
+## 3. Cienka obsluga browser flow OIDC
+
+### `GET/POST /connect/authorize`
+
+Ten endpoint ma teraz nasz cienki kontroler.
+
+Co robi krok po kroku:
+1. Pobiera request OIDC z `HttpContext.GetOpenIddictServerRequest()`.
+2. Probuje odczytac cookie Identity przez jawne `AuthenticateAsync(IdentityConstants.ApplicationScheme)`.
+3. Jesli user nie ma cookie:
+   - robi `Challenge(...)` na cookie scheme,
+   - przegladarka trafia na `/auth/login` z `ReturnUrl` do tego samego authorize requestu.
+4. Jesli cookie istnieje:
+   - pobiera usera z `UserManager`,
+   - sprawdza `CanSignInAsync(...)`,
+   - buduje `ClaimsPrincipal` dla OpenIddict w osobnym serwisie,
+   - zwraca `SignIn(..., OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)`.
+5. OpenIddict konczy protokol i wydaje authorization code.
+
+Dlaczego kontroler istnieje:
+- bo browser authorize flow wymaga interakcji z UI i cookie,
+- ale logika protokolowa nadal zostaje po stronie OpenIddict,
+- kontroler jest cienki i deleguje budowe principal do osobnego serwisu.
+
+Skad to wiadomo w kodzie:
+- `SetAuthorizationEndpointUris("/connect/authorize")` rejestruje endpoint po stronie OpenIddict,
+- `EnableAuthorizationEndpointPassthrough()` przepuszcza request dalej do ASP.NET Core,
+- dlatego mozemy i musimy zaimplementowac cienka akcje MVC, ktora obsluzy browser session i cookie.
+
+Istotny fragment konfiguracji:
+
+```csharp
+options.SetAuthorizationEndpointUris("/connect/authorize");
+
+options.UseAspNetCore()
+    .EnableAuthorizationEndpointPassthrough()
+    .EnableEndSessionEndpointPassthrough();
+```
+
+Istotny fragment kontrolera:
+
+```csharp
+[AcceptVerbs("GET", "POST")]
+[Route("~/connect/authorize")]
+public async Task<IActionResult> Authorize()
+```
+
+Konsekwencja:
+- OpenIddict nadal rozpoznaje request jako OIDC authorize request,
+- ale oddaje nam sterowanie, zebysmy mogli:
+  - odczytac cookie Identity,
+  - przekierowac na `/auth/login`,
+  - po zalogowaniu zbudowac `ClaimsPrincipal`,
+  - oddac sterowanie z powrotem do OpenIddict przez `SignIn(..., OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)`.
 
 ### `GET/POST /connect/logout`
 
-To jest end-session endpoint OIDC.
+Ten endpoint ma teraz nasz cienki kontroler.
 
-W kroku 2:
-- endpoint jest skonfigurowany i publikowany w discovery,
-- ale sensowny browser logout zalezy od UI i cookie flow z kroku 3.
-
-Czyli tak samo jak przy `authorize`:
-- protokol jest skonfigurowany,
-- pelna interakcja usera jeszcze nie.
-
-## 3. Co z endpointami `/auth/*`
-
-Po poprawce kroku 2 nie ma jeszcze endpointow:
-- `/auth/login`
-- `/auth/register`
-- `/auth/logout`
-- `/auth/forbidden`
-
-To jest celowe.
-
-Powod:
-- w `.ai/Auth.md` te endpointy naleza do kroku 3: `Account UI`.
-- krok 2 nie powinien budowac prowizorycznego UI ani wciskac logiki do kontrolerow.
+Co robi:
+- wylogowuje cookie Identity,
+- jesli request jest OIDC end-session requestem, oddaje sterowanie OpenIddict do dokonczenia logout flow,
+- w prostym lokalnym przypadku redirectuje na `/`.
 
 ## 4. Co robi `/.well-known/openid-configuration`, skoro nie ma go w kontrolerze
 
-To pytanie bylo trafne: ten endpoint nie powinien byc w kontrolerze.
+Nadal to samo:
+- nie jest z kontrolera,
+- publikuje go OpenIddict,
+- kontrolery ApiGateway odpowiadaja tylko za ta czesc flow, ktora wymaga naszej interakcji z UI i cookie.
 
-Odpowiedz:
-- publikuje go sam OpenIddict,
-- dzieje sie to automatycznie po `AddOpenIddict().AddServer(...).UseAspNetCore()`,
-- zawartosc bierze z konfiguracji serwera.
-
-Dlatego:
-- endpoint jest testowany,
-- ale nie ma dla niego naszego pliku kontrolera.
-
-## 5. Czemu wczesniej byly trasy z `~`
+## 5. Czemu trasy kontrolerow maja `~/...`
 
 W ASP.NET Core `~/...` oznacza trase absolutna od root aplikacji.
 
 Przyklad:
 - `[HttpGet("~/auth/login")]`
+- `[Route("~/connect/authorize")]`
 
-Znaczenie:
-- nie doklejaj nazwy kontrolera,
-- wystaw endpoint dokladnie pod wskazana sciezka.
+Po co:
+- endpoint ma byc dokladnie pod standardowa sciezka,
+- bez dopinania nazwy kontrolera albo prefiksu MVC.
 
-Po wyczyszczeniu kroku 2 ten temat przestaje byc istotny, bo usuniete zostaly kontrolery z takim routingiem.
+## 6. Czemu jest Razor, a nie HTML string w kontrolerze
 
-## 6. Czemu nie powinno sie budowac HTML w kontrolerze
+Po kroku 3 UI jest juz zrobione poprawnie:
+- jako widoki Razor,
+- z modelami widokow,
+- z walidacja formularzy,
+- bez recznego skladania HTML w kontrolerze.
 
-Budowanie HTML jako stringa w kontrolerze bylo zla forma dla tego projektu.
-
-Dlaczego:
-- dokument przewiduje `Razor/MVC UI` w kroku 3,
-- backend stringujacy HTML mieszal warstwe protokolu z warstwa prezentacji,
-- utrudnial czytelnosc i dalszy rozwoj.
-
-Poprawny kierunek:
-- krok 2: konfiguracja auth,
-- krok 3: kontrolery + modele widokow + Razor Views.
+To bylo glownym celem oczyszczenia po poprzedniej wersji.
 
 ## 7. Skad jest certyfikat
 
-W dev certyfikat bierze sie z:
+W dev:
 - `AddDevelopmentEncryptionCertificate()`
 - `AddDevelopmentSigningCertificate()`
 
-To oznacza:
-- certyfikat developerski nie siedzi w repo,
-- OpenIddict generuje go lokalnie, jesli trzeba,
-- jest przeznaczony tylko do developmentu.
+To znaczy:
+- certyfikaty dev nie sa w repo,
+- OpenIddict generuje i utrzymuje je lokalnie.
 
 W prod:
-- kod oczekuje certyfikatow z konfiguracji,
-- z pliku `.pfx` albo z certificate store po thumbprincie.
+- nadal sa ladowane z konfiguracji,
+- z `.pfx` albo z certificate store przez thumbprint.
 
-## 8. Jak dziala tutaj cookie
+## 8. Jak dziala cookie
 
-Cookie jest przygotowane juz w kroku 2 przez Identity:
-- ustawiony jest application cookie scheme,
-- skonfigurowane sa `LoginPath`, `LogoutPath`, `AccessDeniedPath`.
+Cookie jest wystawiane przez ASP.NET Core Identity po:
+- `POST /auth/login`
+- `POST /auth/register`
 
-Ale w kroku 2 cookie nie jest jeszcze aktywnie uzywane przez UI, bo same endpointy `/auth/*` pojawia sie dopiero w kroku 3.
+Jak jest uzywane:
+- przegladarka zapisuje cookie,
+- przy kolejnym `/connect/authorize` cookie wraca do serwera,
+- kontroler authorize odczytuje je jawnie przez `AuthenticateAsync(IdentityConstants.ApplicationScheme)`.
 
-Rola cookie w docelowym flow:
-- sluzy do interaktywnego loginu przegladarkowego,
-- pozwala utrzymac sesje usera podczas authorize flow,
-- nie sluzy do autoryzacji API.
+Do czego cookie nie sluzy:
+- nie sluzy do autoryzacji API,
+- API nadal uzywa bearer tokena.
 
-API ma uzywac:
-- `Authorization: Bearer <access_token>`
+Wazne doprecyzowanie:
+- cookie nie jest authorization code,
+- cookie nie jest access tokenem,
+- cookie tylko potwierdza, ze browser ma sesje na authorization serverze.
 
-Przechowywanie:
-- cookie jest przechowywane po stronie klienta, czyli w przegladarce,
-- auth ticket jest chroniony przez ASP.NET Core Data Protection.
+Sekwencja jest taka:
+- `POST /auth/login` wystawia cookie Identity,
+- kolejne wejscie na `/connect/authorize` wykorzystuje to cookie,
+- dopiero wtedy OpenIddict wydaje authorization code,
+- dopiero `POST /connect/token` zamienia authorization code na tokeny.
 
-## 9. Jak to wszystko dziala jako calosc po kroku 2
+## 10. Dokladny request chain
 
-Po kroku 2 mamy:
-- Identity jako store userow, hasel, rol i cookie auth,
-- OpenIddict Server jako serwer OIDC/OAuth2,
-- OpenIddict Validation jako walidacje bearer tokenow dla API,
-- discovery endpoint i token endpoint wystawiane przez OpenIddict,
-- konfiguracje certyfikatow, issuera, scopes, lifetimes i endpoint URIs.
+### 10.1 Start
 
-Po kroku 2 jeszcze nie mamy:
-- UI logowania/rejestracji,
-- finalnego browser flow z `/auth/login`,
-- dopietego authorize/logout UX.
+Klient OIDC kieruje browser na:
 
-To jest zgodne z dokumentem:
-- krok 2 konfiguruje protokol,
-- krok 3 dopiero dodaje interaktywne account UI.
+`GET /connect/authorize?client_id=...&redirect_uri=...&response_type=code&scope=openid%20profile%20offline_access&code_challenge=...&code_challenge_method=S256&state=...&nonce=...`
+
+### 10.2 Wejscie na `/connect/authorize`
+
+Request trafia do naszego `OpenIddictController.Authorize()`, bo:
+- endpoint jest zarejestrowany w OpenIddict,
+- ale `EnableAuthorizationEndpointPassthrough()` przepuszcza go do MVC.
+
+Kontroler:
+- pobiera request OIDC przez `HttpContext.GetOpenIddictServerRequest()`,
+- probuje odczytac cookie Identity przez `AuthenticateAsync(IdentityConstants.ApplicationScheme)`.
+
+### 10.3 Brak cookie
+
+Jesli cookie nie ma:
+- kontroler robi `Challenge(...)` na `IdentityConstants.ApplicationScheme`,
+- Identity zna `LoginPath = "/auth/login"`,
+- browser dostaje redirect na `/auth/login?ReturnUrl=...`.
+
+### 10.4 Login
+
+User wysyla:
+- `GET /auth/login`
+- `POST /auth/login`
+
+Przy sukcesie:
+- `PasswordSignInAsync(...)` zapisuje cookie Identity,
+- serwer zwraca `302` do pierwotnego `ReturnUrl`,
+- czyli z powrotem na `/connect/authorize?...`.
+
+### 10.5 Powrot na authorize
+
+Browser wchodzi jeszcze raz na `/connect/authorize?...`, ale tym razem z cookie Identity.
+
+Kontroler:
+- odczytuje cookie,
+- pobiera usera,
+- sprawdza `CanSignInAsync(...)`,
+- buduje `ClaimsPrincipal` dla OpenIddict,
+- zwraca `SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)`.
+
+### 10.6 Wydanie authorization code
+
+Po `SignIn(...)` sterowanie przejmuje OpenIddict:
+- konczy authorize flow,
+- generuje authorization code,
+- redirectuje na `redirect_uri` klienta z `code=...&state=...`.
+
+To jest moment wydania authorization code.
+
+### 10.7 Wymiana code na tokeny
+
+Klient wysyla:
+
+`POST /connect/token`
+
+Typowy payload:
+- `grant_type=authorization_code`
+- `code=...`
+- `redirect_uri=...`
+- `client_id=...`
+- `code_verifier=...`
+
+OpenIddict:
+- waliduje code,
+- waliduje PKCE,
+- waliduje klienta i redirect,
+- zwraca access token i refresh token.
+
+### 10.8 API request
+
+Klient uzywa:
+
+`Authorization: Bearer <access_token>`
+
+API waliduje bearer token przez OpenIddict Validation.
+
+## 11. Cookie vs code vs tokeny
+
+| Artefakt | Kto wystawia | Gdzie zyje | Do czego sluzy | Czy idzie do API |
+| --- | --- | --- | --- | --- |
+| Identity cookie | ASP.NET Core Identity | Browser + auth server | Utrzymanie sesji browserowej po loginie | Nie |
+| Authorization code | OpenIddict | Krotko po redirect flow | Jednorazowa wymiana na tokeny | Nie |
+| Access token | OpenIddict | Client aplikacyjny | Autoryzacja wywolan API | Tak |
+| Refresh token | OpenIddict | Client aplikacyjny | Odnowienie access tokena | Nie, nie do resource API |
+| ID token | OpenIddict | Client aplikacyjny | Informacja o uwierzytelnieniu usera dla klienta OIDC | Nie do resource API |
+
+Najwazniejsze:
+- cookie sluzy do browser session,
+- authorization code sluzy do przejscia z browser session do tokenow,
+- access token sluzy do API,
+- to sa trzy rozne role.
+
+Co znaczy "Czy idzie do API":
+- nie chodzi o to, czy request fizycznie trafia do hosta `GuitarStore.ApiGateway`,
+- bo wszystkie requesty trafiaja do tego samego hosta,
+- chodzi o to, czy dany artefakt sluzy do wywolywania endpointow biznesowych resource API.
+
+W praktyce:
+- Identity cookie idzie do endpointow browser/auth jak `/auth/login` albo `/connect/authorize`,
+- authorization code idzie tylko do `/connect/token`,
+- refresh token idzie tylko do `/connect/token`,
+- access token idzie do endpointow biznesowych chronionych bearer auth.
+
+## 9. Jak to wszystko dziala razem po kroku 3
+
+Po kroku 3 mamy:
+- Identity jako user store i cookie auth,
+- Razor UI dla login/register/logout/forbidden,
+- cienki browser flow dla `/connect/authorize` i `/connect/logout`,
+- OpenIddict jako discovery + token issuance + protocol engine,
+- validation bearer tokenow dla API.
+
+Po kroku 3 nadal nie mamy:
+- finalnej rejestracji klienta SPA w runtime aplikacji,
+- Customers integration po rejestracji,
+- seed roles/policies,
+- seed admin.
+
+To zostaje w kolejnych krokach planu.
