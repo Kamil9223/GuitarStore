@@ -1,3 +1,4 @@
+using Auth.Core.Authorization;
 using Auth.Core.Entities;
 using Microsoft.AspNetCore.Identity;
 using OpenIddict.Abstractions;
@@ -72,6 +73,10 @@ internal sealed class OidcClaimsPrincipalFactory(
                 yield break;
 
             case Claims.Email:
+                yield return Destinations.AccessToken;
+                yield break;
+
+            case AuthClaimTypes.Permission:
                 yield return Destinations.AccessToken;
                 yield break;
 

@@ -1,6 +1,8 @@
+using Auth.Core.Authorization;
 using Auth.Core.Configuration;
 using Auth.Core.Data;
 using Auth.Core.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OpenIddict.Abstractions;
@@ -25,6 +27,7 @@ public static class AuthModuleInitializator
         ConfigureAuthentication(services);
         ConfigureAuthorization(services);
         ConfigureOpenIddict(services, authOptions);
+        services.AddScoped<AuthRolesInitializer>();
         services.AddScoped<OpenIddictApplicationsInitializer>();
 
         return services;
@@ -33,8 +36,10 @@ public static class AuthModuleInitializator
     public static async Task InitializeAuthModuleAsync(this IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
     {
         using var scope = serviceProvider.CreateScope();
-        var initializer = scope.ServiceProvider.GetRequiredService<OpenIddictApplicationsInitializer>();
-        await initializer.SeedAsync(cancellationToken);
+        var authRolesInitializer = scope.ServiceProvider.GetRequiredService<AuthRolesInitializer>();
+        var openIddictApplicationsInitializer = scope.ServiceProvider.GetRequiredService<OpenIddictApplicationsInitializer>();
+        await authRolesInitializer.SeedAsync(cancellationToken);
+        await openIddictApplicationsInitializer.SeedAsync(cancellationToken);
     }
 
     private static AuthOptions GetAuthOptions(IConfiguration configuration)
@@ -156,7 +161,22 @@ public static class AuthModuleInitializator
 
     private static void ConfigureAuthorization(IServiceCollection services)
     {
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            AddPermissionPolicy(options, AuthPolicies.CatalogManage, AuthPermissions.CatalogManage);
+            AddPermissionPolicy(options, AuthPolicies.OrdersViewAny, AuthPermissions.OrdersViewAny);
+            AddPermissionPolicy(options, AuthPolicies.OrdersCancelAny, AuthPermissions.OrdersCancelAny);
+            AddPermissionPolicy(options, AuthPolicies.CustomersViewAny, AuthPermissions.CustomersViewAny);
+        });
+    }
+
+    private static void AddPermissionPolicy(AuthorizationOptions options, string policyName, string permission)
+    {
+        options.AddPolicy(policyName, policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(AuthClaimTypes.Permission, permission);
+        });
     }
 
     private static void ConfigureOpenIddict(IServiceCollection services, AuthOptions authOptions)

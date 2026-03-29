@@ -1,3 +1,4 @@
+using Auth.Core.Authorization;
 using Auth.Core.Entities;
 using Common.StronglyTypedIds.StronglyTypedIds;
 using GuitarStore.ApiGateway.Modules.Auth.ViewModels;
@@ -94,6 +95,14 @@ public sealed class AccountController(
         if (!result.Succeeded)
         {
             AddIdentityErrors(result);
+            return View(model);
+        }
+
+        var addToRoleResult = await userManager.AddToRoleAsync(user, AuthRoles.User);
+        if (!addToRoleResult.Succeeded)
+        {
+            await userManager.DeleteAsync(user);
+            AddIdentityErrors(addToRoleResult);
             return View(model);
         }
 

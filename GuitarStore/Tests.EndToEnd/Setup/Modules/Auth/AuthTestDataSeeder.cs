@@ -1,3 +1,4 @@
+using Auth.Core.Authorization;
 using Auth.Core.Entities;
 using Common.StronglyTypedIds.StronglyTypedIds;
 using Microsoft.AspNetCore.Identity;
@@ -34,6 +35,29 @@ internal static class AuthTestDataSeeder
         };
 
         EnsureSuccess(await userManager.CreateAsync(user, password));
+        return user;
+    }
+
+    internal static async Task<User> EnsureUserWithRolesAsync(
+        IServiceProvider serviceProvider,
+        string email,
+        string password,
+        params string[] roles)
+    {
+        var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+        var user = await EnsureUserAsync(serviceProvider, email, password);
+        var existingRoles = await userManager.GetRolesAsync(user);
+
+        foreach (var role in roles.Distinct(StringComparer.Ordinal))
+        {
+            if (existingRoles.Contains(role, StringComparer.Ordinal))
+            {
+                continue;
+            }
+
+            EnsureSuccess(await userManager.AddToRoleAsync(user, role));
+        }
+
         return user;
     }
 
