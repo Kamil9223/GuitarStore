@@ -20,11 +20,14 @@ public class StockReservationExpirationJob(
             try
             {
                 await ExpireReservations(stoppingToken);
-                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error occurred while releasing stock reservation");
+            }
+            finally
+            {
+                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             }
         }
     }

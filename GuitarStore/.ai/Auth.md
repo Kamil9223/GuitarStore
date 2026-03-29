@@ -88,6 +88,14 @@ Sekcje (przyklad):
   "AccessTokenMinutes": 15,
   "RefreshTokenDays": 30,
   "RequireEmailConfirmed": false,
+  "Clients": [
+    {
+      "ClientId": "guitarstore-spa",
+      "DisplayName": "GuitarStore SPA",
+      "RedirectUris": ["http://localhost:3000/auth/callback"],
+      "PostLogoutRedirectUris": ["http://localhost:3000/auth/logout-callback"]
+    }
+  ],
   "Password": {
     "RequiredLength": 8,
     "RequireDigit": true,
@@ -241,6 +249,12 @@ Prod (standard):
 ### Etap 4: SPA client registration
 - Zarejestrowac SPA client w OpenIddict (public client, no secret).
 - Redirect URIs z configu.
+
+Stan po wdrozeniu:
+- klient SPA jest seedowany przy starcie aplikacji,
+- konfiguracja klienta siedzi w `Auth:Clients`,
+- klient jest typu public,
+- flow to authorization code + PKCE + refresh token.
 
 ### Etap 5: Roles i policies
 - Seed roles: user, support, admin.

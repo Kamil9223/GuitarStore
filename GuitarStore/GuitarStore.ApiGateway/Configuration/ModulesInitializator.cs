@@ -28,4 +28,9 @@ internal static class ModulesInitializator
 
         return services;
     }
+
+    public static async Task InitializeModulesAsync(this WebApplication app, CancellationToken cancellationToken = default)
+    {
+        await app.Services.InitializeAuthModuleAsync(cancellationToken);
+    }
 }

@@ -13,6 +13,7 @@ public sealed record AuthOptions
     public required PasswordConfiguration Password { get; init; }
     public required LockoutConfiguration Lockout { get; init; }
     public ScopeConfiguration Scopes { get; init; } = new();
+    public ClientConfiguration[] Clients { get; init; } = [];
     public CertificateConfiguration Certificates { get; init; } = new();
 
     public sealed record PasswordConfiguration
@@ -33,6 +34,14 @@ public sealed record AuthOptions
     public sealed record ScopeConfiguration
     {
         public bool IncludeProfileScope { get; init; } = true;
+    }
+
+    public sealed record ClientConfiguration
+    {
+        public required string ClientId { get; init; }
+        public string? DisplayName { get; init; }
+        public string[] RedirectUris { get; init; } = [];
+        public string[] PostLogoutRedirectUris { get; init; } = [];
     }
 
     public sealed record CertificateConfiguration

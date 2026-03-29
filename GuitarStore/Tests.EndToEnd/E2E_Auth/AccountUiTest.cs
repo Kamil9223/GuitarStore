@@ -61,7 +61,7 @@ public sealed class AccountUiTest(Setup.Application app) : Setup.EndToEndTestBas
             "ChangeMe!123");
 
         using var client = _webApp.GetHttpsClient(allowAutoRedirect: false);
-        const string returnUrl = "/connect/authorize?client_id=test-spa&redirect_uri=https%3A%2F%2Fspa.local%2Fcallback&response_type=code&scope=openid%20profile%20offline_access&code_challenge=abcdefghijklmnopqrstuvwxyzabcdefghi1234567890AB&code_challenge_method=S256&state=test-state&nonce=test-nonce";
+        var returnUrl = $"/connect/authorize?client_id={ConfiguredOidcClient.ClientId}&redirect_uri={Uri.EscapeDataString(ConfiguredOidcClient.RedirectUri)}&response_type=code&scope=openid%20profile%20offline_access&code_challenge=abcdefghijklmnopqrstuvwxyzabcdefghi1234567890AB&code_challenge_method=S256&state=test-state&nonce=test-nonce";
 
         var getResponse = await client.GetAsync($"/auth/login?returnUrl={Uri.EscapeDataString(returnUrl)}");
         var html = await getResponse.Content.ReadAsStringAsync();
@@ -81,4 +81,3 @@ public sealed class AccountUiTest(Setup.Application app) : Setup.EndToEndTestBas
         postResponse.Headers.Contains("Set-Cookie").ShouldBeTrue();
     }
 }
-

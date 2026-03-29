@@ -1,15 +1,15 @@
 # Auth Flow
 
-Ten dokument opisuje stan po wdrozeniu kroku 3.
+Ten dokument opisuje stan po wdrozeniu kroku 4.
 
 Najwazniejsze rozroznienie:
 - krok 2 skonfigurowal Identity + OpenIddict,
 - krok 3 dodal account UI i interaktywny browser flow,
-- krok 4 nadal ma jeszcze zarejestrowac docelowego klienta SPA w runtime aplikacji.
+- krok 4 zarejestrowal docelowego klienta SPA w runtime aplikacji.
 
-## 1. Co jest gotowe po kroku 3
+## 1. Co jest gotowe po kroku 4
 
-Po kroku 3 mamy gotowe:
+Po kroku 4 mamy gotowe:
 - Identity store userow i hasel,
 - cookie auth dla browser session,
 - widoki Razor dla login/register/forbidden,
@@ -18,6 +18,7 @@ Po kroku 3 mamy gotowe:
 - token endpoint obslugiwany przez OpenIddict,
 - cienka obsluge `/connect/authorize` i `/connect/logout`,
 - serwis budujacy principal OIDC z usera Identity,
+- runtime registration klienta SPA z konfiguracji,
 - validation bearer tokenow po stronie API.
 
 ## 2. Warstwy i odpowiedzialnosci
@@ -380,8 +381,7 @@ Przyklady:
 
 ## 13. Co zostaje na kolejne kroki
 
-Po kroku 3 nadal zostaje:
-- krok 4: rejestracja klienta SPA w runtime aplikacji,
+Po kroku 4 nadal zostaje:
 - krok 5: role i policies,
 - krok 6: Customers integration,
 - krok 7: seed admin,

@@ -1,9 +1,10 @@
 # Auth Endpoints
 
-Ten dokument opisuje stan po wdrozeniu kroku 3.
+Ten dokument opisuje stan po wdrozeniu kroku 4.
 
 Aktualny podzial odpowiedzialnosci:
 - OpenIddict publikuje discovery i obsluguje token endpoint,
+- OpenIddict ma runtime-registered klienta SPA z konfiguracji,
 - ApiGateway hostuje UI `/auth/*`,
 - ApiGateway ma cienka obsluge interaktywnego browser flow dla `/connect/authorize` i `/connect/logout`.
 
@@ -381,17 +382,17 @@ W praktyce:
 - refresh token idzie tylko do `/connect/token`,
 - access token idzie do endpointow biznesowych chronionych bearer auth.
 
-## 9. Jak to wszystko dziala razem po kroku 3
+## 9. Jak to wszystko dziala razem po kroku 4
 
-Po kroku 3 mamy:
+Po kroku 4 mamy:
 - Identity jako user store i cookie auth,
+- runtime registration klienta SPA z `Auth:Clients`,
 - Razor UI dla login/register/logout/forbidden,
 - cienki browser flow dla `/connect/authorize` i `/connect/logout`,
 - OpenIddict jako discovery + token issuance + protocol engine,
 - validation bearer tokenow dla API.
 
-Po kroku 3 nadal nie mamy:
-- finalnej rejestracji klienta SPA w runtime aplikacji,
+Po kroku 4 nadal nie mamy:
 - Customers integration po rejestracji,
 - seed roles/policies,
 - seed admin.

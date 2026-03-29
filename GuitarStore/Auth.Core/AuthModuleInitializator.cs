@@ -25,8 +25,16 @@ public static class AuthModuleInitializator
         ConfigureAuthentication(services);
         ConfigureAuthorization(services);
         ConfigureOpenIddict(services, authOptions);
+        services.AddScoped<OpenIddictApplicationsInitializer>();
 
         return services;
+    }
+
+    public static async Task InitializeAuthModuleAsync(this IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
+    {
+        using var scope = serviceProvider.CreateScope();
+        var initializer = scope.ServiceProvider.GetRequiredService<OpenIddictApplicationsInitializer>();
+        await initializer.SeedAsync(cancellationToken);
     }
 
     private static AuthOptions GetAuthOptions(IConfiguration configuration)
@@ -49,7 +57,51 @@ public static class AuthModuleInitializator
             throw new InvalidOperationException("Auth refresh token lifetime must be greater than zero.");
         }
 
+        if (authOptions.Clients.Length == 0)
+        {
+            throw new InvalidOperationException("At least one Auth client must be configured.");
+        }
+
+        var duplicateClientId = authOptions.Clients
+            .Where(client => !string.IsNullOrWhiteSpace(client.ClientId))
+            .GroupBy(client => client.ClientId, StringComparer.Ordinal)
+            .FirstOrDefault(group => group.Count() > 1)?
+            .Key;
+
+        if (duplicateClientId is not null)
+        {
+            throw new InvalidOperationException($"Duplicate Auth client id '{duplicateClientId}' detected.");
+        }
+
+        foreach (var client in authOptions.Clients)
+        {
+            if (string.IsNullOrWhiteSpace(client.ClientId))
+            {
+                throw new InvalidOperationException("Auth client id must be configured.");
+            }
+
+            if (client.RedirectUris.Length == 0)
+            {
+                throw new InvalidOperationException($"Auth client '{client.ClientId}' must define at least one redirect URI.");
+            }
+
+            EnsureUrisAreAbsolute(client.RedirectUris, client.ClientId, "redirect");
+            EnsureUrisAreAbsolute(client.PostLogoutRedirectUris, client.ClientId, "post logout redirect");
+        }
+
         return authOptions;
+    }
+
+    private static void EnsureUrisAreAbsolute(IEnumerable<string> uris, string clientId, string uriKind)
+    {
+        foreach (var uri in uris)
+        {
+            if (!Uri.TryCreate(uri, UriKind.Absolute, out _))
+            {
+                throw new InvalidOperationException(
+                    $"Auth client '{clientId}' contains an invalid {uriKind} URI: '{uri}'.");
+            }
+        }
     }
 
     private static void ConfigurePersistence(IServiceCollection services, string connectionString)

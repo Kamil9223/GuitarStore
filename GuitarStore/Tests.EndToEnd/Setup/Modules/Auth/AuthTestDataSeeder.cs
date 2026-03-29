@@ -2,8 +2,6 @@ using Auth.Core.Entities;
 using Common.StronglyTypedIds.StronglyTypedIds;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using OpenIddict.Abstractions;
-using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Tests.EndToEnd.Setup.Modules.Auth;
 
@@ -37,50 +35,6 @@ internal static class AuthTestDataSeeder
 
         EnsureSuccess(await userManager.CreateAsync(user, password));
         return user;
-    }
-
-    internal static async Task EnsureOidcPublicClientAsync(
-        IServiceProvider serviceProvider,
-        string clientId,
-        string redirectUri,
-        string? postLogoutRedirectUri = null)
-    {
-        var applicationManager = serviceProvider.GetRequiredService<IOpenIddictApplicationManager>();
-        if (await applicationManager.FindByClientIdAsync(clientId) is not null)
-        {
-            return;
-        }
-
-        var descriptor = new OpenIddictApplicationDescriptor
-        {
-            ClientId = clientId,
-            ClientType = ClientTypes.Public,
-            ConsentType = ConsentTypes.Implicit,
-            DisplayName = "Tests.EndToEnd SPA client"
-        };
-
-        descriptor.RedirectUris.Add(new Uri(redirectUri));
-
-        if (!string.IsNullOrWhiteSpace(postLogoutRedirectUri))
-        {
-            descriptor.PostLogoutRedirectUris.Add(new Uri(postLogoutRedirectUri));
-        }
-
-        descriptor.Permissions.UnionWith(
-        [
-            Permissions.Endpoints.Authorization,
-            Permissions.Endpoints.Token,
-            Permissions.Endpoints.EndSession,
-            Permissions.GrantTypes.AuthorizationCode,
-            Permissions.GrantTypes.RefreshToken,
-            Permissions.ResponseTypes.Code,
-            Permissions.Prefixes.Scope + Scopes.OpenId,
-            Permissions.Prefixes.Scope + Scopes.OfflineAccess,
-            Permissions.Prefixes.Scope + Scopes.Profile,
-            Requirements.Features.ProofKeyForCodeExchange
-        ]);
-
-        await applicationManager.CreateAsync(descriptor);
     }
 
     private static void EnsureSuccess(IdentityResult result)

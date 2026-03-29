@@ -3,10 +3,11 @@ using GuitarStore.ApiGateway.Helpers.StronglyTypedIdsConfig;
 using GuitarStore.ApiGateway.MiddleWares;
 using GuitarStore.ApiGateway.Modules.Auth.Services;
 using Microsoft.OpenApi.Models;
+using System.Diagnostics;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,10 @@ public class Program
         });
 
         var app = builder.Build();
+        if (!IsOpenApiDocumentGeneration())
+        {
+            await app.InitializeModulesAsync();
+        }
 
         app.MapGet("/test", () => Results.Ok("Hello World!"));
 
@@ -60,6 +65,15 @@ public class Program
 
         app.MapControllers();
 
-        app.Run();
+        await app.RunAsync();
+    }
+
+    private static bool IsOpenApiDocumentGeneration()
+    {
+        var commandLine = Environment.CommandLine;
+
+        return commandLine.Contains("dotnet-getdocument", StringComparison.OrdinalIgnoreCase)
+            || commandLine.Contains("GetDocument.Insider", StringComparison.OrdinalIgnoreCase)
+            || Process.GetCurrentProcess().ProcessName.Contains("GetDocument", StringComparison.OrdinalIgnoreCase);
     }
 }
