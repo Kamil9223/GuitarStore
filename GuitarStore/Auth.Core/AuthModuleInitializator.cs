@@ -10,6 +10,7 @@ using OpenIddict.Validation.AspNetCore;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Auth.Core.Services;
 
 namespace Auth.Core;
 
@@ -27,6 +28,7 @@ public static class AuthModuleInitializator
         ConfigureAuthentication(services);
         ConfigureAuthorization(services);
         ConfigureOpenIddict(services, authOptions);
+        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<AuthRolesInitializer>();
         services.AddScoped<OpenIddictApplicationsInitializer>();
 
@@ -284,3 +286,4 @@ public static class AuthModuleInitializator
         throw new InvalidOperationException($"OpenIddict {usage} certificate must be loaded from a PFX path or a certificate store thumbprint.");
     }
 }
+

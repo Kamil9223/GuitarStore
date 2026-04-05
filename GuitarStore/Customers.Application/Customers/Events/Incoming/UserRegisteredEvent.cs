@@ -1,4 +1,3 @@
-﻿using Common.Errors.Exceptions;
 using Common.RabbitMq.Abstractions.EventHandlers;
 using Common.RabbitMq.Abstractions.Events;
 using Customers.Application.Abstractions;
@@ -8,31 +7,43 @@ using Domain.ValueObjects;
 
 namespace Customers.Application.Customers.Events.Incoming;
 
-internal sealed record SignedUpEvent(string Name, string LastName, string Email) : IntegrationEvent, IIntegrationConsumeEvent;
+internal sealed record UserRegisteredEvent(
+    Guid UserId,
+    string Email,
+    string Name,
+    string LastName,
+    DateTimeOffset OccurredAtUtc)
+    : IntegrationEvent, IIntegrationConsumeEvent;
 
-internal sealed class SignedUpEventHandler : IIntegrationEventHandler<SignedUpEvent>
+internal sealed class UserRegisteredEventHandler : IIntegrationEventHandler<UserRegisteredEvent>
 {
     private readonly ICustomerRepository _customerRepository;
     private readonly ICustomersUnitOfWork _unitOfWork;
     private readonly ICartRepository _cartRepository;
 
-    public SignedUpEventHandler(ICustomerRepository productRepository, ICustomersUnitOfWork unitOfWork, ICartRepository cartRepository)
+    public UserRegisteredEventHandler(
+        ICustomerRepository customerRepository,
+        ICustomersUnitOfWork unitOfWork,
+        ICartRepository cartRepository)
     {
-        _customerRepository = productRepository;
+        _customerRepository = customerRepository;
         _unitOfWork = unitOfWork;
         _cartRepository = cartRepository;
     }
 
-    public async Task Handle(SignedUpEvent @event, CancellationToken ct)
+    public async Task Handle(UserRegisteredEvent @event, CancellationToken ct)
     {
-        var customerExists = await _customerRepository.Exists(x => x.Email == @event.Email, ct);
+        var customerExists = await _customerRepository.Exists(x => x.AuthUserId == @event.UserId, ct);
         if (customerExists)
-            throw new DomainException($"Customer with Email: [{@event.Email}] already exists.");
+        {
+            return;
+        }
 
         var validEmail = EmailAddress.Create(@event.Email);
+        var customer = Customer.Create(@event.UserId, @event.Name, @event.LastName, validEmail);
 
-        var customer = Customer.Create(@event.Name, @event.LastName, validEmail);
         _customerRepository.Add(customer);
+
         var cart = Cart.Create(customer.Id);
         await _cartRepository.Add(cart, ct);
 

@@ -14,6 +14,7 @@ internal static class CustomersDbSeeder
 {
     public static Customer SeedCustomer(
         this CustomersDbContext context,
+        Guid? authUserId = null,
         EmailAddress? emailAddress = null,
         string? name = null,
         string? lastName = null,
@@ -24,6 +25,7 @@ internal static class CustomersDbSeeder
         var faker = new Faker();
         var address = useAddress ? (customerAddress ?? SeedAddress(context)) : null;
         var customer = Customer.Create(
+            authUserId ?? Guid.NewGuid(),
             name ?? faker.Random.String2(30),
             lastName ?? faker.Random.String2(30),
             emailAddress ?? EmailAddress.Create(faker.Internet.Email()),

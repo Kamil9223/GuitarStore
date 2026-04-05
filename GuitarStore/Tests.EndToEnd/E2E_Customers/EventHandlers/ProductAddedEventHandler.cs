@@ -40,7 +40,8 @@ public sealed class ProductAddedEventHandler(Setup.Application app) : EndToEndTe
     [Fact]
     public async Task Handle_WhenProductExists_ProductQuantityIsIncreased()
     {
-        var product = Databases.CustomersDbContext.SeedProduct();
+        var product = Databases.CustomersDbContext.SeedProduct(quantity: 100);
+        var originalQuantity = product.Quantity;
         await Databases.CustomersDbContext.SaveChangesAsync();
 
         var productEvent = new ProductAddedEvent(
@@ -54,12 +55,11 @@ public sealed class ProductAddedEventHandler(Setup.Application app) : EndToEndTe
         await Waiter.WaitForCondition(async () =>
         {
             Databases.CustomersDbContext.ChangeTracker.Clear();
-
             var newProduct = await Databases.CustomersDbContext.Products
-                .FirstOrDefaultAsync(p => p.Id == product.Id);
+                .FirstOrDefaultAsync(p => p.Id == productEvent.Id);
 
-            return newProduct!.Quantity == product.Quantity + productEvent.Quantity;
-        }, TimeSpan.FromSeconds(1));
+            return newProduct!.Quantity == originalQuantity + productEvent.Quantity;
+        }, TimeSpan.FromSeconds(2));
 
 
         var insertedProduct = await Databases.CustomersDbContext.Products

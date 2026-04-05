@@ -19,8 +19,11 @@ internal class CustomerDbConfiguration : IEntityTypeConfiguration<Customer>
                 id => id!.Value,
                 value => new CustomerId(value));
 
+        builder.Property(x => x.AuthUserId).IsRequired();
         builder.Property(x => x.Name).HasMaxLength(100);
         builder.Property(x => x.LastName).HasMaxLength(100);
+
+        builder.HasIndex(x => x.AuthUserId).IsUnique();
 
         builder.OwnsOne(x => x.Address, builder =>
         {

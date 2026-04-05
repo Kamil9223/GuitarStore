@@ -1,14 +1,17 @@
+using Auth.Core.Authorization;
 using Auth.Core.Entities;
+using Auth.Core.Events.Outgoing;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using System.Net;
 using Tests.EndToEnd.Setup.Modules.Auth;
+using Tests.EndToEnd.Setup.TestsHelpers;
 using Xunit;
 
 namespace Tests.EndToEnd.E2E_Auth;
 
-public sealed class AccountUiTest(Setup.Application app) : Setup.EndToEndTestBase(app)
+public sealed class AccountControllerTest(Setup.Application app) : Setup.EndToEndTestBase(app)
 {
     [Fact]
     public async Task LoginPage_ShouldRenderForm()
@@ -25,9 +28,10 @@ public sealed class AccountUiTest(Setup.Application app) : Setup.EndToEndTestBas
     }
 
     [Fact]
-    public async Task Register_WhenPostedWithValidData_ShouldCreateUserAndRedirectHome()
+    public async Task Register_WhenPostedWithValidData_ShouldCreateUserPublishIntegrationEventAndRedirectHome()
     {
         using var client = _webApp.GetHttpsClient(allowAutoRedirect: false);
+        var publishedEvent = RabbitMqChannel.CreateTestConsumerForPublishing<UserRegisteredEvent>();
 
         var getResponse = await client.GetAsync("/auth/register");
         var html = await getResponse.Content.ReadAsStringAsync();
@@ -37,6 +41,8 @@ public sealed class AccountUiTest(Setup.Application app) : Setup.EndToEndTestBas
         using var postResponse = await client.PostAsync("/auth/register", new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["__RequestVerificationToken"] = antiForgeryToken,
+            ["Name"] = "Test",
+            ["LastName"] = "User",
             ["Email"] = email,
             ["Password"] = "ChangeMe!123",
             ["ConfirmPassword"] = "ChangeMe!123",
@@ -47,9 +53,40 @@ public sealed class AccountUiTest(Setup.Application app) : Setup.EndToEndTestBas
         postResponse.Headers.Location?.ToString().ShouldBe("/");
         postResponse.Headers.Contains("Set-Cookie").ShouldBeTrue();
 
+        await publishedEvent.Task.WaitAsync(TimeSpan.FromSeconds(10));
+
         var userManager = Scope.ServiceProvider.GetRequiredService<UserManager<User>>();
         var user = await userManager.FindByEmailAsync(email);
         user.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task Register_ShouldAssignDefaultUserRole()
+    {
+        using var client = _webApp.GetHttpsClient(allowAutoRedirect: false);
+
+        var getResponse = await client.GetAsync("/auth/register");
+        var html = await getResponse.Content.ReadAsStringAsync();
+        var antiForgeryToken = AuthUiTestHelpers.ExtractAntiForgeryToken(html);
+        var email = $"auth-step5-register-{Guid.NewGuid():N}@guitarstore.local";
+
+        using var postResponse = await client.PostAsync("/auth/register", new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["__RequestVerificationToken"] = antiForgeryToken,
+            ["Name"] = "Step5",
+            ["LastName"] = "User",
+            ["Email"] = email,
+            ["Password"] = "ChangeMe!123",
+            ["ConfirmPassword"] = "ChangeMe!123",
+            ["ReturnUrl"] = "/"
+        }));
+
+        postResponse.StatusCode.ShouldBe(HttpStatusCode.Found);
+
+        var userManager = Scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        var user = await userManager.FindByEmailAsync(email);
+        user.ShouldNotBeNull();
+        (await userManager.IsInRoleAsync(user, AuthRoles.User)).ShouldBeTrue();
     }
 
     [Fact]

@@ -4,11 +4,23 @@
 }
 
 <h2>Create account</h2>
-<p class="intro">Step 3 creates the Auth account only. Customer profile enrichment stays in a later step.</p>
+<p class="intro">Creating an account also provisions your customer profile and empty cart.</p>
 
 <form asp-action="Register" method="post">
     <div asp-validation-summary="ModelOnly"></div>
     <input asp-for="ReturnUrl" type="hidden" />
+
+    <div class="field">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+        <span asp-validation-for="Name"></span>
+    </div>
+
+    <div class="field">
+        <label asp-for="LastName"></label>
+        <input asp-for="LastName" />
+        <span asp-validation-for="LastName"></span>
+    </div>
 
     <div class="field">
         <label asp-for="Email"></label>

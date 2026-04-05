@@ -1,18 +1,13 @@
-using Auth.Core.Authorization;
-using Auth.Core.Entities;
-using Common.StronglyTypedIds.StronglyTypedIds;
+using Auth.Core.Services;
 using GuitarStore.ApiGateway.Modules.Auth.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GuitarStore.ApiGateway.Modules.Auth.Controllers;
 
 [AllowAnonymous]
 [ApiExplorerSettings(IgnoreApi = true)]
-public sealed class AccountController(
-    UserManager<User> userManager,
-    SignInManager<User> signInManager) : Controller
+public sealed class AccountController(IAuthService authService) : Controller
 {
     [HttpGet("~/auth/login")]
     public IActionResult Login([FromQuery] string? returnUrl = null)
@@ -29,35 +24,27 @@ public sealed class AccountController(
             return View(model);
         }
 
-        var user = await FindUserAsync(model.EmailOrUserName);
-        if (user is null)
-        {
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-            return View(model);
-        }
-
-        var result = await signInManager.PasswordSignInAsync(
-            user.UserName!,
+        var result = await authService.LoginAsync(new AuthLoginRequest(
+            model.EmailOrUserName,
             model.Password,
-            model.RememberMe,
-            lockoutOnFailure: true);
+            model.RememberMe));
 
         if (result.Succeeded)
         {
             return RedirectToLocal(model.ReturnUrl);
         }
 
-        if (result.IsLockedOut)
+        switch (result.Status)
         {
-            ModelState.AddModelError(string.Empty, "This account is locked.");
-        }
-        else if (result.IsNotAllowed)
-        {
-            ModelState.AddModelError(string.Empty, "This account is not allowed to sign in.");
-        }
-        else
-        {
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            case AuthLoginStatus.LockedOut:
+                ModelState.AddModelError(string.Empty, "This account is locked.");
+                break;
+            case AuthLoginStatus.NotAllowed:
+                ModelState.AddModelError(string.Empty, "This account is not allowed to sign in.");
+                break;
+            default:
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                break;
         }
 
         return View(model);
@@ -71,50 +58,43 @@ public sealed class AccountController(
 
     [HttpPost("~/auth/register")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(RegisterViewModel model)
+    public async Task<IActionResult> Register(RegisterViewModel model, CancellationToken ct)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        if (await userManager.FindByEmailAsync(model.Email) is not null)
+        var result = await authService.RegisterAsync(new AuthRegisterRequest(
+            model.Name,
+            model.LastName,
+            model.Email,
+            model.Password), ct);
+
+        if (result.Succeeded)
+        {
+            return RedirectToLocal(model.ReturnUrl);
+        }
+
+        if (result.Status == AuthRegisterStatus.DuplicateEmail)
         {
             ModelState.AddModelError(nameof(RegisterViewModel.Email), "A user with this email already exists.");
             return View(model);
         }
 
-        var user = new User
+        foreach (var error in result.Errors)
         {
-            Id = AuthId.New(),
-            UserName = model.Email,
-            Email = model.Email
-        };
-
-        var result = await userManager.CreateAsync(user, model.Password);
-        if (!result.Succeeded)
-        {
-            AddIdentityErrors(result);
-            return View(model);
+            ModelState.AddModelError(string.Empty, error);
         }
 
-        var addToRoleResult = await userManager.AddToRoleAsync(user, AuthRoles.User);
-        if (!addToRoleResult.Succeeded)
-        {
-            await userManager.DeleteAsync(user);
-            AddIdentityErrors(addToRoleResult);
-            return View(model);
-        }
-
-        await signInManager.SignInAsync(user, isPersistent: false);
-        return RedirectToLocal(model.ReturnUrl);
+        return View(model);
     }
 
     [HttpPost("~/auth/logout")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout([FromForm] string? returnUrl = null)
     {
-        await signInManager.SignOutAsync();
+        await authService.LogoutAsync();
         return RedirectToLocal(returnUrl);
     }
 
@@ -122,12 +102,6 @@ public sealed class AccountController(
     public IActionResult Forbidden()
     {
         return View();
-    }
-
-    private async Task<User?> FindUserAsync(string emailOrUserName)
-    {
-        return await userManager.FindByEmailAsync(emailOrUserName)
-            ?? await userManager.FindByNameAsync(emailOrUserName);
     }
 
     private IActionResult RedirectToLocal(string? returnUrl)
@@ -138,13 +112,5 @@ public sealed class AccountController(
         }
 
         return Redirect(Url.Content("~/"));
-    }
-
-    private void AddIdentityErrors(IdentityResult result)
-    {
-        foreach (var error in result.Errors)
-        {
-            ModelState.AddModelError(string.Empty, error.Description);
-        }
     }
 }

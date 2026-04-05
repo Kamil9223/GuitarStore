@@ -19,7 +19,7 @@ internal sealed class AddCustomerCommandHandler : ICommandHandler<AddCustomerCom
 
     public async Task Handle(AddCustomerCommand command, CancellationToken ct)
     {
-        var customer = Customer.Create(command.Name, command.LastName, EmailAddress.Create(command.Email));
+        var customer = Customer.Create(Guid.NewGuid(), command.Name, command.LastName, EmailAddress.Create(command.Email));
 
         _customerRepository.Add(customer);
 
