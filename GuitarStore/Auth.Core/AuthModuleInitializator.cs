@@ -29,8 +29,10 @@ public static class AuthModuleInitializator
         ConfigureAuthorization(services);
         ConfigureOpenIddict(services, authOptions);
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IAdminInitializationStore, IdentityAdminInitializationStore>();
         services.AddScoped<AuthRolesInitializer>();
         services.AddScoped<OpenIddictApplicationsInitializer>();
+        services.AddScoped<AdminInitializer>();
 
         return services;
     }
@@ -40,8 +42,10 @@ public static class AuthModuleInitializator
         using var scope = serviceProvider.CreateScope();
         var authRolesInitializer = scope.ServiceProvider.GetRequiredService<AuthRolesInitializer>();
         var openIddictApplicationsInitializer = scope.ServiceProvider.GetRequiredService<OpenIddictApplicationsInitializer>();
+        var adminInitializer = scope.ServiceProvider.GetRequiredService<AdminInitializer>();
         await authRolesInitializer.SeedAsync(cancellationToken);
         await openIddictApplicationsInitializer.SeedAsync(cancellationToken);
+        await adminInitializer.SeedAsync(cancellationToken);
     }
 
     private static AuthOptions GetAuthOptions(IConfiguration configuration)

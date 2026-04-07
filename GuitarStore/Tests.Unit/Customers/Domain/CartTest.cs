@@ -4,7 +4,7 @@ using Customers.Domain.Products;
 using Domain.StronglyTypedIds;
 using Xunit;
 
-namespace Customers.Tests.UnitTests.Domain;
+namespace Tests.Unit.Customers.Domain;
 public class CartTest
 {
     [Fact]
