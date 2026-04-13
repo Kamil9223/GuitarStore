@@ -207,6 +207,7 @@ public static class AuthModuleInitializator
 
                 options.SetAccessTokenLifetime(TimeSpan.FromMinutes(authOptions.AccessTokenMinutes));
                 options.SetRefreshTokenLifetime(TimeSpan.FromDays(authOptions.RefreshTokenDays));
+                options.SetRefreshTokenReuseLeeway(TimeSpan.Zero);
                 options.RegisterScopes(GetScopes(authOptions));
 
                 ConfigureCertificates(options, authOptions);
