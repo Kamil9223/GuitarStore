@@ -8,7 +8,11 @@ namespace Tests.EndToEnd.Setup.Modules.Auth;
 
 internal static class AuthTestDataSeeder
 {
-    internal static async Task<User> EnsureUserAsync(IServiceProvider serviceProvider, string email, string password)
+    internal static async Task<User> EnsureUserAsync(
+        IServiceProvider serviceProvider,
+        string email,
+        string password,
+        bool mustChangePassword = false)
     {
         var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
         var existingUser = await userManager.FindByEmailAsync(email);
@@ -24,6 +28,20 @@ internal static class AuthTestDataSeeder
                 EnsureSuccess(await userManager.AddPasswordAsync(existingUser, password));
             }
 
+            if (existingUser.MustChangePassword != mustChangePassword)
+            {
+                if (mustChangePassword)
+                {
+                    existingUser.RequirePasswordChange();
+                }
+                else
+                {
+                    existingUser.MarkPasswordChanged();
+                }
+
+                EnsureSuccess(await userManager.UpdateAsync(existingUser));
+            }
+
             return existingUser;
         }
 
@@ -33,6 +51,11 @@ internal static class AuthTestDataSeeder
             UserName = email,
             Email = email
         };
+
+        if (mustChangePassword)
+        {
+            user.RequirePasswordChange();
+        }
 
         EnsureSuccess(await userManager.CreateAsync(user, password));
         return user;

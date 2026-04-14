@@ -4,6 +4,7 @@ using Auth.Core.Events.Outgoing;
 using Common.RabbitMq.Abstractions.EventHandlers;
 using Common.StronglyTypedIds.StronglyTypedIds;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Auth.Core.Services;
 
@@ -30,6 +31,11 @@ internal sealed class AuthService(
 
         if (result.Succeeded)
         {
+            if (user.MustChangePassword)
+            {
+                return new AuthLoginResult(AuthLoginStatus.RequiresPasswordChange);
+            }
+
             return new AuthLoginResult(AuthLoginStatus.Succeeded);
         }
 
@@ -99,6 +105,42 @@ internal sealed class AuthService(
 
         await signInManager.SignInAsync(user, isPersistent: false);
         return AuthRegisterResult.Success();
+    }
+
+    public async Task<bool> RequiresPasswordChangeAsync(ClaimsPrincipal principal)
+    {
+        var user = await userManager.GetUserAsync(principal);
+        return user?.MustChangePassword == true;
+    }
+
+    public async Task<AuthChangePasswordResult> ChangePasswordAsync(ClaimsPrincipal principal, AuthChangePasswordRequest request)
+    {
+        var user = await userManager.GetUserAsync(principal);
+        if (user is null)
+        {
+            return AuthChangePasswordResult.CurrentUserNotFoundResult();
+        }
+
+        if (!user.MustChangePassword)
+        {
+            return AuthChangePasswordResult.PasswordChangeNotRequiredResult();
+        }
+
+        var changePasswordResult = await userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+        if (!changePasswordResult.Succeeded)
+        {
+            return AuthChangePasswordResult.Failed(changePasswordResult.Errors.Select(static error => error.Description));
+        }
+
+        user.MarkPasswordChanged();
+        var updateResult = await userManager.UpdateAsync(user);
+        if (!updateResult.Succeeded)
+        {
+            return AuthChangePasswordResult.Failed(updateResult.Errors.Select(static error => error.Description));
+        }
+
+        await signInManager.RefreshSignInAsync(user);
+        return AuthChangePasswordResult.Success();
     }
 
     public Task LogoutAsync() => signInManager.SignOutAsync();

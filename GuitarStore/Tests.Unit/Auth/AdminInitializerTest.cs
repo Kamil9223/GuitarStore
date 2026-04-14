@@ -31,6 +31,7 @@ public sealed class AdminInitializerTest
 
         var user = Assert.Single(store.Users);
         Assert.Equal(email, user.Email);
+        Assert.False(user.MustChangePassword);
         Assert.True(store.IsUserInRole(email, AuthRoles.Admin));
     }
 
@@ -54,6 +55,7 @@ public sealed class AdminInitializerTest
 
         Assert.Single(store.Users);
         Assert.Equal(1, store.CreateCalls);
+        Assert.False(Assert.Single(store.Users).MustChangePassword);
         Assert.True(store.IsUserInRole(email, AuthRoles.Admin));
     }
 
@@ -99,6 +101,7 @@ public sealed class AdminInitializerTest
 
         Assert.Single(store.Users);
         Assert.Equal(1, store.CreateCalls);
+        Assert.True(Assert.Single(store.Users).MustChangePassword);
         Assert.True(store.IsUserInRole(email, AuthRoles.Admin));
     }
 

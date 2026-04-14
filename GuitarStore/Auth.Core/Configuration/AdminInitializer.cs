@@ -48,7 +48,7 @@ internal sealed class AdminInitializer(
         var user = await adminInitializationStore.FindByEmailAsync(options.Email);
         if (user is null)
         {
-            user = await CreateAdminUserAsync(options, cancellationToken);
+            user = await CreateAdminUserAsync(options, requirePasswordChange: false, cancellationToken);
             logger.LogInformation(
                 "Seeded development admin account in environment '{EnvironmentName}'.",
                 hostEnvironment.EnvironmentName);
@@ -103,11 +103,14 @@ internal sealed class AdminInitializer(
                 $"Production admin bootstrap cannot reuse existing user '{options.Email}' because the account already exists without the '{AuthRoles.Admin}' role.");
         }
 
-        await CreateAdminUserAsync(options, cancellationToken);
+        await CreateAdminUserAsync(options, requirePasswordChange: true, cancellationToken);
         logger.LogInformation("Bootstrapped the first production admin account.");
     }
 
-    private async Task<User> CreateAdminUserAsync(SeedAdminOptions options, CancellationToken cancellationToken)
+    private async Task<User> CreateAdminUserAsync(
+        SeedAdminOptions options,
+        bool requirePasswordChange,
+        CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -117,6 +120,11 @@ internal sealed class AdminInitializer(
             UserName = options.Email,
             Email = options.Email
         };
+
+        if (requirePasswordChange)
+        {
+            user.RequirePasswordChange();
+        }
 
         await adminInitializationStore.CreateAsync(user, options.Password);
 

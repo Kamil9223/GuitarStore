@@ -1,9 +1,13 @@
+using System.Security.Claims;
+
 namespace Auth.Core.Services;
 
 public interface IAuthService
 {
     Task<AuthLoginResult> LoginAsync(AuthLoginRequest request);
     Task<AuthRegisterResult> RegisterAsync(AuthRegisterRequest request, CancellationToken ct);
+    Task<bool> RequiresPasswordChangeAsync(ClaimsPrincipal principal);
+    Task<AuthChangePasswordResult> ChangePasswordAsync(ClaimsPrincipal principal, AuthChangePasswordRequest request);
     Task LogoutAsync();
 }
 
@@ -21,6 +25,7 @@ public sealed record AuthRegisterRequest(
 public enum AuthLoginStatus
 {
     Succeeded,
+    RequiresPasswordChange,
     InvalidCredentials,
     LockedOut,
     NotAllowed
@@ -46,4 +51,26 @@ public sealed record AuthRegisterResult(AuthRegisterStatus Status, IReadOnlyColl
     public static AuthRegisterResult DuplicateEmail() => new(AuthRegisterStatus.DuplicateEmail, []);
     public static AuthRegisterResult Failed(params string[] errors) => new(AuthRegisterStatus.Failed, errors);
     public static AuthRegisterResult Failed(IEnumerable<string> errors) => new(AuthRegisterStatus.Failed, errors.ToArray());
+}
+
+public sealed record AuthChangePasswordRequest(
+    string CurrentPassword,
+    string NewPassword);
+
+public enum AuthChangePasswordStatus
+{
+    Succeeded,
+    CurrentUserNotFound,
+    PasswordChangeNotRequired,
+    Failed
+}
+
+public sealed record AuthChangePasswordResult(AuthChangePasswordStatus Status, IReadOnlyCollection<string> Errors)
+{
+    public bool Succeeded => Status == AuthChangePasswordStatus.Succeeded;
+
+    public static AuthChangePasswordResult Success() => new(AuthChangePasswordStatus.Succeeded, []);
+    public static AuthChangePasswordResult CurrentUserNotFoundResult() => new(AuthChangePasswordStatus.CurrentUserNotFound, []);
+    public static AuthChangePasswordResult PasswordChangeNotRequiredResult() => new(AuthChangePasswordStatus.PasswordChangeNotRequired, []);
+    public static AuthChangePasswordResult Failed(IEnumerable<string> errors) => new(AuthChangePasswordStatus.Failed, errors.ToArray());
 }

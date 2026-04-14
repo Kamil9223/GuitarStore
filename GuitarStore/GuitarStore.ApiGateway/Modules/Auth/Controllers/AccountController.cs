@@ -1,20 +1,22 @@
 using Auth.Core.Services;
+using Microsoft.AspNetCore.Identity;
 using GuitarStore.ApiGateway.Modules.Auth.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GuitarStore.ApiGateway.Modules.Auth.Controllers;
 
-[AllowAnonymous]
 [ApiExplorerSettings(IgnoreApi = true)]
 public sealed class AccountController(IAuthService authService) : Controller
 {
+    [AllowAnonymous]
     [HttpGet("~/auth/login")]
     public IActionResult Login([FromQuery] string? returnUrl = null)
     {
         return View(new LoginViewModel { ReturnUrl = returnUrl });
     }
 
+    [AllowAnonymous]
     [HttpPost("~/auth/login")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
@@ -34,6 +36,11 @@ public sealed class AccountController(IAuthService authService) : Controller
             return RedirectToLocal(model.ReturnUrl);
         }
 
+        if (result.Status == AuthLoginStatus.RequiresPasswordChange)
+        {
+            return RedirectToAction(nameof(ChangePasswordRequired), new { returnUrl = model.ReturnUrl });
+        }
+
         switch (result.Status)
         {
             case AuthLoginStatus.LockedOut:
@@ -50,12 +57,14 @@ public sealed class AccountController(IAuthService authService) : Controller
         return View(model);
     }
 
+    [AllowAnonymous]
     [HttpGet("~/auth/register")]
     public IActionResult Register([FromQuery] string? returnUrl = null)
     {
         return View(new RegisterViewModel { ReturnUrl = returnUrl });
     }
 
+    [AllowAnonymous]
     [HttpPost("~/auth/register")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model, CancellationToken ct)
@@ -90,6 +99,54 @@ public sealed class AccountController(IAuthService authService) : Controller
         return View(model);
     }
 
+    [Authorize]
+    [HttpGet("~/auth/change-password-required")]
+    public async Task<IActionResult> ChangePasswordRequired([FromQuery] string? returnUrl = null)
+    {
+        if (!await authService.RequiresPasswordChangeAsync(User))
+        {
+            return RedirectToLocal(returnUrl);
+        }
+
+        return View(new ForcedPasswordChangeViewModel
+        {
+            ReturnUrl = returnUrl
+        });
+    }
+
+    [Authorize]
+    [HttpPost("~/auth/change-password-required")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangePasswordRequired(ForcedPasswordChangeViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var result = await authService.ChangePasswordAsync(User, new AuthChangePasswordRequest(
+            model.CurrentPassword,
+            model.NewPassword));
+
+        if (result.Succeeded || result.Status == AuthChangePasswordStatus.PasswordChangeNotRequired)
+        {
+            return RedirectToLocal(model.ReturnUrl);
+        }
+
+        if (result.Status == AuthChangePasswordStatus.CurrentUserNotFound)
+        {
+            return RedirectToAction(nameof(Login), new { returnUrl = model.ReturnUrl });
+        }
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error);
+        }
+
+        return View(model);
+    }
+
+    [Authorize]
     [HttpPost("~/auth/logout")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout([FromForm] string? returnUrl = null)
@@ -98,6 +155,7 @@ public sealed class AccountController(IAuthService authService) : Controller
         return RedirectToLocal(returnUrl);
     }
 
+    [AllowAnonymous]
     [HttpGet("~/auth/forbidden")]
     public IActionResult Forbidden()
     {

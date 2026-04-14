@@ -117,4 +117,92 @@ public sealed class AccountControllerTest(Setup.Application app) : Setup.EndToEn
         postResponse.Headers.Location?.ToString().ShouldBe(returnUrl);
         postResponse.Headers.Contains("Set-Cookie").ShouldBeTrue();
     }
+
+    [Fact]
+    public async Task Login_WhenUserMustChangePassword_ShouldRedirectToForcedChangeScreen()
+    {
+        const string password = "ChangeMe!123";
+        const string returnUrl = "/orders/history";
+        var email = $"auth-step9-login-force-{Guid.NewGuid():N}@guitarstore.local";
+
+        await AuthTestDataSeeder.EnsureUserAsync(
+            Scope.ServiceProvider,
+            email,
+            password,
+            mustChangePassword: true);
+
+        using var client = _webApp.GetHttpsClient(allowAutoRedirect: false);
+        var getResponse = await client.GetAsync($"/auth/login?returnUrl={Uri.EscapeDataString(returnUrl)}");
+        var html = await getResponse.Content.ReadAsStringAsync();
+        var antiForgeryToken = AuthUiTestHelpers.ExtractAntiForgeryToken(html);
+
+        using var postResponse = await client.PostAsync("/auth/login", new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["__RequestVerificationToken"] = antiForgeryToken,
+            ["EmailOrUserName"] = email,
+            ["Password"] = password,
+            ["RememberMe"] = "false",
+            ["ReturnUrl"] = returnUrl
+        }));
+
+        postResponse.StatusCode.ShouldBe(HttpStatusCode.Found);
+        postResponse.Headers.Location?.ToString().ShouldContain("/auth/change-password-required");
+        postResponse.Headers.Location?.ToString().ShouldContain(Uri.EscapeDataString(returnUrl));
+        postResponse.Headers.Contains("Set-Cookie").ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task ForcedPasswordChange_WhenPostedWithValidData_ShouldClearFlagAndRedirectToReturnUrl()
+    {
+        const string currentPassword = "ChangeMe!123";
+        const string newPassword = "EvenBetter!123";
+        const string returnUrl = "/orders/history";
+        var email = $"auth-step9-change-password-{Guid.NewGuid():N}@guitarstore.local";
+
+        await AuthTestDataSeeder.EnsureUserAsync(
+            Scope.ServiceProvider,
+            email,
+            currentPassword,
+            mustChangePassword: true);
+
+        using var client = _webApp.GetHttpsClient(allowAutoRedirect: false);
+        var loginPageResponse = await client.GetAsync($"/auth/login?returnUrl={Uri.EscapeDataString(returnUrl)}");
+        var loginPageHtml = await loginPageResponse.Content.ReadAsStringAsync();
+        var loginAntiForgeryToken = AuthUiTestHelpers.ExtractAntiForgeryToken(loginPageHtml);
+
+        using var loginResponse = await client.PostAsync("/auth/login", new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["__RequestVerificationToken"] = loginAntiForgeryToken,
+            ["EmailOrUserName"] = email,
+            ["Password"] = currentPassword,
+            ["RememberMe"] = "false",
+            ["ReturnUrl"] = returnUrl
+        }));
+
+        loginResponse.StatusCode.ShouldBe(HttpStatusCode.Found);
+        var changePasswordLocation = loginResponse.Headers.Location?.ToString();
+        changePasswordLocation.ShouldNotBeNull();
+
+        var changePasswordPageResponse = await client.GetAsync(changePasswordLocation);
+        var changePasswordHtml = await changePasswordPageResponse.Content.ReadAsStringAsync();
+        var changePasswordAntiForgeryToken = AuthUiTestHelpers.ExtractAntiForgeryToken(changePasswordHtml);
+
+        using var changePasswordResponse = await client.PostAsync("/auth/change-password-required", new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["__RequestVerificationToken"] = changePasswordAntiForgeryToken,
+            ["CurrentPassword"] = currentPassword,
+            ["NewPassword"] = newPassword,
+            ["ConfirmPassword"] = newPassword,
+            ["ReturnUrl"] = returnUrl
+        }));
+
+        changePasswordResponse.StatusCode.ShouldBe(HttpStatusCode.Found);
+        changePasswordResponse.Headers.Location?.ToString().ShouldBe(returnUrl);
+
+        var userManager = Scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+        var user = await userManager.FindByEmailAsync(email);
+        user.ShouldNotBeNull();
+        user.MustChangePassword.ShouldBeFalse();
+        (await userManager.CheckPasswordAsync(user, newPassword)).ShouldBeTrue();
+    }
 }

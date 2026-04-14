@@ -47,6 +47,14 @@ public sealed class OpenIddictController(
             return RedirectToAction(nameof(AccountController.Forbidden), "Account");
         }
 
+        if (user.MustChangePassword)
+        {
+            return RedirectToAction(
+                nameof(AccountController.ChangePasswordRequired),
+                "Account",
+                new { returnUrl = BuildReturnUrl() });
+        }
+
         var principal = await oidcClaimsPrincipalFactory.CreateAsync(user, request);
         return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
