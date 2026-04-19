@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Shouldly;
 using System.Net;
+using GuitarStore.ApiGateway;
 using Tests.EndToEnd.Setup.Modules.Auth;
 using Xunit;
 

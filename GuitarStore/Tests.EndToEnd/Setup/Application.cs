@@ -2,6 +2,7 @@ using Auth.Core.Data;
 using Catalog.Infrastructure.Database;
 using Customers.Infrastructure.Database;
 using GuitarStore.Api.Client;
+using GuitarStore.ApiGateway;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -33,8 +34,13 @@ public class Application : IAsyncLifetime
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .ConfigureAppConfiguration(config =>
                 {
-                    config.Sources.Clear();
-                    config.Add(MemoryConfigurationTestSource.BuildConfiguration(_containers));
+                    // Static test values come from appsettings.*.TestContainers.json files.
+                    // Only inject dynamic container URLs/connection strings that are not known at build time.
+                    config.AddInMemoryCollection([
+                        new("ConnectionStrings:GuitarStore", _containers.MsSqlContainerConnectionString),
+                        new("ConnectionStrings:RabbitMq", _containers.RabbitMqContainerConnectionString),
+                        new("Stripe:Url", _containers.StripeBaseUrl),
+                    ]);
                 })
                 .ConfigureTestServices(ConfigureTestServices)
                 //.ConfigureLogging(x => x.AddProvider(LoggerProvider))
