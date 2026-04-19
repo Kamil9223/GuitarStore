@@ -17,9 +17,9 @@ namespace Tests.EndToEnd.Setup;
 public class Application : IAsyncLifetime
 {
     private readonly TestsContainers _containers = new();
-    private WebApplicationFactory<Program> _app = null!;
 
-    public IServiceProvider ServiceProvider => _app!.Services;
+    public IServiceProvider ServiceProvider => Factory!.Services;
+    public WebApplicationFactory<Program> Factory { get; private set; } = null!;
 
     public Application() { }
 
@@ -27,7 +27,7 @@ public class Application : IAsyncLifetime
     {
         await _containers.StartAsync();
 
-        _app = new WebApplicationFactory<Program>()
+        Factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder => builder
                 .UseEnvironment("TestContainers")
                 .UseContentRoot(Directory.GetCurrentDirectory())
@@ -44,7 +44,7 @@ public class Application : IAsyncLifetime
         // without this, the application is started when the first request is made or services are resolved from the integration test
         // When at least two tests are run in parallel, ConfigureTestServices might be called twice (looks like .NET bug)
         // it may cause singleton services to be created twice, which caused some issues with our "overriding services per test" support
-        using var scope = _app.Services.CreateScope();
+        using var scope = Factory.Services.CreateScope();
         ValidateTestInfrastructureConfiguration(scope.ServiceProvider);
     }
 
@@ -66,9 +66,9 @@ public class Application : IAsyncLifetime
         OverrideServicesSetup.SetupServicesOverrides(services);
     }
 
-    public HttpClient GetHttpClient() => _app!.CreateClient();
+    public HttpClient GetHttpClient() => Factory!.CreateClient();
 
-    public HttpClient GetHttpsClient(bool allowAutoRedirect = true) => _app.CreateClient(new WebApplicationFactoryClientOptions
+    public HttpClient GetHttpsClient(bool allowAutoRedirect = true) => Factory.CreateClient(new WebApplicationFactoryClientOptions
     {
         BaseAddress = new Uri("https://localhost:7028"),
         AllowAutoRedirect = allowAutoRedirect

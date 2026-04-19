@@ -228,6 +228,7 @@ public sealed class AuthorizationCodeFlowTest(Setup.Application app) : Setup.End
         query["code"].ToString().ShouldNotBeNullOrWhiteSpace();
         query["state"].ToString().ShouldBe(state);
 
+        Databases.AuthDbContext.ChangeTracker.Clear();
         var userManager = Scope.ServiceProvider.GetRequiredService<UserManager<User>>();
         var user = await userManager.FindByEmailAsync(email);
         user.ShouldNotBeNull();

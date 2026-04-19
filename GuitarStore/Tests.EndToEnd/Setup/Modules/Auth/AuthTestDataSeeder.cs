@@ -12,7 +12,8 @@ internal static class AuthTestDataSeeder
         IServiceProvider serviceProvider,
         string email,
         string password,
-        bool mustChangePassword = false)
+        bool mustChangePassword = false,
+        bool emailConfirmed = true)
     {
         var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
         var existingUser = await userManager.FindByEmailAsync(email);
@@ -42,6 +43,12 @@ internal static class AuthTestDataSeeder
                 EnsureSuccess(await userManager.UpdateAsync(existingUser));
             }
 
+            if (existingUser.EmailConfirmed != emailConfirmed)
+            {
+                existingUser.EmailConfirmed = emailConfirmed;
+                EnsureSuccess(await userManager.UpdateAsync(existingUser));
+            }
+
             return existingUser;
         }
 
@@ -56,6 +63,8 @@ internal static class AuthTestDataSeeder
         {
             user.RequirePasswordChange();
         }
+
+        user.EmailConfirmed = emailConfirmed;
 
         EnsureSuccess(await userManager.CreateAsync(user, password));
         return user;

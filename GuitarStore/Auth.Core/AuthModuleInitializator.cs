@@ -29,6 +29,8 @@ public static class AuthModuleInitializator
         ConfigureAuthorization(services);
         ConfigureOpenIddict(services, authOptions);
         services.AddScoped<IAuthService, AuthService>();
+        services.AddSingleton<IAuthEmailSender, LoggingAuthEmailSender>();
+        services.AddSingleton<IAuthAccountLinkFactory, AuthAccountLinkFactory>();
         services.AddScoped<IAdminInitializationStore, IdentityAdminInitializationStore>();
         services.AddScoped<AuthRolesInitializer>();
         services.AddScoped<OpenIddictApplicationsInitializer>();

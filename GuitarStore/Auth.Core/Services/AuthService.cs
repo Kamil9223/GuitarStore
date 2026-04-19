@@ -1,9 +1,11 @@
 using Auth.Core.Authorization;
+using Auth.Core.Configuration;
 using Auth.Core.Entities;
 using Auth.Core.Events.Outgoing;
 using Common.RabbitMq.Abstractions.EventHandlers;
 using Common.StronglyTypedIds.StronglyTypedIds;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 namespace Auth.Core.Services;
@@ -11,8 +13,13 @@ namespace Auth.Core.Services;
 internal sealed class AuthService(
     UserManager<User> userManager,
     SignInManager<User> signInManager,
-    IIntegrationEventPublisher integrationEventPublisher) : IAuthService
+    IIntegrationEventPublisher integrationEventPublisher,
+    IAuthEmailSender authEmailSender,
+    IAuthAccountLinkFactory authAccountLinkFactory,
+    IOptions<AuthOptions> authOptions) : IAuthService
 {
+    private readonly bool _requireEmailConfirmed = authOptions.Value.RequireEmailConfirmed;
+
     public async Task<AuthLoginResult> LoginAsync(AuthLoginRequest request)
     {
         var user = await userManager.FindByEmailAsync(request.EmailOrUserName)
@@ -31,6 +38,12 @@ internal sealed class AuthService(
 
         if (result.Succeeded)
         {
+            if (_requireEmailConfirmed && !user.EmailConfirmed)
+            {
+                await signInManager.SignOutAsync();
+                return new AuthLoginResult(AuthLoginStatus.RequiresEmailConfirmation);
+            }
+
             if (user.MustChangePassword)
             {
                 return new AuthLoginResult(AuthLoginStatus.RequiresPasswordChange);
@@ -46,6 +59,11 @@ internal sealed class AuthService(
 
         if (result.IsNotAllowed)
         {
+            if (!await userManager.IsEmailConfirmedAsync(user))
+            {
+                return new AuthLoginResult(AuthLoginStatus.RequiresEmailConfirmation);
+            }
+
             return new AuthLoginResult(AuthLoginStatus.NotAllowed);
         }
 
@@ -81,6 +99,16 @@ internal sealed class AuthService(
 
         try
         {
+            if (_requireEmailConfirmed)
+            {
+                var confirmationToken = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                var confirmationLink = authAccountLinkFactory.CreateEmailConfirmationLink(user, confirmationToken);
+
+                await authEmailSender.SendEmailConfirmationAsync(
+                    new EmailConfirmationMessage(request.Email, confirmationLink),
+                    ct);
+            }
+
             var userRegisteredEvent = new UserRegisteredEvent(
                 UserId: user.Id.Value,
                 Email: request.Email,
@@ -103,8 +131,90 @@ internal sealed class AuthService(
             return AuthRegisterResult.Failed(errors);
         }
 
+        if (_requireEmailConfirmed)
+        {
+            return AuthRegisterResult.PendingEmailConfirmation();
+        }
+
         await signInManager.SignInAsync(user, isPersistent: false);
         return AuthRegisterResult.Success();
+    }
+
+    public async Task<AuthConfirmEmailResult> ConfirmEmailAsync(string userId, string encodedToken)
+    {
+        var user = await userManager.FindByIdAsync(userId);
+        if (user is null)
+        {
+            return AuthConfirmEmailResult.InvalidTokenOrUser();
+        }
+
+        if (user.EmailConfirmed)
+        {
+            return AuthConfirmEmailResult.AlreadyConfirmed();
+        }
+
+        string token;
+        try
+        {
+            token = authAccountLinkFactory.DecodeToken(encodedToken);
+        }
+        catch (FormatException)
+        {
+            return AuthConfirmEmailResult.InvalidTokenOrUser();
+        }
+
+        var confirmResult = await userManager.ConfirmEmailAsync(user, token);
+        if (!confirmResult.Succeeded)
+        {
+            return AuthConfirmEmailResult.InvalidTokenOrUser();
+        }
+
+        return AuthConfirmEmailResult.Success();
+    }
+
+    public async Task ForgotPasswordAsync(AuthForgotPasswordRequest request, CancellationToken ct)
+    {
+        var user = await userManager.FindByEmailAsync(request.Email);
+        if (user is null || !user.EmailConfirmed)
+        {
+            return;
+        }
+
+        var resetToken = await userManager.GeneratePasswordResetTokenAsync(user);
+        var resetLink = authAccountLinkFactory.CreatePasswordResetLink(user, resetToken);
+
+        await authEmailSender.SendPasswordResetAsync(
+            new PasswordResetMessage(user.Email!, resetLink),
+            ct);
+    }
+
+    public async Task<AuthResetPasswordResult> ResetPasswordAsync(AuthResetPasswordRequest request)
+    {
+        var user = await userManager.FindByIdAsync(request.UserId);
+        if (user is null)
+        {
+            return AuthResetPasswordResult.InvalidTokenOrUser();
+        }
+
+        string token;
+        try
+        {
+            token = authAccountLinkFactory.DecodeToken(request.EncodedToken);
+        }
+        catch (FormatException)
+        {
+            return AuthResetPasswordResult.InvalidTokenOrUser();
+        }
+
+        var resetPasswordResult = await userManager.ResetPasswordAsync(user, token, request.NewPassword);
+        if (!resetPasswordResult.Succeeded)
+        {
+            return resetPasswordResult.Errors.Any(static error => error.Code == "InvalidToken")
+                ? AuthResetPasswordResult.InvalidTokenOrUser()
+                : AuthResetPasswordResult.Failed(resetPasswordResult.Errors.Select(static error => error.Description));
+        }
+
+        return AuthResetPasswordResult.Success();
     }
 
     public async Task<bool> RequiresPasswordChangeAsync(ClaimsPrincipal principal)

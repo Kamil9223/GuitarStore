@@ -199,6 +199,7 @@ public sealed class AccountControllerTest(Setup.Application app) : Setup.EndToEn
         changePasswordResponse.StatusCode.ShouldBe(HttpStatusCode.Found);
         changePasswordResponse.Headers.Location?.ToString().ShouldBe(returnUrl);
 
+        Databases.AuthDbContext.ChangeTracker.Clear();
         var userManager = Scope.ServiceProvider.GetRequiredService<UserManager<User>>();
         var user = await userManager.FindByEmailAsync(email);
         user.ShouldNotBeNull();

@@ -1,0 +1,14 @@
+@model StatusViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<h2>@Model.Heading</h2>
+<p class="intro">@Model.Message</p>
+
+@if (!string.IsNullOrWhiteSpace(Model.PrimaryActionText) && !string.IsNullOrWhiteSpace(Model.PrimaryActionUrl))
+{
+    <div class="actions">
+        <a class="button" href="@Model.PrimaryActionUrl">@Model.PrimaryActionText</a>
+    </div>
+}
