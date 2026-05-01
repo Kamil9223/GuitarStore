@@ -1,13 +1,12 @@
-using Common.RabbitMq.Abstractions.EventHandlers;
+﻿using Common.RabbitMq.Abstractions.EventHandlers;
 using Common.RabbitMq.Abstractions.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Payments.Core.Database;
 
-namespace Payments.Core.Services;
+namespace Common.Outbox;
 
 internal sealed class OutboxMessageDispatcherJob : BackgroundService
 {
@@ -56,7 +55,7 @@ internal sealed class OutboxMessageDispatcherJob : BackgroundService
     private async Task ProcessOutboxMessages(CancellationToken ct)
     {
         using var scope = _scopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<PaymentsDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
         var eventPublisher = scope.ServiceProvider.GetRequiredService<IIntegrationEventPublisher>();
 
         var messages = await dbContext.OutboxMessages

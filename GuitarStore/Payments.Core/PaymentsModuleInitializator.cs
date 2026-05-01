@@ -64,11 +64,8 @@ public static class PaymentsModuleInitializator
         
         services.AddScoped<IWebhookIdempotencyStore, EfCoreWebhookIdempotencyStore>();
         services.AddScoped<IPaymentIntentParser, PaymentIntentParser>();
-        services.AddScoped<IOutboxEventPublisher, OutboxEventPublisher>();
 
         services.AddScoped<IStripeService, StripeService>();
-
-        services.AddHostedService<OutboxMessageDispatcherJob>();
 
         services.Configure<WebhookTimeToLiveConfiguration>(configuration.GetSection("WebhookTimeToLive"));
         services.Configure<StripeConfiguration>(configuration.GetSection("Stripe"));

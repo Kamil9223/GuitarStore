@@ -61,6 +61,6 @@ public sealed class AuthDbContext : IdentityDbContext<User, Role, AuthId>
         {
             builder.Property(e => e.UserId).HasConversion(authIdConverter);
             builder.Property(e => e.RoleId).HasConversion(authIdConverter);
-        });
+        }); ;
     }
 }

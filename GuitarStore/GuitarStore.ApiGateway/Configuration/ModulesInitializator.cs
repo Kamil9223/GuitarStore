@@ -1,6 +1,7 @@
 using Application.Configuration;
 using Auth.Core;
 using Catalog.Infrastructure.Configuration;
+using Common.Outbox;
 using Common.RabbitMq.Configuration;
 using Customers.Infrastructure.Configuration;
 using Delivery.Core;
@@ -12,16 +13,17 @@ namespace GuitarStore.ApiGateway.Configuration;
 
 internal static class ModulesInitializator
 {
-    public static IServiceCollection InitializeModules(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection InitializeModules(this IServiceCollection services, IConfiguration configuration, bool skipHostedServices = false)
     {
         services
             .AddApplicationModule()
             .AddAuthModule(configuration)
-            .AddRabbitMqModule()
+            .AddRabbitMqModule(skipHostedServices)
+            .AddOutbox(configuration, skipHostedServices)
             .AddCatalogModule(configuration)
             .AddCustomersModule(configuration)
-            .AddOrdersModule(configuration)
-            .AddWarehouseModule(configuration)
+            .AddOrdersModule(configuration, skipHostedServices)
+            .AddWarehouseModule(configuration, skipHostedServices)
             .AddPaymentsModule(configuration)
             .AddDeliveryModule(configuration)
             .AddApiModule(configuration);

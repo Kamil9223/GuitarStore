@@ -1,17 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Common.Outbox;
+﻿namespace Common.Outbox;
 public sealed class OutboxMessage
 {
-    public required Guid Id { get; init; }
-    public required string Type { get; init; }
-    public required string Payload { get; init; }
-    public required DateTime OccurredOnUtc { get; init; }
-    public required string? CorrelationId { get; init; }
-    public required DateTime? ProcessedOnUtc { get; set; }
-    public required int RetryCount { get; set; }
+    public Guid Id { get; private set; }
+    public string Type { get; private set; }
+    public string Payload { get; private set; }
+    public DateTime OccurredOnUtc { get; private set; }
+    public string? CorrelationId { get; private set; }
+    public DateTime? ProcessedOnUtc { get; private set; }
+    public int RetryCount { get; private set; }
+    public string? LastError { get; private set; }
+    
+    private OutboxMessage() { }
+    
+    public OutboxMessage(string type, string payload, string? correlationId = null)
+    {
+        Id = Guid.NewGuid();
+        Type = type;
+        Payload = payload;
+        OccurredOnUtc = DateTime.UtcNow;
+        CorrelationId = correlationId;
+        RetryCount = 0;
+    }
+    
+    public void MarkAsProcessed() => ProcessedOnUtc = DateTime.UtcNow;
+
+    public void IncrementRetryCount(string? error = null)
+    {
+        RetryCount++;
+        LastError = error;
+    }
 }

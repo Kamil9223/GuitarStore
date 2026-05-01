@@ -22,6 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Application\Application.csproj" />
+    <ProjectReference Include="..\Common.Errors\Common.Errors.csproj" />
+    <ProjectReference Include="..\Common.Outbox\Common.Outbox.csproj" />
     <ProjectReference Include="..\Common.RabbitMq.Abstractions\Common.RabbitMq.Abstractions.csproj" />
     <ProjectReference Include="..\Common.StronglyTypedIds\Common.StronglyTypedIds.csproj" />
   </ItemGroup>

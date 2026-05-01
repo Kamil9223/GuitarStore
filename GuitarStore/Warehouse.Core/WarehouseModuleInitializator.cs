@@ -15,7 +15,7 @@ using Warehouse.Shared;
 namespace Warehouse.Core;
 public static class WarehouseModuleInitializator
 {
-    public static IServiceCollection AddWarehouseModule(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddWarehouseModule(this IServiceCollection services, IConfiguration configuration, bool skipHostedServices = false)
     {
         services.AddScoped(provider =>
         {
@@ -33,7 +33,8 @@ public static class WarehouseModuleInitializator
 
         services.AddScoped<ICommandHandler<IncreaseStockQuantityCommand>, IncreaseStockQuantityCommandHandler>();
 
-        services.AddHostedService<StockReservationExpirationJob>();
+        if (!skipHostedServices)
+            services.AddHostedService<StockReservationExpirationJob>();
 
         services.AddSingleton<IEventBusSubscriptionManager, EventBusSubscriptionManager>();
         services.AddScoped<IIntegrationEventHandler<OrderPaidEvent>, OrderPaidEventHandler>();

@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Common.EfCore\Common.EfCore.csproj" />
+    <ProjectReference Include="..\Common.Outbox\Common.Outbox.csproj" />
     <ProjectReference Include="..\Common.RabbitMq.Abstractions\Common.RabbitMq.Abstractions.csproj" />
     <ProjectReference Include="..\Payments.Shared\Payments.Shared.csproj" />
   </ItemGroup>

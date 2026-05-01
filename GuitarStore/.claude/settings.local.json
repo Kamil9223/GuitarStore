@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find '/c/Moje/Projekty IT/GuitarStore/GuitarStore' -type f -name *Auth*)"
+    ]
+  }
+}

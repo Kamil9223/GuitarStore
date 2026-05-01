@@ -10,8 +10,6 @@ internal class PaymentsDbContext : DbContext, IPaymentsDbContext
 
     public DbSet<ProcessedWebhookMessage> ProcessedWebhookMessages { get; set; }
 
-    public DbSet<OutboxMessage> OutboxMessages { get; set; }
-
     public PaymentsDbContext(DbContextOptions<PaymentsDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -33,32 +31,9 @@ internal class PaymentsDbContext : DbContext, IPaymentsDbContext
 
             b.Property(x => x.Error).HasMaxLength(2000);
         });
-
-        modelBuilder.Entity<OutboxMessage>(b =>
-        {
-            b.ToTable("OutboxMessages", Schema);
-
-            b.HasKey(x => x.Id);
-
-            b.Property(x => x.Type).HasMaxLength(255).IsRequired();
-
-            b.Property(x => x.Payload).IsRequired();
-
-            b.Property(x => x.OccurredOnUtc).IsRequired();
-
-            b.Property(x => x.CorrelationId).HasMaxLength(100);
-
-            b.Property(x => x.ProcessedOnUtc);
-
-            b.Property(x => x.RetryCount).IsRequired();
-
-            b.Property(x => x.LastError).HasMaxLength(2000);
-
-            b.HasIndex(x => x.ProcessedOnUtc);
-        });
     }
     
     public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken ct) => Database.BeginTransactionAsync(ct);
 
-    public async Task SaveChangesAsync(CancellationToken ct) => await base.SaveChangesAsync(ct);
+    public override async Task<int> SaveChangesAsync(CancellationToken ct) => await base.SaveChangesAsync(ct);
 }

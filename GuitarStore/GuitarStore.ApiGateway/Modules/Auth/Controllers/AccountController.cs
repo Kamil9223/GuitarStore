@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GuitarStore.ApiGateway.Modules.Auth.Controllers;
 
 [ApiExplorerSettings(IgnoreApi = true)]
-public sealed class AccountController(IAuthService authService) : Controller
+public sealed class AccountController(IAccountService authService) : Controller
 {
     [AllowAnonymous]
     [HttpGet("~/auth/login")]
@@ -286,14 +286,9 @@ public sealed class AccountController(IAuthService authService) : Controller
             model.CurrentPassword,
             model.NewPassword));
 
-        if (result.Succeeded || result.Status == AuthChangePasswordStatus.PasswordChangeNotRequired)
+        if (result.Succeeded)
         {
             return RedirectToLocal(model.ReturnUrl);
-        }
-
-        if (result.Status == AuthChangePasswordStatus.CurrentUserNotFound)
-        {
-            return RedirectToAction(nameof(Login), new { returnUrl = model.ReturnUrl });
         }
 
         foreach (var error in result.Errors)

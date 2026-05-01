@@ -19,7 +19,8 @@ internal static class ApplicationModule
 {
     internal static void AddApplicationModule(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        bool skipHostedServices = false)
     {
         var assembly = Assembly.GetExecutingAssembly();
         services.Scan(scan => scan
@@ -36,7 +37,8 @@ internal static class ApplicationModule
         services.AddScoped<IIntegrationEventHandler<OrderPaidEvent>, OrderPaidEventHandler>();
         services.AddScoped<IIntegrationEventHandler<OrderPaymentFailedEvent>, OrderPaymentFailedEventHandler>();
 
-        services.AddHostedService<OrderExpirationJob>();
+        if (!skipHostedServices)
+            services.AddHostedService<OrderExpirationJob>();
 
         services.Configure<Configuration.OrdersConfiguration>(configuration.GetSection("Orders"));
     }

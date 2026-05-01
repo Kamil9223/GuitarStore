@@ -4,10 +4,11 @@ using Common.RabbitMq.Extensions;
 namespace Common.RabbitMq.Configuration;
 public static class RabbitMqModuleInitializator
 {
-    public static IServiceCollection AddRabbitMqModule(this IServiceCollection services)
+    public static IServiceCollection AddRabbitMqModule(this IServiceCollection services, bool skipHostedServices = false)
     {
         services.AddRabbitMq();
-        services.RegisterRabbitMqBackgroundWorkers();
+        if (!skipHostedServices)
+            services.RegisterRabbitMqBackgroundWorkers();
         return services;
     }
 }

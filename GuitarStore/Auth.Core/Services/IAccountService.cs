@@ -2,7 +2,7 @@ using System.Security.Claims;
 
 namespace Auth.Core.Services;
 
-public interface IAuthService
+public interface IAccountService
 {
     Task<AuthLoginResult> LoginAsync(AuthLoginRequest request);
     Task<AuthRegisterResult> RegisterAsync(AuthRegisterRequest request, CancellationToken ct);
@@ -106,8 +106,6 @@ public sealed record AuthChangePasswordRequest(
 public enum AuthChangePasswordStatus
 {
     Succeeded,
-    CurrentUserNotFound,
-    PasswordChangeNotRequired,
     Failed
 }
 
@@ -116,7 +114,5 @@ public sealed record AuthChangePasswordResult(AuthChangePasswordStatus Status, I
     public bool Succeeded => Status == AuthChangePasswordStatus.Succeeded;
 
     public static AuthChangePasswordResult Success() => new(AuthChangePasswordStatus.Succeeded, []);
-    public static AuthChangePasswordResult CurrentUserNotFoundResult() => new(AuthChangePasswordStatus.CurrentUserNotFound, []);
-    public static AuthChangePasswordResult PasswordChangeNotRequiredResult() => new(AuthChangePasswordStatus.PasswordChangeNotRequired, []);
     public static AuthChangePasswordResult Failed(IEnumerable<string> errors) => new(AuthChangePasswordStatus.Failed, errors.ToArray());
 }

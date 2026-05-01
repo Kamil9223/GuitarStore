@@ -1,5 +1,6 @@
 ﻿using Application.CQRS.Command;
 using Common.Errors.Exceptions;
+using Common.Outbox;
 using Common.RabbitMq.Abstractions.EventHandlers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

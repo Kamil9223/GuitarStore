@@ -53,7 +53,7 @@ public class Program
             .AddEnvironmentVariables()
             .AddCommandLine(args);
 
-        builder.Services.InitializeModules(builder.Configuration);
+        builder.Services.InitializeModules(builder.Configuration, IsOpenApiDocumentGeneration());
         builder.Services.AddScoped<IOidcClaimsPrincipalFactory, OidcClaimsPrincipalFactory>();
 
         builder.Services.AddControllersWithViews();

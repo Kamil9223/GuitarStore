@@ -1,7 +1,12 @@
+using Application.CQRS.Command;
+using Application.CQRS.Query;
 using Auth.Core.Authorization;
+using Auth.Core.Commands;
 using Auth.Core.Configuration;
 using Auth.Core.Data;
 using Auth.Core.Entities;
+using Auth.Core.Queries;
+using Auth.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +15,6 @@ using OpenIddict.Validation.AspNetCore;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Auth.Core.Services;
 
 namespace Auth.Core;
 
@@ -28,7 +32,13 @@ public static class AuthModuleInitializator
         ConfigureAuthentication(services);
         ConfigureAuthorization(services);
         ConfigureOpenIddict(services, authOptions);
-        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<ICommandHandler<AuthRegisterResult, RegisterUserCommand>, RegisterUserCommandHandler>();
+        services.AddScoped<ICommandHandler<AuthConfirmEmailResult, ConfirmEmailCommand>, ConfirmEmailCommandHandler>();
+        services.AddScoped<ICommandHandler<RequestPasswordResetCommand>, RequestPasswordResetCommandHandler>();
+        services.AddScoped<ICommandHandler<AuthResetPasswordResult, ResetPasswordCommand>, ResetPasswordCommandHandler>();
+        services.AddScoped<ICommandHandler<AuthChangePasswordResult, ChangePasswordCommand>, ChangePasswordCommandHandler>();
+        services.AddScoped<IQueryHandler<RequiresPasswordChangeQuery, RequiresPasswordChangeQueryResult>, RequiresPasswordChangeQueryHandler>();
+        services.AddScoped<IAccountService, AccountService>();
         services.AddSingleton<IAuthEmailSender, LoggingAuthEmailSender>();
         services.AddSingleton<IAuthAccountLinkFactory, AuthAccountLinkFactory>();
         services.AddScoped<IAdminInitializationStore, IdentityAdminInitializationStore>();

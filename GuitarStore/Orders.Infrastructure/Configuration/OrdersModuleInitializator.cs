@@ -8,10 +8,11 @@ public static class OrdersModuleInitializator
 {
     public static IServiceCollection AddOrdersModule(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        bool skipHostedServices = false)
     {
         services.AddInfrastructureModule(configuration);
-        services.AddApplicationModule(configuration);
+        services.AddApplicationModule(configuration, skipHostedServices);
         return services;
     }
 }

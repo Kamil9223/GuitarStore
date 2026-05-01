@@ -2,7 +2,7 @@ using Common.RabbitMq.Abstractions.Events;
 
 namespace Auth.Core.Events.Outgoing;
 
-internal sealed record UserRegisteredEvent(
+public sealed record UserRegisteredEvent(
     Guid UserId,
     string Email,
     string Name,
