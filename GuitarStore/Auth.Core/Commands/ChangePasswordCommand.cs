@@ -7,10 +7,24 @@ using System.Security.Claims;
 
 namespace Auth.Core.Commands;
 
-internal sealed record ChangePasswordCommand(
+public sealed record ChangePasswordCommand(
     ClaimsPrincipal Principal,
     string CurrentPassword,
     string NewPassword) : ICommand;
+
+public enum AuthChangePasswordStatus
+{
+    Succeeded,
+    Failed
+}
+
+public sealed record AuthChangePasswordResult(AuthChangePasswordStatus Status, IReadOnlyCollection<string> Errors)
+{
+    public bool Succeeded => Status == AuthChangePasswordStatus.Succeeded;
+
+    public static AuthChangePasswordResult Success() => new(AuthChangePasswordStatus.Succeeded, []);
+    public static AuthChangePasswordResult Failed(IEnumerable<string> errors) => new(AuthChangePasswordStatus.Failed, errors.ToArray());
+}
 
 internal sealed class ChangePasswordCommandHandler(
     UserManager<User> userManager,

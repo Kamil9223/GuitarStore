@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Auth.Core.Commands;
 
-internal sealed record RequestPasswordResetCommand(string Email) : ICommand;
+public sealed record RequestPasswordResetCommand(string Email) : ICommand;
 
 internal sealed class RequestPasswordResetCommandHandler(
     UserManager<User> userManager,
@@ -16,9 +16,7 @@ internal sealed class RequestPasswordResetCommandHandler(
     {
         var user = await userManager.FindByEmailAsync(command.Email);
         if (user is null || !user.EmailConfirmed)
-        {
             return;
-        }
 
         var resetToken = await userManager.GeneratePasswordResetTokenAsync(user);
         var resetLink = authAccountLinkFactory.CreatePasswordResetLink(user, resetToken);

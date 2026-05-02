@@ -33,12 +33,13 @@ public static class AuthModuleInitializator
         ConfigureAuthorization(services);
         ConfigureOpenIddict(services, authOptions);
         services.AddScoped<ICommandHandler<AuthRegisterResult, RegisterUserCommand>, RegisterUserCommandHandler>();
+        services.AddScoped<ICommandHandler<LogoutCommand>, LogoutCommandHandler>();
+        services.AddScoped<ICommandHandler<AuthLoginResult, LoginCommand>, LoginCommandHandler>();
         services.AddScoped<ICommandHandler<AuthConfirmEmailResult, ConfirmEmailCommand>, ConfirmEmailCommandHandler>();
         services.AddScoped<ICommandHandler<RequestPasswordResetCommand>, RequestPasswordResetCommandHandler>();
         services.AddScoped<ICommandHandler<AuthResetPasswordResult, ResetPasswordCommand>, ResetPasswordCommandHandler>();
         services.AddScoped<ICommandHandler<AuthChangePasswordResult, ChangePasswordCommand>, ChangePasswordCommandHandler>();
         services.AddScoped<IQueryHandler<RequiresPasswordChangeQuery, RequiresPasswordChangeQueryResult>, RequiresPasswordChangeQueryHandler>();
-        services.AddScoped<IAccountService, AccountService>();
         services.AddSingleton<IAuthEmailSender, LoggingAuthEmailSender>();
         services.AddSingleton<IAuthAccountLinkFactory, AuthAccountLinkFactory>();
         services.AddScoped<IAdminInitializationStore, IdentityAdminInitializationStore>();

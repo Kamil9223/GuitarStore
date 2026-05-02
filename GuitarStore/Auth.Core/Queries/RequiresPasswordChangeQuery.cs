@@ -5,9 +5,9 @@ using System.Security.Claims;
 
 namespace Auth.Core.Queries;
 
-internal sealed record RequiresPasswordChangeQuery(ClaimsPrincipal Principal) : IQuery;
+public sealed record RequiresPasswordChangeQuery(ClaimsPrincipal Principal) : IQuery;
 
-internal sealed record RequiresPasswordChangeQueryResult(bool IsRequired);
+public sealed record RequiresPasswordChangeQueryResult(bool IsRequired);
 
 internal sealed class RequiresPasswordChangeQueryHandler(
     UserManager<User> userManager) : IQueryHandler<RequiresPasswordChangeQuery, RequiresPasswordChangeQueryResult>

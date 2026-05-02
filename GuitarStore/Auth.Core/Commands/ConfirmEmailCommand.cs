@@ -5,7 +5,23 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Auth.Core.Commands;
 
-internal sealed record ConfirmEmailCommand(string UserId, string EncodedToken) : ICommand;
+public sealed record ConfirmEmailCommand(string UserId, string EncodedToken) : ICommand;
+
+public enum AuthConfirmEmailStatus
+{
+    Succeeded,
+    AlreadyConfirmed,
+    InvalidTokenOrUser
+}
+
+public sealed record AuthConfirmEmailResult(AuthConfirmEmailStatus Status)
+{
+    public bool Succeeded => Status is AuthConfirmEmailStatus.Succeeded or AuthConfirmEmailStatus.AlreadyConfirmed;
+
+    public static AuthConfirmEmailResult Success() => new(AuthConfirmEmailStatus.Succeeded);
+    public static AuthConfirmEmailResult AlreadyConfirmed() => new(AuthConfirmEmailStatus.AlreadyConfirmed);
+    public static AuthConfirmEmailResult InvalidTokenOrUser() => new(AuthConfirmEmailStatus.InvalidTokenOrUser);
+}
 
 internal sealed class ConfirmEmailCommandHandler(
     UserManager<User> userManager,
@@ -15,14 +31,10 @@ internal sealed class ConfirmEmailCommandHandler(
     {
         var user = await userManager.FindByIdAsync(command.UserId);
         if (user is null)
-        {
             return AuthConfirmEmailResult.InvalidTokenOrUser();
-        }
 
         if (user.EmailConfirmed)
-        {
             return AuthConfirmEmailResult.AlreadyConfirmed();
-        }
 
         string token;
         try
@@ -36,9 +48,7 @@ internal sealed class ConfirmEmailCommandHandler(
 
         var confirmResult = await userManager.ConfirmEmailAsync(user, token);
         if (!confirmResult.Succeeded)
-        {
             return AuthConfirmEmailResult.InvalidTokenOrUser();
-        }
 
         return AuthConfirmEmailResult.Success();
     }

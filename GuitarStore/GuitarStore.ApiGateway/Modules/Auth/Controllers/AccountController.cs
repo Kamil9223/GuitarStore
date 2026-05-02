@@ -1,5 +1,8 @@
+using Application.CQRS.Command;
+using Application.CQRS.Query;
 using Auth.Core.Authorization;
-using Auth.Core.Services;
+using Auth.Core.Commands;
+using Auth.Core.Queries;
 using GuitarStore.ApiGateway.Modules.Auth.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GuitarStore.ApiGateway.Modules.Auth.Controllers;
 
 [ApiExplorerSettings(IgnoreApi = true)]
-public sealed class AccountController(IAccountService authService) : Controller
+public sealed class AccountController : Controller
 {
     [AllowAnonymous]
     [HttpGet("~/auth/login")]
@@ -19,17 +22,21 @@ public sealed class AccountController(IAccountService authService) : Controller
     [AllowAnonymous]
     [HttpPost("~/auth/login")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(LoginViewModel model)
+    public async Task<IActionResult> Login(
+        LoginViewModel model,
+        [FromServices] ICommandHandler<AuthLoginResult, LoginCommand> handler,
+        CancellationToken ct)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        var result = await authService.LoginAsync(new AuthLoginRequest(
+        var result = await handler.Handle(new LoginCommand(
             model.EmailOrUserName,
             model.Password,
-            model.RememberMe));
+            model.RememberMe),
+            ct);
 
         if (result.Succeeded)
         {
@@ -70,14 +77,17 @@ public sealed class AccountController(IAccountService authService) : Controller
     [AllowAnonymous]
     [HttpPost("~/auth/register")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(RegisterViewModel model, CancellationToken ct)
+    public async Task<IActionResult> Register(
+        RegisterViewModel model,
+        [FromServices] ICommandHandler<AuthRegisterResult, RegisterUserCommand> handler,
+        CancellationToken ct)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        var result = await authService.RegisterAsync(new AuthRegisterRequest(
+        var result = await handler.Handle(new RegisterUserCommand(
             model.Name,
             model.LastName,
             model.Email,
@@ -125,7 +135,11 @@ public sealed class AccountController(IAccountService authService) : Controller
 
     [AllowAnonymous]
     [HttpGet("~/auth/confirm-email")]
-    public async Task<IActionResult> ConfirmEmail([FromQuery] string? userId = null, [FromQuery] string? token = null)
+    public async Task<IActionResult> ConfirmEmail(
+        [FromQuery] string? userId,
+        [FromQuery] string? token,
+        [FromServices] ICommandHandler<AuthConfirmEmailResult, ConfirmEmailCommand> handler,
+        CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
         {
@@ -134,7 +148,7 @@ public sealed class AccountController(IAccountService authService) : Controller
                 "This confirmation link is invalid or incomplete."));
         }
 
-        var result = await authService.ConfirmEmailAsync(userId, token);
+        var result = await handler.Handle(new ConfirmEmailCommand(userId, token), ct);
         if (result.Status == AuthConfirmEmailStatus.InvalidTokenOrUser)
         {
             return View("Status", BuildFailureStatus(
@@ -166,14 +180,17 @@ public sealed class AccountController(IAccountService authService) : Controller
     [AllowAnonymous]
     [HttpPost("~/auth/forgot-password")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model, CancellationToken ct)
+    public async Task<IActionResult> ForgotPassword(
+        ForgotPasswordViewModel model,
+        [FromServices] ICommandHandler<RequestPasswordResetCommand> handler,
+        CancellationToken ct)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        await authService.ForgotPasswordAsync(new AuthForgotPasswordRequest(model.Email), ct);
+        await handler.Handle(new RequestPasswordResetCommand(model.Email), ct);
         return RedirectToAction(nameof(ForgotPasswordConfirmation));
     }
 
@@ -212,17 +229,21 @@ public sealed class AccountController(IAccountService authService) : Controller
     [AllowAnonymous]
     [HttpPost("~/auth/reset-password")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+    public async Task<IActionResult> ResetPassword(
+        ResetPasswordViewModel model,
+        [FromServices] ICommandHandler<AuthResetPasswordResult, ResetPasswordCommand> handler,
+        CancellationToken ct)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        var result = await authService.ResetPasswordAsync(new AuthResetPasswordRequest(
+        var result = await handler.Handle(new ResetPasswordCommand(
             model.UserId,
             model.Token,
-            model.NewPassword));
+            model.NewPassword),
+            ct);
 
         if (result.Succeeded)
         {
@@ -259,9 +280,13 @@ public sealed class AccountController(IAccountService authService) : Controller
 
     [Authorize(AuthenticationSchemes = AuthAuthenticationSchemes.IdentityApplication)]
     [HttpGet("~/auth/change-password-required")]
-    public async Task<IActionResult> ChangePasswordRequired([FromQuery] string? returnUrl = null)
+    public async Task<IActionResult> ChangePasswordRequired(
+        [FromQuery] string? returnUrl,
+        [FromServices] IQueryHandler<RequiresPasswordChangeQuery, RequiresPasswordChangeQueryResult> handler,
+        CancellationToken ct)
     {
-        if (!await authService.RequiresPasswordChangeAsync(User))
+        var result = await handler.Handle(new RequiresPasswordChangeQuery(User), ct);
+        if (!result.IsRequired)
         {
             return RedirectToLocal(returnUrl);
         }
@@ -275,16 +300,21 @@ public sealed class AccountController(IAccountService authService) : Controller
     [Authorize(AuthenticationSchemes = AuthAuthenticationSchemes.IdentityApplication)]
     [HttpPost("~/auth/change-password-required")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ChangePasswordRequired(ForcedPasswordChangeViewModel model)
+    public async Task<IActionResult> ChangePasswordRequired(
+        ForcedPasswordChangeViewModel model,
+        [FromServices] ICommandHandler<AuthChangePasswordResult, ChangePasswordCommand> handler,
+        CancellationToken ct)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        var result = await authService.ChangePasswordAsync(User, new AuthChangePasswordRequest(
+        var result = await handler.Handle(new ChangePasswordCommand(
+            User,
             model.CurrentPassword,
-            model.NewPassword));
+            model.NewPassword),
+            ct);
 
         if (result.Succeeded)
         {
@@ -302,9 +332,12 @@ public sealed class AccountController(IAccountService authService) : Controller
     [Authorize(AuthenticationSchemes = AuthAuthenticationSchemes.IdentityApplication)]
     [HttpPost("~/auth/logout")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Logout([FromForm] string? returnUrl = null)
+    public async Task<IActionResult> Logout(
+        [FromForm] string? returnUrl,
+        [FromServices] ICommandHandler<LogoutCommand> handler,
+        CancellationToken ct)
     {
-        await authService.LogoutAsync();
+        await handler.Handle(new LogoutCommand(), ct);
         return RedirectToLocal(returnUrl);
     }
 
