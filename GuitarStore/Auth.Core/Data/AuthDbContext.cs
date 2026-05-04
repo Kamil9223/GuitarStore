@@ -1,4 +1,5 @@
 using Auth.Core.Entities;
+using Common.Outbox;
 using Common.StronglyTypedIds.StronglyTypedIds;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -10,6 +11,8 @@ namespace Auth.Core.Data;
 public sealed class AuthDbContext : IdentityDbContext<User, Role, AuthId>
 {
     public const string Schema = "Auth";
+
+    public DbSet<OutboxMessage> OutboxMessages { get; init; }
 
     public AuthDbContext(DbContextOptions<AuthDbContext> options)
         : base(options)
@@ -26,6 +29,7 @@ public sealed class AuthDbContext : IdentityDbContext<User, Role, AuthId>
 
         base.OnModelCreating(modelBuilder);
         modelBuilder.UseOpenIddict();
+        modelBuilder.ConfigureOutbox(Schema);
 
         modelBuilder.Entity<User>(builder =>
         {

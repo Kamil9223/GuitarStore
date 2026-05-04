@@ -19,7 +19,7 @@ internal static class ModulesInitializator
             .AddApplicationModule()
             .AddAuthModule(configuration)
             .AddRabbitMqModule(skipHostedServices)
-            .AddOutbox(configuration, skipHostedServices)
+            .AddOutbox(skipHostedServices)
             .AddCatalogModule(configuration)
             .AddCustomersModule(configuration)
             .AddOrdersModule(configuration, skipHostedServices)

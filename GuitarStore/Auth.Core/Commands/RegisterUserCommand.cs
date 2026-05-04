@@ -1,9 +1,10 @@
 using Application.CQRS.Command;
 using Auth.Core.Authorization;
+using Auth.Core.Data;
 using Auth.Core.Entities;
 using Auth.Core.Events.Outgoing;
+using Auth.Core.Outbox;
 using Auth.Core.Services;
-using Common.Outbox;
 using Common.StronglyTypedIds.StronglyTypedIds;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -39,7 +40,8 @@ public sealed record AuthRegisterResult(AuthRegisterStatus Status, IReadOnlyColl
 internal sealed class RegisterUserCommandHandler(
     UserManager<User> userManager,
     SignInManager<User> signInManager,
-    IOutboxEventPublisher authOutboxPublisher,
+    IAuthOutboxPublisher authOutboxPublisher,
+    AuthDbContext authDbContext,
     IAuthEmailSender authEmailSender,
     IAuthAccountLinkFactory authAccountLinkFactory,
     IOptions<Configuration.AuthOptions> authOptions) : ICommandHandler<AuthRegisterResult, RegisterUserCommand>
@@ -58,14 +60,19 @@ internal sealed class RegisterUserCommandHandler(
             Email = command.Email
         };
 
+        await using var tx = await authDbContext.Database.BeginTransactionAsync(ct);
+
         var createResult = await userManager.CreateAsync(user, command.Password);
         if (!createResult.Succeeded)
+        {
+            await tx.RollbackAsync(ct);
             return AuthRegisterResult.Failed(createResult.Errors.Select(static e => e.Description));
+        }
 
         var addToRoleResult = await userManager.AddToRoleAsync(user, AuthRoles.User);
         if (!addToRoleResult.Succeeded)
         {
-            await userManager.DeleteAsync(user);
+            await tx.RollbackAsync(ct);
             return AuthRegisterResult.Failed(addToRoleResult.Errors.Select(static e => e.Description));
         }
 
@@ -83,6 +90,9 @@ internal sealed class RegisterUserCommandHandler(
             Name: command.Name,
             LastName: command.LastName,
             OccurredAtUtc: DateTimeOffset.UtcNow), ct);
+
+        await authDbContext.SaveChangesAsync(ct);
+        await tx.CommitAsync(ct);
 
         if (_requireEmailConfirmed)
             return AuthRegisterResult.PendingEmailConfirmation();

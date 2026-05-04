@@ -1,6 +1,5 @@
-﻿using Common.RabbitMq.Abstractions.EventHandlers;
+using Common.RabbitMq.Abstractions.EventHandlers;
 using Common.RabbitMq.Abstractions.Events;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -55,19 +54,23 @@ internal sealed class OutboxMessageDispatcherJob : BackgroundService
     private async Task ProcessOutboxMessages(CancellationToken ct)
     {
         using var scope = _scopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<OutboxDbContext>();
+        var readers = scope.ServiceProvider.GetRequiredService<IEnumerable<IOutboxReader>>();
         var eventPublisher = scope.ServiceProvider.GetRequiredService<IIntegrationEventPublisher>();
 
-        var messages = await dbContext.OutboxMessages
-            .Where(m => m.ProcessedOnUtc == null && m.RetryCount < MaxRetryCount)
-            .OrderBy(m => m.OccurredOnUtc)
-            .Take(50)
-            .ToListAsync(ct);
+        foreach (var reader in readers)
+        {
+            await ProcessReader(reader, eventPublisher, ct);
+        }
+    }
+
+    private async Task ProcessReader(IOutboxReader reader, IIntegrationEventPublisher eventPublisher, CancellationToken ct)
+    {
+        var messages = await reader.GetPendingAsync(50, ct);
 
         if (messages.Count == 0)
             return;
 
-        _logger.LogInformation("Processing {Count} outbox messages.", messages.Count);
+        _logger.LogInformation("Processing {Count} outbox messages from {Reader}.", messages.Count, reader.GetType().Name);
 
         foreach (var message in messages)
         {
@@ -110,7 +113,7 @@ internal sealed class OutboxMessageDispatcherJob : BackgroundService
             }
         }
 
-        await dbContext.SaveChangesAsync(ct);
+        await reader.SaveAsync(ct);
     }
 
     private IntegrationEvent? DeserializeEvent(string payload)

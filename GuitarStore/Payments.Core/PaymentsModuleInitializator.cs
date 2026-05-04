@@ -1,8 +1,10 @@
 ﻿using Application.CQRS.Command;
 using Application.CQRS.Query;
+using Common.Outbox;
 using Common.RabbitMq.Abstractions.EventHandlers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Payments.Core.Outbox;
 using Payments.Shared.Services;
 using Stripe;
 using System.Reflection;
@@ -62,6 +64,8 @@ public static class PaymentsModuleInitializator
             return new StripeClient(secretKey, apiBase: client.BaseAddress!.ToString(), httpClient: stripeHttpClient);
         });
         
+        services.AddScoped<IPaymentsOutboxPublisher, PaymentsOutboxEventPublisher>();
+        services.AddScoped<IOutboxReader, PaymentsOutboxReader>();
         services.AddScoped<IWebhookIdempotencyStore, EfCoreWebhookIdempotencyStore>();
         services.AddScoped<IPaymentIntentParser, PaymentIntentParser>();
 

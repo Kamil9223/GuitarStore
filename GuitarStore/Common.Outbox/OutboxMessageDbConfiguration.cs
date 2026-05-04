@@ -4,11 +4,11 @@ namespace Common.Outbox;
 
 public static class OutboxMessageDbConfiguration
 {
-    public static void ConfigureOutbox(this ModelBuilder modelBuilder)
+    public static void ConfigureOutbox(this ModelBuilder modelBuilder, string schema)
     {
         modelBuilder.Entity<OutboxMessage>(builder =>
         {
-            builder.ToTable("OutboxMessages", "outbox");
+            builder.ToTable("OutboxMessages", schema);
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Type).HasMaxLength(255).IsRequired();
             builder.Property(x => x.Payload).IsRequired();

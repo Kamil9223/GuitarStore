@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find '/c/Moje/Projekty IT/GuitarStore/GuitarStore' -type f -name *Auth*)"
+      "Bash(find '/c/Moje/Projekty IT/GuitarStore/GuitarStore' -type f -name *Auth*)",
+      "Bash(find 'C:\\\\Moje\\\\Projekty IT\\\\GuitarStore\\\\GuitarStore' -name *Initializer* -type f)",
+      "Bash(find 'C:\\\\Moje\\\\Projekty IT\\\\GuitarStore\\\\GuitarStore\\\\GuitarStore.ApiGateway' -name *Configuration* -type f)",
+      "Bash(xargs grep:*)"
     ]
   }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Common.Outbox;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Payments.Core.Entities;
 
@@ -9,11 +10,14 @@ internal class PaymentsDbContext : DbContext, IPaymentsDbContext
     public const string Schema = "Payments";
 
     public DbSet<ProcessedWebhookMessage> ProcessedWebhookMessages { get; set; }
+    public DbSet<OutboxMessage> OutboxMessages { get; set; }
 
     public PaymentsDbContext(DbContextOptions<PaymentsDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.ConfigureOutbox(Schema);
+
         modelBuilder.Entity<ProcessedWebhookMessage>(b =>
         {
             b.ToTable("ProcessedWebhookMessages", Schema);

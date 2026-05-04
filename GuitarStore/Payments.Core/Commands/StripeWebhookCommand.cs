@@ -1,10 +1,10 @@
 ﻿using Application.CQRS.Command;
 using Common.Errors.Exceptions;
-using Common.Outbox;
 using Common.RabbitMq.Abstractions.EventHandlers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Payments.Core.Events.Outgoing;
+using Payments.Core.Outbox;
 using Payments.Core.Services;
 using Stripe;
 using StripeConfiguration = Payments.Core.Services.StripeConfiguration;
@@ -15,7 +15,7 @@ public sealed record StripeWebhookCommand(string Json, string Signature) : IComm
 
 internal sealed class StripeWebhookCommandHandler(
     IWebhookIdempotencyStore webhookStore,
-    IOutboxEventPublisher outboxEventPublisher,
+    IPaymentsOutboxPublisher outboxEventPublisher,
     IPaymentIntentParser parser,
     IOptions<StripeConfiguration> stripeConfiguration,
     ILogger<StripeWebhookCommandHandler> logger,

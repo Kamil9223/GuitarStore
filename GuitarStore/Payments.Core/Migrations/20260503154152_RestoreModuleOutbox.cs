@@ -3,20 +3,17 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Common.Outbox.Migrations
+namespace Payments.Core.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class RestoreModuleOutbox : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.EnsureSchema(
-                name: "outbox");
-
             migrationBuilder.CreateTable(
                 name: "OutboxMessages",
-                schema: "outbox",
+                schema: "Payments",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -35,7 +32,7 @@ namespace Common.Outbox.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_OutboxMessages_ProcessedOnUtc",
-                schema: "outbox",
+                schema: "Payments",
                 table: "OutboxMessages",
                 column: "ProcessedOnUtc");
         }
@@ -45,7 +42,7 @@ namespace Common.Outbox.Migrations
         {
             migrationBuilder.DropTable(
                 name: "OutboxMessages",
-                schema: "outbox");
+                schema: "Payments");
         }
     }
 }
